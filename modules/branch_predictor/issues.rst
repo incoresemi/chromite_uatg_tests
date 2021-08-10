@@ -14,7 +14,9 @@ Open issues
     we require for the test to pass.
   * **Cheking if 'ALL' BHT entries are updated properly:** This test checks if all
     the BHT entries get updated properly (as shown in the FSM). Currently, the 
-    intractability of the BHT updation makes it difficult to perform this test. 
+    intractability of the BHT updation makes it difficult to perform this test.
+    
+- The assembler tends to optimize the calls and returns. This makes it difficult to create tests which would invlove numerous calls and returns for testing the functioning of the RAS.
 
 Closed issues
 =============
