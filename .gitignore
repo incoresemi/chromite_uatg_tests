@@ -1,0 +1,16 @@
+# Pycache stuff
+**.pyc
+**.pyo
+
+# Assembly, Plugins
+**.S
+**.yapsy-plugin
+
+# IDE Settings
+.idea/*
+
+.*
+*.egg-info
+docs/build/
+uarch_test/target/*
+uarch_test/*.yaml
