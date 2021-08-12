@@ -26,63 +26,63 @@ class decompressor(IPlugin):
         asm = "\n\n## test: decompressor ##\n\n"
         asm += """##LOAD INSTRUCTIONS CI FORMAT
 
-c.lwsp x3, 8(x2) ## load word stack pointer scaled by 4
+#c.lwsp x3, 8(x2) ## load word stack pointer scaled by 4
 
-c.ldsp x4, 64(x2) ## load double word stack pointer scaled by 8 (RV64C/128C)
+#c.ldsp x4, 64(x2) ## load double word stack pointer scaled by 8 (RV64C/128C)
 
-c.flwsp x6, 16(x2) ## single precision floating point scaled by 4(32FC)
+#c.flwsp x6, 16(x2) ## single precision floating point scaled by 4(32FC)
 
-c.fldsp x7, 24(x2) ## double precision floating point scaled by 8 (RV32DC/RV64DC)
+#c.fldsp x7, 24(x2) ## double precision floating point scaled by 8 (RV32DC/RV64DC)
 
 ##STORE INSTRUCTIONS CSS FORMAT
 
-C.swsp x3, 20(x2) ## store word stack pointer scaled by 4
+#C.swsp x3, 20(x2) ## store word stack pointer scaled by 4
 
-c.sdsp x4, 32(x2) ## store double stack pointer scaled by 8(RV64C/RV128C)
+#c.sdsp x4, 32(x2) ## store double stack pointer scaled by 8(RV64C/RV128C)
 
-c.fswsp x6, 24(x2) ## single precision floating point scaled by 4(RV32C)
+#c.fswsp x6, 24(x2) ## single precision floating point scaled by 4(RV32C)
 
-c.fsdsp x7, 16(x2) ## double precision floating point scaled by 8 (RV32DC/RV64DC)
+#c.fsdsp x7, 16(x2) ## double precision floating point scaled by 8 (RV32DC/RV64DC)
 
 ##REGISTER BASED LOAD INSTRUCTIONS CL FORMAT
 
-c.lw x8, 16(x9) ## load word scaled by 4
+#c.lw x8, 16(x9) ## load word scaled by 4
 
-c.ld x9, 24(x10) ## load double word scaled by 8(RV64C/128C)
+#c.ld x9, 24(x10) ## load double word scaled by 8(RV64C/128C)
 
-c.flw f8, 40(x8) ## single precision floating point scaled by 4(RV32FC)
+#c.flw f8, 40(x8) ## single precision floating point scaled by 4(RV32FC)
 
-c.fld f9, 32(x9) ## double precision floating point scaled by 8 (RV32DC/RV64DC)
+#c.fld f9, 32(x9) ## double precision floating point scaled by 8 (RV32DC/RV64DC)
 
 ## REGISTER BASED STORE INSTRUCTIONS CS FORMAT
 
-c.sw x8, 8(x9) ##store word scaled by 4
+#c.sw x8, 8(x9) ##store word scaled by 4
 
-c.sd x9, 80(x10) ##store double scaled by 8 (64C/128C)
+#c.sd x9, 80(x10) ##store double scaled by 8 (64C/128C)
 
-c.fsw f11, 40(x12) ##single precision floating point scaled by 4(RV32FC)
+#c.fsw f11, 40(x12) ##single precision floating point scaled by 4(RV32FC)
 
-c.fsd f12, 88(x13) ##double precision floating point scaled by 8 (RV32DC/RV64DC)
+#c.fsd f12, 88(x13) ##double precision floating point scaled by 8 (RV32DC/RV64DC)
 
 ## CONTROL TRANSFER INSTRUCTIONS
 
-c.j x0,6 ##jump instructions
+#c.j x0,6 ##jump instructions
 
-c.jal x1,22 ## jump and link instructions (RV32C)
+#c.jal x1,22 ## jump and link instructions (RV32C)
 
-c.jr x0, 0(x3) ## jump register -CR format
+#c.jr x0, 0(x3) ## jump register -CR format
 
-c.jalr x1, 0(x4) ## jump and link register-CR format
+#c.jalr x1, 0(x4) ## jump and link register-CR format
 
-c.beqz x0,7 ##branch equal to zero instruction -CB format
+#c.beqz x0,7 ##branch equal to zero instruction -CB format
 
-c.bnez x9,6 ##branch not equal to zero - CB format
+#c.bnez x9,6 ##branch not equal to zero - CB format
 
 ##INTEGER COMPUTATIONAL INSTRUCTIONS
 
-c.li x3,5 ##load instructions
+#c.li x3,5 ##load instructions
 
-c.lui x3,4 ## load unsigned instructions
+#c.lui x3,4 ## load unsigned instructions
 
 ## INTEGER REGISTER IMMEDIATE INSTRUCTIONS
 
