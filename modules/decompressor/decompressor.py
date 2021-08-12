@@ -90,15 +90,15 @@ c.addi x3,7 ## add instructions (CI format)
 
 c.addiw x4,8 ## add instruction (RV64C/128C)
 
-c.addi16sp x2,200 ## add stack pointer instruction
+#c.addi16sp x2,200 ## add stack pointer instruction
 
-c.addi4spn x7, x2,8 ## stack pointer scaled by 4 (CIW format)
+#c.addi4spn x7, x2,8 ## stack pointer scaled by 4 (CIW format)
 
-c.slli x3, 64 ## logical left shift instruction (CI format)
+#c.slli x3, 64 ## logical left shift instruction (CI format)
 
-c.srli x8, 64 ## logical right shift (CB format)
+#c.srli x8, 64 ## logical right shift (CB format)
 
-c.srai x9,96 ## arithmetic right shift (CB format)
+#c.srai x9,96 ## arithmetic right shift (CB format)
 
 c.andi x9,16 ## bitwise AND (CB format)
 
