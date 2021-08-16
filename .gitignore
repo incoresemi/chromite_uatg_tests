@@ -2,6 +2,12 @@
 **.pyc
 **.pyo
 
+# text and misc files
+
+**.txt
+**.yaml
+**.xml
+
 # Assembly, Plugins
 **.S
 **.yapsy-plugin
