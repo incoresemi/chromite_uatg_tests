@@ -1,3 +1,5 @@
+.. _creating_new_tests: 
+
 =========================
 Micro-Arch-Test Framework
 =========================
@@ -10,12 +12,12 @@ Before adding new test cases to the framework, one needs to understand
 the conventions that are followed to ensure code compatibility and
 automation.
 
-Note : The ``execute``,\ ``generate_asm`` and ``check_log`` functions'
+Note : The ``execute``, ``generate_asm``, ``generate_covergroups`` and ``check_log`` functions'
 implementation are **mandatory**. The default return values are as
-follows, ``execute``:``False``, ``generate_asm``:``''``,
+follows, ``execute``:``False``, ``generate_asm``:``''``, ``generate_covergroups``:``''``,
 ``check_log``:``None``.
 
-1. Packages Imported by the test\_generator
+1. Packages Imported by the test_generator
 
    1. Yapsy: for plugin management (version>=1.12.2)
    2. regex\_formats: file containing regex expressions for commonly
@@ -44,7 +46,12 @@ follows, ``execute``:``False``, ``generate_asm``:``''``,
    -  This function should return a formatted string. This string will
       be directly written as the assembly test program.
 
-5. Defining the ``check_log`` function:
+5. Defining the ``generate_covergroups`` function:
+   
+   - This function should return a formatted string of the SV coverpoints which the user 
+     expects to get covered in their test. This string will be directly written into an SV file.
+
+6. Defining the ``check_log`` function:
 
    1. Read the log file from ``log_file_path`` variable.
    2. Using the regex patterns given from the ``regex_formats.py`` file,
@@ -53,8 +60,10 @@ follows, ``execute``:``False``, ``generate_asm``:``''``,
       cases.
    4. If the assembly test passes, return ``True`` else return
       ``False``.
+   5. The reports dir will contain the path where the reports from the check log 
+      would be created.
 
-6. If the ``regex-formats.py`` file does not have suitable regex
+7. If the ``regex-formats.py`` file does not have suitable regex
    patterns, frame the regex pattern and store it in the file with
    suitable naming.
 
@@ -99,24 +108,67 @@ suite their needs.
         recurse_level = self.parameter_name1
         asm = "assembly code to be generated in terms of string"
         return asm  # generate_asm returns the assembly code as a string
+      
+      def generate_covergroups(self, config_file):
+        
+        """ Generates SV covergroups """
+        sv = ""
+        sv += "enter SV covergroup syntax here"
+        return (sv)
 
-      def check_log(self, log_file_path):
+      def check_log(self, log_file_path, reports_dir):
 
         """ Docstring for check_log, this function checks whether the Device under Test (DUT) has executed appropriately"""
-        if self.execute(log_file_path):
-             f = open(log_file_path, "r")  # Reading the file from given path
-             log_file = f.read()
-             f.close()
+        """
+          check if all the ghr values are zero throughout the test
+        """
+        f = open(log_file_path, "r")
+        log_file = f.read()
+        f.close()
+        test_report = {
+            "gshare_fa_ghr_zeros_01_report": {
+                'Doc': "ASM should have generated 00000... pattern in the GHR "
+                       "Register. This report show's the "
+                       "results",
+                'expected_GHR_pattern': None,
+                'executed_GHR_pattern': None,
+                'Execution_Status': None
+            }
+        }
+        test_report['gshare_fa_ghr_zeros_01_report'][
+            'expected_GHR_pattern'] = '0' * self._history_len
+        res = None
+        alloc_newind_pattern_result = re.findall(rf.alloc_newind_pattern,
+                                                 log_file)
+        ghr_patterns = [
+            i[-self._history_len:] for i in alloc_newind_pattern_result
+        ]
+        for i in ghr_patterns:
+            if self._history_len * '0' in i:
+                test_report['gshare_fa_ghr_zeros_01_report'][
+                    'executed_GHR_pattern'] = i
+                test_report['gshare_fa_ghr_zeros_01_report'][
+                    'Execution_Status'] = 'Pass'
+                res = True
+                break
+            else:
+                res = False
+        if not res:
+            test_report['gshare_fa_ghr_zeros_01_report'][
+                'executed_GHR_pattern'] = ghr_patterns
+            test_report['gshare_fa_ghr_zeros_01_report'][
+                'Execution_Status'] = 'Fail: expected pattern not found'
 
-             # parse the log file, extract the needed patterns.
-             # based on the occurrences and frequency validate the execution
-             ghr_update_result = re.findall(rf.ghr_update_pattern, log_file)
+        f = open(
+            os.path.join(reports_dir, 'gshare_fa_ghr_zeros_01_report.yaml'),
+            'w')
+        yaml = YAML()
+        yaml.default_flow_style = False
+        yaml.dump(test_report, f)
+        f.close()
 
-             # design your own conditions based on the need and return True if test has passed
-             if len(ghr_update_result) != 8:
-               return False  # Return False if test has failed.
-             return True  # Return True if test has passed.
-        return None # To denote that test-case was not implemented/tested
+        return res
+
 
 
 Framework Structure
