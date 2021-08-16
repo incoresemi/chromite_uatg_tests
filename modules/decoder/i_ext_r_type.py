@@ -36,7 +36,7 @@ class cdtg_randomized(crv.Randomized):
         self.rs2_not_cov = lambda y, z: (z, y) not in irs2_covered
 
         # define hard constraint - do not pick items from the "covered" list
-        self.add_constraint(lambda w, x, y, z: (z, w, x, y) not in covered)
+        self.add_constraint(lambda w, x, y, z: (z, w, x, y) not in covered and w!=y and x!=y and x!=w)
         # self.add_constraint(lambda x,z : (z, x) not in irs1_covered)
         # self.add_constraint(lambda y,z : (z.name, y) not in irs2_covered)
 
@@ -93,6 +93,11 @@ while cross_size != cross_coverage:
 
 print(len(covered))
 
+def tup_sort(tup):
+    return tup[0];
+    
+covered.sort(key = tup_sort)
+
 with open('insts.txt', 'w') as out:
     for i in covered:
         inst = str(i)[1:-1]
@@ -100,4 +105,4 @@ with open('insts.txt', 'w') as out:
 
 coverage_db.report_coverage(log.info, bins=True)
 coverage_db.export_to_yaml(filename="coverage.yaml")
-# coverage_db.export_to_xml(filename="coverage.xml")
+#coverage_db.export_to_xml(filename="coverage.xml")
