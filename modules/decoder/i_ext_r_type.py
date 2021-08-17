@@ -40,64 +40,74 @@ class cdtg_randomized(crv.Randomized):
         # self.add_constraint(lambda y,z : (z.name, y) not in irs2_covered)
 
 
-my_coverage = coverage_section(
-    CoverPoint("top.rs1", xf=lambda obj: obj.x, bins=base_reg_file),
-    CoverPoint("top.rs2", xf=lambda obj: obj.y, bins=base_reg_file),
-    CoverPoint("top.rd", xf=lambda obj: obj.w, bins=base_reg_file),
-    CoverPoint("top.instr", xf=lambda obj: obj.z, bins=instructions),
-    CoverCross("top.seq1", items=["top.instr", "top.rs1"]),
-    CoverCross("top.seq2", items=["top.instr", "top.rs2"]),
-    CoverCross("top.seq3", items=["top.instr", "top.rd"])
-)
+def gen():
+    my_coverage = coverage_section(
+        CoverPoint("top.rs1", xf=lambda obj: obj.x, bins=base_reg_file),
+        CoverPoint("top.rs2", xf=lambda obj: obj.y, bins=base_reg_file),
+        CoverPoint("top.rd", xf=lambda obj: obj.w, bins=base_reg_file),
+        CoverPoint("top.instr", xf=lambda obj: obj.z, bins=instructions),
+        CoverCross("top.seq1", items=["top.instr", "top.rs1"]),
+        CoverCross("top.seq2", items=["top.instr", "top.rs2"]),
+        CoverCross("top.seq3", items=["top.instr", "top.rd"])
+    )
 
 
-@my_coverage
-def sample_coverage(obj):
-    covered.append(
-        (obj.z, obj.w, obj.x, obj.y))  # extend the list with sampled value
-    irs1_covered.append((obj.z, obj.x))  # extend the list with sampled value
-    irs2_covered.append((obj.z, obj.y))  # extend the list with sampled value
-    ird_covered.append((obj.z, obj.w))
+    @my_coverage
+    def sample_coverage(obj):
+        covered.append(
+            (obj.z, obj.w, obj.x, obj.y))  # extend the list with sampled value
+        irs1_covered.append((obj.z, obj.x))  # extend the list with sampled value
+        irs2_covered.append((obj.z, obj.y))  # extend the list with sampled value
+        ird_covered.append((obj.z, obj.w))
 
 
-obj = cdtg_randomized()
-cross_size = coverage_db["top.seq1"].size
-cross_coverage = coverage_db["top.seq1"].coverage
-
-# for _ in range(cross_size):
-while cross_size != cross_coverage:
-    obj.randomize_with(obj.rs1_ne_rs2, obj.rs1_not_cov, obj.rs1_ne_rd)
-    sample_coverage(obj)
+    obj = cdtg_randomized()
+    cross_size = coverage_db["top.seq1"].size
     cross_coverage = coverage_db["top.seq1"].coverage
 
-print(len(covered))
+    # for _ in range(cross_size):
+    while cross_size != cross_coverage:
+        obj.randomize_with(obj.rs1_ne_rs2, obj.rs1_not_cov, obj.rs1_ne_rd)
+        sample_coverage(obj)
+        cross_coverage = coverage_db["top.seq1"].coverage
 
-cross_size = coverage_db["top.seq2"].size
-cross_coverage = coverage_db["top.seq2"].coverage
-while cross_size != cross_coverage:
-    obj.randomize_with(obj.rs2_not_cov, obj.rs2_ne_rd)
-    sample_coverage(obj)
+    print(len(covered))
+
+    cross_size = coverage_db["top.seq2"].size
     cross_coverage = coverage_db["top.seq2"].coverage
+    while cross_size != cross_coverage:
+        obj.randomize_with(obj.rs2_not_cov, obj.rs2_ne_rd)
+        sample_coverage(obj)
+        cross_coverage = coverage_db["top.seq2"].coverage
 
-print(len(covered))
+    print(len(covered))
 
-cross_size = coverage_db["top.seq3"].size
-cross_coverage = coverage_db["top.seq3"].coverage
-
-# for _ in range(cross_size):
-while cross_size != cross_coverage:
-    obj.randomize_with(obj.rd_not_cov)
-    sample_coverage(obj)
+    cross_size = coverage_db["top.seq3"].size
     cross_coverage = coverage_db["top.seq3"].coverage
 
-print(len(covered))
-covered.sort(key=lambda tup: tup[0])
+    # for _ in range(cross_size):
+    while cross_size != cross_coverage:
+        obj.randomize_with(obj.rd_not_cov)
+        sample_coverage(obj)
+        cross_coverage = coverage_db["top.seq3"].coverage
 
-with open('insts.txt', 'w') as out:
-    for i in covered:
-        inst = str(i)[1:-1]
-        out.write(f'{i[0]} {i[1]}, {i[2]}, {i[3]}\n')
+    print(len(covered))
+    covered.sort(key=lambda tup: tup[0])
+    
+    ret_str = ""
 
-coverage_db.report_coverage(log.info, bins=True)
-coverage_db.export_to_yaml(filename="coverage.yaml")
-# coverage_db.export_to_xml(filename="coverage.xml")
+    with open('insts.txt', 'w') as out:
+        for i in covered:
+            inst = str(i)[1:-1]
+            #out.write(f'{i[0]} {i[1]}, {i[2]}, {i[3]}\n')
+            ret_str += f'{i[0]} {i[1]}, {i[2]}, {i[3]}\n'
+
+     
+    coverage_db.report_coverage(log.info, bins=True)
+    coverage_db.export_to_yaml(filename="i_ext_r_type.yaml")
+    # coverage_db.export_to_xml(filename="coverage.xml")
+    return(ret_str)
+
+if __name__=="__main__":
+    s = gen()
+    print(s)
