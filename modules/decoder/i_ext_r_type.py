@@ -95,11 +95,11 @@ def gen():
 
     ret_str = ""
 
-    with open('insts.txt', 'w') as out:
-        for i in covered:
-            inst = str(i)[1:-1]
-            #out.write(f'{i[0]} {i[1]}, {i[2]}, {i[3]}\n')
-            ret_str += f'{i[0]} {i[1]}, {i[2]}, {i[3]}\n'
+    #with open('insts.txt', 'w') as out:
+    for i in covered:
+        inst = str(i)[1:-1]
+    #out.write(f'{i[0]} {i[1]}, {i[2]}, {i[3]}\n')
+        ret_str += f'{i[0]} {i[1]}, {i[2]}, {i[3]}\n'
 
     coverage_db.report_coverage(log.info, bins=True)
     coverage_db.export_to_yaml(filename="i_ext_r_type.yaml")
