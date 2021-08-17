@@ -34,8 +34,8 @@ class cdtg_randomized(crv.Randomized):
         self.rs2_not_cov = lambda y, z: (z, y) not in irs2_covered
 
         # define hard constraint - do not pick items from the "covered" list
-        self.add_constraint(lambda w, x, y, z: (z, w, x,
-                                                y) not in covered and w != y and x != y and x != w)
+        self.add_constraint(lambda w, x, y, z: (z, w, x, y) not in covered and w
+                            != y and x != y and x != w)
         # self.add_constraint(lambda x,z : (z, x) not in irs1_covered)
         # self.add_constraint(lambda y,z : (z.name, y) not in irs2_covered)
 
@@ -48,18 +48,17 @@ def gen():
         CoverPoint("top.instr", xf=lambda obj: obj.z, bins=instructions),
         CoverCross("top.seq1", items=["top.instr", "top.rs1"]),
         CoverCross("top.seq2", items=["top.instr", "top.rs2"]),
-        CoverCross("top.seq3", items=["top.instr", "top.rd"])
-    )
-
+        CoverCross("top.seq3", items=["top.instr", "top.rd"]))
 
     @my_coverage
     def sample_coverage(obj):
         covered.append(
             (obj.z, obj.w, obj.x, obj.y))  # extend the list with sampled value
-        irs1_covered.append((obj.z, obj.x))  # extend the list with sampled value
-        irs2_covered.append((obj.z, obj.y))  # extend the list with sampled value
+        irs1_covered.append(
+            (obj.z, obj.x))  # extend the list with sampled value
+        irs2_covered.append(
+            (obj.z, obj.y))  # extend the list with sampled value
         ird_covered.append((obj.z, obj.w))
-
 
     obj = cdtg_randomized()
     cross_size = coverage_db["top.seq1"].size
@@ -93,7 +92,7 @@ def gen():
 
     #print(len(covered))
     covered.sort(key=lambda tup: tup[0])
-    
+
     ret_str = ""
 
     with open('insts.txt', 'w') as out:
@@ -102,12 +101,7 @@ def gen():
             #out.write(f'{i[0]} {i[1]}, {i[2]}, {i[3]}\n')
             ret_str += f'{i[0]} {i[1]}, {i[2]}, {i[3]}\n'
 
-     
     coverage_db.report_coverage(log.info, bins=True)
     coverage_db.export_to_yaml(filename="i_ext_r_type.yaml")
     # coverage_db.export_to_xml(filename="coverage.xml")
-    return(ret_str)
-
-if __name__=="__main__":
-    s = gen()
-    print(s)
+    return (ret_str)
