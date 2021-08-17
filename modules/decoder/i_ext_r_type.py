@@ -1,12 +1,10 @@
 from cocotb_coverage.coverage import *
 from cocotb_coverage import crv
 import cocotb
+from instruction_constants import r_type32, r_type64, base_reg_file
 # from enum import Enum, IntEnum, unique, auto
 
-instructions = ['add', 'sub', 'sll', 'slt', 'sltu', 'xor', 'srl', 'sra',
-          'or', 'and', 'addw', 'subw', 'sllw', 'srlw', 'sraw']
-
-reg_file = ['x' + str(s) for s in range(32)]
+instructions = r_type64
 
 covered = []  # list to store already covered data
 irs1_covered = []
@@ -23,9 +21,9 @@ class cdtg_randomized(crv.Randomized):
         self.x = 'x0'
         self.y = 'x0'
         self.z = 'add'
-        self.add_rand('w', reg_file)
-        self.add_rand('x', reg_file)
-        self.add_rand('y', reg_file)
+        self.add_rand('w', base_reg_file)
+        self.add_rand('x', base_reg_file)
+        self.add_rand('y', base_reg_file)
         self.add_rand('z', instructions)
 
         self.rd_not_cov = lambda w, z: (z, w) not in ird_covered
@@ -36,15 +34,16 @@ class cdtg_randomized(crv.Randomized):
         self.rs2_not_cov = lambda y, z: (z, y) not in irs2_covered
 
         # define hard constraint - do not pick items from the "covered" list
-        self.add_constraint(lambda w, x, y, z: (z, w, x, y) not in covered and w!=y and x!=y and x!=w)
+        self.add_constraint(lambda w, x, y, z: (z, w, x,
+                                                y) not in covered and w != y and x != y and x != w)
         # self.add_constraint(lambda x,z : (z, x) not in irs1_covered)
         # self.add_constraint(lambda y,z : (z.name, y) not in irs2_covered)
 
 
 my_coverage = coverage_section(
-    CoverPoint("top.rs1", xf=lambda obj: obj.x, bins=reg_file),
-    CoverPoint("top.rs2", xf=lambda obj: obj.y, bins=reg_file),
-    CoverPoint("top.rd", xf=lambda obj: obj.w, bins=reg_file),
+    CoverPoint("top.rs1", xf=lambda obj: obj.x, bins=base_reg_file),
+    CoverPoint("top.rs2", xf=lambda obj: obj.y, bins=base_reg_file),
+    CoverPoint("top.rd", xf=lambda obj: obj.w, bins=base_reg_file),
     CoverPoint("top.instr", xf=lambda obj: obj.z, bins=instructions),
     CoverCross("top.seq1", items=["top.instr", "top.rs1"]),
     CoverCross("top.seq2", items=["top.instr", "top.rs2"]),
@@ -92,11 +91,7 @@ while cross_size != cross_coverage:
     cross_coverage = coverage_db["top.seq3"].coverage
 
 print(len(covered))
-
-def tup_sort(tup):
-    return tup[0];
-    
-covered.sort(key = tup_sort)
+covered.sort(key=lambda tup: tup[0])
 
 with open('insts.txt', 'w') as out:
     for i in covered:
@@ -105,4 +100,4 @@ with open('insts.txt', 'w') as out:
 
 coverage_db.report_coverage(log.info, bins=True)
 coverage_db.export_to_yaml(filename="coverage.yaml")
-#coverage_db.export_to_xml(filename="coverage.xml")
+# coverage_db.export_to_xml(filename="coverage.xml")
