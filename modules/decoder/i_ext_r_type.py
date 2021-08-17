@@ -1,7 +1,7 @@
 from cocotb_coverage.coverage import *
 from cocotb_coverage import crv
 import cocotb
-from instruction_constants import r_type32, r_type64, base_reg_file
+from uarch_test.uarch_modules.modules.decoder.instruction_constants import r_type32, r_type64, base_reg_file
 # from enum import Enum, IntEnum, unique, auto
 
 instructions = r_type64
@@ -71,7 +71,7 @@ def gen():
         sample_coverage(obj)
         cross_coverage = coverage_db["top.seq1"].coverage
 
-    print(len(covered))
+    #print(len(covered))
 
     cross_size = coverage_db["top.seq2"].size
     cross_coverage = coverage_db["top.seq2"].coverage
@@ -80,7 +80,7 @@ def gen():
         sample_coverage(obj)
         cross_coverage = coverage_db["top.seq2"].coverage
 
-    print(len(covered))
+    #print(len(covered))
 
     cross_size = coverage_db["top.seq3"].size
     cross_coverage = coverage_db["top.seq3"].coverage
@@ -91,7 +91,7 @@ def gen():
         sample_coverage(obj)
         cross_coverage = coverage_db["top.seq3"].coverage
 
-    print(len(covered))
+    #print(len(covered))
     covered.sort(key=lambda tup: tup[0])
     
     ret_str = ""
