@@ -31,15 +31,15 @@ def bit_walker(bit_width=8, n_ones=1, invert=False):
         temp = (1 << n_ones) - 1
         for i in range(bit_width):
             if temp <= (1 << bit_width) - 1:
-                binary = format(temp, f'0{bit_width}x')
+                # binary = format(temp, f'0{bit_width}x')
                 if not invert:
                     # walked.append(binary)
-                    walked.append(temp)
+                    walked.append(hex(temp))
                 elif invert:
                     # binary = format((temp ^ ((1 << bit_width)-1)),
                     #                 f'0{bit_width}x')
                     # walked.append(binary)
-                    walked.append(temp ^ ((1 << bit_width) - 1))
+                    walked.append(hex(temp ^ ((1 << bit_width) - 1)))
                 temp = temp << 1
             else:
                 break
