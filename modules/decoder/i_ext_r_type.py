@@ -1,8 +1,7 @@
 from cocotb_coverage.coverage import *
 from cocotb_coverage import crv
 import cocotb
-from instruction_constants import r_type32, r_type64, base_reg_file
-
+from uarch_test.uarch_modules.modules.decoder.instruction_constants import r_type32, r_type64, base_reg_file
 # from enum import Enum, IntEnum, unique, auto
 
 instructions = r_type64
@@ -35,8 +34,8 @@ class cdtg_randomized(crv.Randomized):
         self.rs2_not_cov = lambda y, z: (z, y) not in irs2_covered
 
         # define hard constraint - do not pick items from the "covered" list
-        self.add_constraint(lambda w, x, y, z: (z, w, x,
-                                                y) not in covered and w != y and x != y and x != w)
+        self.add_constraint(lambda w, x, y, z: (z, w, x, y) not in covered and w
+                            != y and x != y and x != w)
         # self.add_constraint(lambda x,z : (z, x) not in irs1_covered)
         # self.add_constraint(lambda y,z : (z.name, y) not in irs2_covered)
 
@@ -49,8 +48,7 @@ def gen():
         CoverPoint("top.instr", xf=lambda obj: obj.z, bins=instructions),
         CoverCross("top.seq1", items=["top.instr", "top.rs1"]),
         CoverCross("top.seq2", items=["top.instr", "top.rs2"]),
-        CoverCross("top.seq3", items=["top.instr", "top.rd"])
-    )
+        CoverCross("top.seq3", items=["top.instr", "top.rd"]))
 
     @my_coverage
     def sample_coverage(obj):
@@ -68,19 +66,11 @@ def gen():
 
     # for _ in range(cross_size):
     while cross_size != cross_coverage:
-        count = 0
-        try:
-            if count < 10:
-                obj.randomize_with(obj.rs1_ne_rs2, obj.rs1_not_cov, obj.rs1_ne_rd)
-            else:
-                pass    # solve using allsolutions method
-        except Exception:
-            count += 1
-
+        obj.randomize_with(obj.rs1_ne_rs2, obj.rs1_not_cov, obj.rs1_ne_rd)
         sample_coverage(obj)
         cross_coverage = coverage_db["top.seq1"].coverage
 
-    print(len(covered))
+    #print(len(covered))
 
     cross_size = coverage_db["top.seq2"].size
     cross_coverage = coverage_db["top.seq2"].coverage
@@ -89,7 +79,7 @@ def gen():
         sample_coverage(obj)
         cross_coverage = coverage_db["top.seq2"].coverage
 
-    print(len(covered))
+    #print(len(covered))
 
     cross_size = coverage_db["top.seq3"].size
     cross_coverage = coverage_db["top.seq3"].coverage
@@ -100,23 +90,18 @@ def gen():
         sample_coverage(obj)
         cross_coverage = coverage_db["top.seq3"].coverage
 
-    print(len(covered))
+    #print(len(covered))
     covered.sort(key=lambda tup: tup[0])
 
     ret_str = ""
 
-    with open('insts.txt', 'w') as out:
-        for i in covered:
-            inst = str(i)[1:-1]
-            # out.write(f'{i[0]} {i[1]}, {i[2]}, {i[3]}\n')
-            ret_str += f'{i[0]} {i[1]}, {i[2]}, {i[3]}\n'
+    #with open('insts.txt', 'w') as out:
+    for i in covered:
+        inst = str(i)[1:-1]
+    #out.write(f'{i[0]} {i[1]}, {i[2]}, {i[3]}\n')
+        ret_str += f'{i[0]} {i[1]}, {i[2]}, {i[3]}\n'
 
     coverage_db.report_coverage(log.info, bins=True)
     coverage_db.export_to_yaml(filename="i_ext_r_type.yaml")
     # coverage_db.export_to_xml(filename="coverage.xml")
-    return ret_str
-
-
-if __name__ == "__main__":
-    s = gen()
-    # print(s)
+    return (ret_str)
