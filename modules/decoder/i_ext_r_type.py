@@ -2,6 +2,7 @@ from cocotb_coverage.coverage import *
 from cocotb_coverage import crv
 import cocotb
 from instruction_constants import r_type32, r_type64, base_reg_file
+
 # from enum import Enum, IntEnum, unique, auto
 
 instructions = r_type64
@@ -51,15 +52,15 @@ def gen():
         CoverCross("top.seq3", items=["top.instr", "top.rd"])
     )
 
-
     @my_coverage
     def sample_coverage(obj):
         covered.append(
             (obj.z, obj.w, obj.x, obj.y))  # extend the list with sampled value
-        irs1_covered.append((obj.z, obj.x))  # extend the list with sampled value
-        irs2_covered.append((obj.z, obj.y))  # extend the list with sampled value
+        irs1_covered.append(
+            (obj.z, obj.x))  # extend the list with sampled value
+        irs2_covered.append(
+            (obj.z, obj.y))  # extend the list with sampled value
         ird_covered.append((obj.z, obj.w))
-
 
     obj = cdtg_randomized()
     cross_size = coverage_db["top.seq1"].size
@@ -67,7 +68,15 @@ def gen():
 
     # for _ in range(cross_size):
     while cross_size != cross_coverage:
-        obj.randomize_with(obj.rs1_ne_rs2, obj.rs1_not_cov, obj.rs1_ne_rd)
+        count = 0
+        try:
+            if count < 10:
+                obj.randomize_with(obj.rs1_ne_rs2, obj.rs1_not_cov, obj.rs1_ne_rd)
+            else:
+                pass    # solve using allsolutions method
+        except Exception:
+            count += 1
+
         sample_coverage(obj)
         cross_coverage = coverage_db["top.seq1"].coverage
 
@@ -93,21 +102,21 @@ def gen():
 
     print(len(covered))
     covered.sort(key=lambda tup: tup[0])
-    
+
     ret_str = ""
 
     with open('insts.txt', 'w') as out:
         for i in covered:
             inst = str(i)[1:-1]
-            #out.write(f'{i[0]} {i[1]}, {i[2]}, {i[3]}\n')
+            # out.write(f'{i[0]} {i[1]}, {i[2]}, {i[3]}\n')
             ret_str += f'{i[0]} {i[1]}, {i[2]}, {i[3]}\n'
 
-     
     coverage_db.report_coverage(log.info, bins=True)
     coverage_db.export_to_yaml(filename="i_ext_r_type.yaml")
     # coverage_db.export_to_xml(filename="coverage.xml")
-    return(ret_str)
+    return ret_str
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     s = gen()
-    print(s)
+    # print(s)
