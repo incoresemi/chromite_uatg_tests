@@ -5,7 +5,7 @@ from ruamel.yaml import YAML
 import uarch_test.regex_formats as rf
 import re
 import os
-from configparser import ConfigParser
+from uarch_test.utils import load_yaml
 
 
 class gshare_fa_fence_01(IPlugin):
@@ -18,6 +18,7 @@ class gshare_fa_fence_01(IPlugin):
         super().__init__()
         self.recurse_level = 5
         self._btb_depth = 32
+
     def execute(self, _bpu_dict):
         self._btb_depth = _bpu_dict['btb_depth']
         _en_bpu = _bpu_dict['instantiate']
@@ -95,16 +96,13 @@ class gshare_fa_fence_01(IPlugin):
         """
            returns the covergroups for this test
         """
-        #ini_file = /Projects/incorecpu/jyothi.g/micro-arch-tests/example.ini
-        config = ConfigParser()
-        config.read(config_file)
-        #test = config['test']['test_name']
-        rg_initialize = config['bpu']['bpu_rg_initialize']
-        rg_allocate = config['bpu']['bpu_rg_allocate']
-        btb_tag = config['bpu']['bpu_btb_tag']
-        btb_tag_valid = config['bpu']['bpu_btb_tag_valid']
-        ras_top_index = config['bpu']['bpu_ras_top_index']
-        rg_ghr = config['bpu']['bpu_rg_ghr']
+        config = load_yaml(config_file)
+        rg_initialize = config['bpu']['reg']['bpu_rg_initialize']
+        rg_allocate = config['bpu']['reg']['bpu_rg_allocate']
+        btb_tag = config['bpu']['wire']['bpu_btb_tag']
+        btb_tag_valid = config['bpu']['wire']['bpu_btb_tag_valid']
+        ras_top_index = config['bpu']['wire']['bpu_ras_top_index']
+        rg_ghr = config['bpu']['reg']['bpu_rg_ghr']
 
         sv = ("covergroup  gshare_fa_fence_cg @(posedge CLK);\n"
               "option.per_instance=1;\n"

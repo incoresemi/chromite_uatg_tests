@@ -7,7 +7,7 @@ from ruamel.yaml import YAML
 import uarch_test.regex_formats as rf
 import re
 import os
-from configparser import ConfigParser
+from uarch_test.utils import load_yaml
 
 
 class gshare_fa_btb_fill_01(IPlugin):
@@ -104,11 +104,11 @@ class gshare_fa_btb_fill_01(IPlugin):
         }
         ct = 0
         res = None
-        
+
         for i in range(self._btb_depth):
             try:
                 if str(i) not in new_arr[i]:
-                    pass     
+                    pass
                 else:
                     ct += 1
             except IndexError as err:
@@ -137,11 +137,10 @@ class gshare_fa_btb_fill_01(IPlugin):
         """
            returns the covergroups for this test
         """
-        config = ConfigParser()
-        config.read(config_file)
-        rg_initialize = config['bpu']['bpu_rg_initialize']
-        rg_allocate = config['bpu']['bpu_rg_allocate']
-        btb_entry = config['bpu']['bpu_btb_entry']
+        config = load_yaml(config_file)
+        rg_initialize = config['bpu']['reg']['bpu_rg_initialize']
+        rg_allocate = config['bpu']['reg']['bpu_rg_allocate']
+        btb_entry = config['bpu']['wire']['bpu_btb_entry']
         sv = (
             "covergroup gshare_fa_btb_fill_cg @(posedge CLK);\n"
             "option.per_instance=1;\n"
