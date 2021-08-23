@@ -6,6 +6,7 @@
 
 **.txt
 **.yaml
+!aliasing.yaml
 **.xml
 
 # Assembly, Plugins
