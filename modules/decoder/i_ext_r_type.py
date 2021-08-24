@@ -1,7 +1,7 @@
 from cocotb_coverage.coverage import *
 from cocotb_coverage import crv
 import cocotb
-from uarch_test.uarch_modules.modules.decoder.instruction_constants import r_type32, r_type64, base_reg_file
+from utg.uarch_modules.modules.decoder.instruction_constants import r_type32, r_type64, base_reg_file
 # from enum import Enum, IntEnum, unique, auto
 
 instructions = r_type64
@@ -38,7 +38,6 @@ class cdtg_randomized(crv.Randomized):
                             != y and x != y and x != w)
         # self.add_constraint(lambda x,z : (z, x) not in irs1_covered)
         # self.add_constraint(lambda y,z : (z.name, y) not in irs2_covered)
-
 
 def gen():
     my_coverage = coverage_section(
@@ -102,6 +101,6 @@ def gen():
         ret_str += f'{i[0]} {i[1]}, {i[2]}, {i[3]}\n'
 
     coverage_db.report_coverage(log.info, bins=True)
-    coverage_db.export_to_yaml(filename="i_ext_r_type.yaml")
+    #coverage_db.export_to_yaml(filename="i_ext_r_type.yaml")
     # coverage_db.export_to_xml(filename="coverage.xml")
     return (ret_str)
