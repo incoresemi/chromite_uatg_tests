@@ -2,10 +2,10 @@
 
 from yapsy.IPlugin import IPlugin
 from ruamel.yaml import YAML
-import uarch_test.regex_formats as rf
+import utg.regex_formats as rf
 import re
 import os
-from uarch_test.utils import load_yaml
+from utg.utils import load_yaml
 
 
 class gshare_fa_fence_01(IPlugin):
