@@ -4,7 +4,6 @@ from ruamel.yaml import YAML
 import utg.regex_formats as rf
 import re
 import os
-from utg.utils import load_yaml
 
 
 class gshare_fa_ghr_zeros_01(IPlugin):
@@ -93,7 +92,7 @@ class gshare_fa_ghr_zeros_01(IPlugin):
         """
            returns the covergroups for this test
         """
-        config = load_yaml(config_file)
+        config = config_file
         rg_ghr = config['bpu']['reg']['bpu_rg_ghr']
 
         sv = """covergroup bpu_rg_ghr_cg @(posedge CLK); 
