@@ -1,0 +1,11 @@
+branch_predictor:
+  utg_gshare_fa_btb_fill_01: "fill the BTB with entries"
+
+decoder:
+  utg_decoder_i_ext_r_type: "tests i_extension instructions"
+
+decompressor:
+  utg_decompressor: "checks if mis-predictions occur and tests macro's"
+
+fpu:
+

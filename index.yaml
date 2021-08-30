@@ -1,8 +1,0 @@
-branch_predictor:
-  utg_gshare_fa_btb_fill_01:
-
-decompressor:
-  utg_decompressor:
-
-decoder:
-  utg_decoder_i_ext_r_type:
