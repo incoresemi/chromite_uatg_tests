@@ -7,6 +7,7 @@
 **.txt
 **.yaml
 !aliasing.yaml
+!index.yaml
 **.xml
 
 # Assembly, Plugins
@@ -19,5 +20,3 @@
 .*
 *.egg-info
 docs/build/
-uarch_test/target/*
-uarch_test/*.yaml
