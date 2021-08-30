@@ -7,7 +7,7 @@ import re
 import os
 
 
-class gshare_fa_fence_01(IPlugin):
+class utg_gshare_fa_fence_01(IPlugin):
     """
     This program generates an assembly program which fences the CPU and
     checks if the BTB entries are invalidated

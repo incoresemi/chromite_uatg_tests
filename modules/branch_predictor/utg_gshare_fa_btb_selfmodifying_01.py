@@ -7,7 +7,7 @@ import re
 import os
 
 
-class gshare_fa_btb_selfmodifying_01(IPlugin):
+class utg_gshare_fa_btb_selfmodifying_01(IPlugin):
 
     def __init__(self):
         super().__init__()

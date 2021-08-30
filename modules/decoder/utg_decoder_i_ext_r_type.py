@@ -14,7 +14,7 @@ inst_list = [
 
 reg_vals = ['x' + str(s) for s in range(32)]
  
-class decoder_i_ext_r_type(IPlugin):
+class utg_decoder_i_ext_r_type(IPlugin):
 
     def __init__(self):
         pass

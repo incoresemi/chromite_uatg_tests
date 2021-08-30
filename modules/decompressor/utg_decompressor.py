@@ -12,7 +12,7 @@ import re
 import os
 from configparser import ConfigParser
 
-class decompressor(IPlugin):
+class utg_decompressor(IPlugin):
 
     def __init__(self):
         super().__init__()

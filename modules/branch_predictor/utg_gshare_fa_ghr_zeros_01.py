@@ -3,10 +3,9 @@ from yapsy.IPlugin import IPlugin
 from ruamel.yaml import YAML
 import utg.regex_formats as rf
 import re
-#import os
+import os
 
-
-class gshare_fa_ghr_zeros_01(IPlugin):
+class utg_gshare_fa_ghr_zeros_01(IPlugin):
 
     def __init__(self):
         self._history_len = 8
