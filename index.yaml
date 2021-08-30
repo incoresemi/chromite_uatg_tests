@@ -1,8 +1,15 @@
 branch_predictor:
-  utg_gshare_fa_btb_fill_01:
+  utg_gshare_fa_btb_fill_01: "Fills the Branch Target Buffer with branch, jump, call and ret insts"
+  utg_gshare_fa_btb_selfmodifying_01: "Self modifying code which exercises FENCE"
+  utg_gshare_fa_fence_01: "Test to check if core gets fenced"
+  utg_gshare_fa_ghr_alternating_01: "Fills the Global History Register with an alternating pattern of ones and zeros"
+  utg_gshare_fa_ghr_ones_01: "Fills the Global History Register with ones"
+  utg_gshare_fa_ghr_zeros_01: "Fills the Global Hitsory Register with zeros"
+  utg_gshare_fa_mispredict_loop_01: "Checks the behaviour of the Branch Predictor on a misprediction"
+  utg_gshare_fa_ras_push_pop_01: "Checks the functioning of the Return Address Stack of the predictor"
 
 decompressor:
-  utg_decompressor:
+  utg_decompressor: "The test exercises the decompressor"
 
 decoder:
-  utg_decoder_i_ext_r_type:
+  utg_decoder_i_ext_r_type: "exercises the decoding of all the r-type base instructions"
