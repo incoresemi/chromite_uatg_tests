@@ -4,9 +4,6 @@ tb_top:
   path_to_stage0: mktbsoc.soc.ccore.riscv.stage0
   path_to_fn_decompress: mktbsoc.soc.ccore.riscv.stage1.instance_fn_decompress_0
 
-test_case:
-  test: regression
-
 bpu:
   input:
   output:
@@ -20,3 +17,6 @@ bpu:
     bpu_btb_entry: v_reg_btb_entry
     bpu_ras_top_index: ras_stack_top_index_port2__read
     bpu_btb_tag_valid: btb_valids
+
+test_case:
+  test: regression
