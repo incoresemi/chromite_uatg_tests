@@ -7,7 +7,7 @@ tb_top:
 bpu:
   input:
   output:
-  reg:
+  register:
     bpu_rg_ghr: rg_ghr_port1__read
     bpu_rg_initialize: rg_initialize
     bpu_rg_allocate: rg_allocate
