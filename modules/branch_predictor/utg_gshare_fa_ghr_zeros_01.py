@@ -92,7 +92,7 @@ class utg_gshare_fa_ghr_zeros_01(IPlugin):
            returns the covergroups for this test
         """
         config = config_file
-        rg_ghr = config['bpu']['reg']['bpu_rg_ghr']
+        rg_ghr = config['bpu']['register']['bpu_rg_ghr']
 
         sv = """covergroup bpu_rg_ghr_cg @(posedge CLK); 
 option.per_instance=1;
