@@ -1,38 +1,33 @@
 from yapsy.IPlugin import IPlugin
-from ruamel.yaml import YAML
-import utg.regex_formats as rf
-import re
-import os
+from utg.instruction_constants import base_reg_file, arithmetic_instructions
+from random import randint
 
-#TO-DO inst_list and reg_vals will come from instrcutions constants file
-global inst_list, reg_vals
 
-inst_list = [
-    'add', 'and', 'or', 'sll', 'slt', 'sltu', 'sra', 'srl', 'sub', 'xor',
-    'addw', 'sllw', 'sraw', 'srlw', 'subw'
-    ]
+class utg_decoder_arith_tests(IPlugin):
 
-reg_vals = ['x' + str(s) for s in range(32)]
- 
-class utg_decoder_i_ext_r_type(IPlugin):
-
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
-    def execute(self, _null):
+    def execute(self, _null) -> bool:
         return True
 
-    def generate_asm(self):
+    def generate_asm(self) -> str:
         """
-          Generates the ASM file containing R type instructions present in the I extension"""        
-        asm = ''
-        for inst in inst_list:
-            for reg1 in reg_vals:
-                for reg2 in reg_vals:
-                    for reg3 in reg_vals:
-                        asm = asm + f'{inst} {reg1}, {reg2}, {reg3}\n'
-        
-        return (asm)
+            Generates the ASM file containing R type instructions present in the I extension"
+        """
+        asm = '#'*5 + ' add/sub reg, reg, reg ' + '#'*5 + '\n'
+        for inst in arithmetic_instructions['add-sub-reg']:
+            for rd in base_reg_file:
+                for rs1 in base_reg_file:
+                    for rs2 in base_reg_file:
+                        asm += f'{inst} {rd}, {rs1}, {rs2}\n'
+        asm = '\n' * 2 + '#' * 5 + ' shift_inst reg, reg, reg ' + '#' * 5 + '\n'
+        for inst in arithmetic_instructions['shift-rl-reg']:
+            for rd in base_reg_file:
+                for rs in base_reg_file:
+                    for sh_amt in range(0, 2 ** 5 - 1):
+                        asm += f'{inst} {rd}, {rs}, {sh_amt}\n'
+        return asm
 
     def check_log(self, log_file_path, reports_dir):
         return None
