@@ -137,8 +137,8 @@ class utg_gshare_fa_btb_fill_01(IPlugin):
            returns the covergroups for this test
         """
         config = config_file
-        rg_initialize = config['bpu']['reg']['bpu_rg_initialize']
-        rg_allocate = config['bpu']['reg']['bpu_rg_allocate']
+        rg_initialize = config['bpu']['register']['bpu_rg_initialize']
+        rg_allocate = config['bpu']['register']['bpu_rg_allocate']
         btb_entry = config['bpu']['wire']['bpu_btb_entry']
         sv = (
             "covergroup gshare_fa_btb_fill_cg @(posedge CLK);\n"

@@ -96,12 +96,12 @@ class utg_gshare_fa_fence_01(IPlugin):
            returns the covergroups for this test
         """
         config = config_file
-        rg_initialize = config['bpu']['reg']['bpu_rg_initialize']
-        rg_allocate = config['bpu']['reg']['bpu_rg_allocate']
+        rg_initialize = config['bpu']['register']['bpu_rg_initialize']
+        rg_allocate = config['bpu']['register']['bpu_rg_allocate']
         btb_tag = config['bpu']['wire']['bpu_btb_tag']
         btb_tag_valid = config['bpu']['wire']['bpu_btb_tag_valid']
         ras_top_index = config['bpu']['wire']['bpu_ras_top_index']
-        rg_ghr = config['bpu']['reg']['bpu_rg_ghr']
+        rg_ghr = config['bpu']['register']['bpu_rg_ghr']
 
         sv = ("covergroup  gshare_fa_fence_cg @(posedge CLK);\n"
               "option.per_instance=1;\n"

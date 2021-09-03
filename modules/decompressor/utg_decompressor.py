@@ -122,5 +122,5 @@ c.subw x9, x11 ## (RV64C/128C) (CA format)\n"""
 
         return asm
 
-    def check_log(self):
+    def check_log(self, log_file_path, reports_dir):
         return None
