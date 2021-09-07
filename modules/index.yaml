@@ -1,5 +1,12 @@
 branch_predictor:
   utg_gshare_fa_btb_fill_01: "fill the BTB with entries"
+  utg_gshare_fa_btb_selfmodifying_01: "Self modifying code fo fence"
+  utg_gshare_fa_fence_01: "check Fence instrcution"
+  utg_gshare_fa_ghr_alternating_01: "Fill the GHR with alternating ones & zeros"
+  utg_gshare_fa_ghr_ones_01: "Fill GHR with ones" 
+  utg_gshare_fa_ghr_zeros_01: "Fill GHR with zeros"
+  utg_gshare_fa_mispredict_loop_01: "makes the BPU mispredict"
+  utg_gshare_fa_ras_push_pop_01: "Pushes and pops return address from/to RAS"
 
 decoder:
   utg_decoder_i_ext_r_type: "tests i_extension instructions"
