@@ -16,10 +16,13 @@ class utg_gshare_fa_ras_push_pop_01(IPlugin):
     """
 
     def __init__(self):
+        # initializing variables
         super().__init__()
         self.recurse_level = 5
 
-    def execute(self, _bpu_dict):
+    def execute(self, _bpu_dict) -> bool:
+        # Function to check whether to generate/validate this test or not
+
         # extract needed values from bpu's parameters
         _en_ras = _bpu_dict['ras_depth']
         _en_bpu = _bpu_dict['instantiate']
@@ -29,7 +32,7 @@ class utg_gshare_fa_ras_push_pop_01(IPlugin):
         else:
             return False
 
-    def generate_asm(self):
+    def generate_asm(self) -> str:
         # reg x30 is used as looping variable. reg x31 used as a temp variable
 
         recurse_level = self.recurse_level
@@ -37,7 +40,7 @@ class utg_gshare_fa_ras_push_pop_01(IPlugin):
         no_ops = '\taddi x31, x0, 5\n\taddi x31, x0, -5\n'
         asm = f'\taddi x30, x0, {recurse_level}\n'
         # going into the first call
-        asm += '\tcall x1, lab1\n\tbeq  x30, x0, end\n'
+        asm += '\tcall x1, lab1\n\tbeq x30, x0, end\n'
         # recursively going into calls
         for i in range(1, recurse_level + 1):
             asm += f'lab{i} :\n'
@@ -50,7 +53,7 @@ class utg_gshare_fa_ras_push_pop_01(IPlugin):
         asm += 'end:\n\tnop\n'
         return asm
 
-    def check_log(self, log_file_path, reports_dir):
+    def check_log(self, log_file_path, reports_dir) -> bool:
         """
         check for pushes and pops in this file. There should be 8 pushes and
         4 pops
