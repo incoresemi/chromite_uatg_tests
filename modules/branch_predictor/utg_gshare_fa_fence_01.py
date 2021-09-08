@@ -1,4 +1,4 @@
-# This program fences the CPU and checks if the BTB entries are invalidated.
+# See LICENSE.incore for details
 
 from yapsy.IPlugin import IPlugin
 from ruamel.yaml import YAML
@@ -14,31 +14,46 @@ class utg_gshare_fa_fence_01(IPlugin):
     """
 
     def __init__(self):
+        """ The constructor for this class. """
         super().__init__()
-        self.recurse_level = 5
-        self._btb_depth = 32
+        self.recurse_level = 5  # used to specify the depth of recusrion in calls
+        self._btb_depth = 32    ## we assume that the default BTB depth is 32 
 
     def execute(self, _bpu_dict):
-        self._btb_depth = _bpu_dict['btb_depth']
-        _en_bpu = _bpu_dict['instantiate']
-        # TODO why  recursing in the asm test?
-        if self._btb_depth and _en_bpu:
-            return True
+        """
+        The method returns true or false.
+        In order to make test_generation targeted, we adopt this approach. Based on 
+        some conditions, we decide if said test should exist.
+
+        This method also doubles up as the only method which has access to the 
+        hardware configuration of the DUt in the test_class. 
+        """
+        self._btb_depth = _bpu_dict['btb_depth'] # states the depth of the BTB
+        _en_bpu = _bpu_dict['instantiate'] # States if the DUT has a branch predictor
+        
+        if self._btb_depth and _en_bpu: # check condition, if BPU exists and btb depth is valid
+            return True # return true if this test can exist.
         else:
-            return False
+            return False # return false if this test cannot.
 
     def generate_asm(self):
         """
-        This code is derived from the ras_push_pop code. Fence instructions are
-        introduced.reg x30 is used as looping variable. reg x31 used as
-        a temp variable
+        This method returns a string of the ASM file to be generated.
+
+        This ASM file is written as the ASM file which will be run on the DUT.
         """
-        recurse_level = self.recurse_level
-        no_ops = "\taddi x31,x0,5\n  addi x31,x0,-5\n"
-        asm = "\taddi x30,x0," + str(recurse_level) + "\n"
+
+        # This code is derived from the ras_push_pop code. Fence instructions are
+        # introduced.reg x30 is used as looping variable. reg x31 used as
+        # a temp variable
+        # The ASM will just fence the Core. We check if the fence happens properly.
+        
+        recurse_level = self.recurse_level  # reuse the self variable
+        no_ops = "\taddi x31,x0,5\n  addi x31,x0,-5\n"  # no templates
+        asm = "\taddi x30,x0," + str(recurse_level) + "\n"  # tempate asm directives
         asm = asm + "\tcall x1,lab1\n\tbeq x30,x0,end\n\tfence.i\n"
 
-        for i in range(1, recurse_level + 1):
+        for i in range(1, recurse_level + 1):   # loop to iterate and generate the ASM
             asm += "lab" + str(i) + ":\n"
             if i == recurse_level:
                 asm += "\tfence.i\n\taddi x30,x30,-1\n"
@@ -46,16 +61,23 @@ class utg_gshare_fa_fence_01(IPlugin):
                 asm = asm + no_ops * 3 + "  call x" + str(
                     i + 1) + ", lab" + str(i + 1) + "\n"
             asm = asm + no_ops * 3 + "\tret\n"
-        asm = asm + "end:\n\tnop\n"
+        asm = asm + "end:\n\tnop\n" # concatenate
 
-        return asm
+        return asm # return string
 
     def check_log(self, log_file_path, reports_dir):
         """
-        check if rg_allocate becomes zero after encountering fence.
-        also check if the valid bits become zero
-        and if the ghr becomes zero
+        This method performs a minimal check of the logs genrated from the DUT when
+        the ASM test generated from this class is run.
+
+        We use regular expressions to parse and check if the execution is as 
+        expected. 
         """
+
+        # check if rg_allocate becomes zero after encountering fence.
+        # also check if the valid bits become zero
+        # and if the ghr becomes zero
+        # creating the template for the YAML report for this check.
         test_report = {
             "gshare_fa_fence_01_report": {
                 'Doc': "ASM should have executed FENCE instructions at least "
@@ -67,35 +89,44 @@ class utg_gshare_fa_fence_01(IPlugin):
         }
 
         f = open(log_file_path, "r")
-        log_file = f.read()
+        log_file = f.read() # open the log file for parsing
         f.close()
 
-        fence_executed_result = re.findall(rf.fence_executed_pattern, log_file)
-        ct = len(fence_executed_result)
-        res = None
-        test_report["gshare_fa_fence_01_report"]['executed_Fence_count'] = ct
+        fence_executed_result = re.findall(rf.fence_executed_pattern, log_file) # we choose the pattern among the pre-written patterns 
+                                                                                # which we wrote in the regex formats file
+        ct = len(fence_executed_result) # count of hits
+        res = None # test result
+        test_report["gshare_fa_fence_01_report"]['executed_Fence_count'] = ct # update count
         if ct <= 1:
-            # check for execution of more than one fence inst
-            res = False
+            # check for execution of more than one fence inst as there is one fence in the boot code
+            # so out fence will be the second fence.
+            res = False # test fail
             test_report["gshare_fa_fence_01_report"][
                 'Execution_Status'] = 'Fail'
         else:
-            res = True
+            res = True # test pass
             test_report["gshare_fa_fence_01_report"][
                 'Execution_Status'] = 'Pass'
+
+        # write YAML file
         f = open(os.path.join(reports_dir, 'gshare_fa_fence_01_report.yaml'),
                  'w')
         yaml = YAML()
         yaml.default_flow_style = False
         yaml.dump(test_report, f)
         f.close()
-        return res
+        return res # return the result.
 
     def generate_covergroups(self, config_file):
         """
-           returns the covergroups for this test
+           returns the covergroups for this test. This is written as an SV file.
+
+           The covergroups are used to check for coverage.
         """
-        config = config_file
+        
+        config = config_file # contains the aliasing file as a dict.
+
+        # variables required in the covergroup
         rg_initialize = config['bpu']['register']['bpu_rg_initialize']
         rg_allocate = config['bpu']['register']['bpu_rg_allocate']
         btb_tag = config['bpu']['wire']['bpu_btb_tag']
@@ -103,6 +134,7 @@ class utg_gshare_fa_fence_01(IPlugin):
         ras_top_index = config['bpu']['wire']['bpu_ras_top_index']
         rg_ghr = config['bpu']['register']['bpu_rg_ghr']
 
+        # SV syntax as python strings
         sv = ("covergroup  gshare_fa_fence_cg @(posedge CLK);\n"
               "option.per_instance=1;\n"
               "///coverpoint -rg_initialize should toggle from 0->1\n")
@@ -114,6 +146,8 @@ class utg_gshare_fa_fence_01(IPlugin):
         sv = sv + str(
             self._btb_depth
         ) + "\'b11111111_11111111_11111111_11111111};\n}\n///coverpoint -  rg_initilaize toggles friom 1->0 2. rg_allocate should become zero 3. v_reg_btb_tag_XX should become 0 (the entire 63bit reg) 4. rg_ghr_port1__read should become zeros. 5. ras_stack_top_index_port2__read should become 0\n"
+
+        # loops to generate SC strings
         for i in range(self._btb_depth):
             sv = sv + str(rg_initialize) + "_" + str(i) + ": coverpoint " + str(
                 rg_initialize) + "{\n    bins " + str(rg_initialize) + "_"
@@ -129,4 +163,5 @@ endproperty
 
 always @(negedge CLK)
 rg_initialize_assert: assert property (rg_initialize_prop);"""
-        return (sv)
+
+        return (sv) # return SV string

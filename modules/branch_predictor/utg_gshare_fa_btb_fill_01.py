@@ -1,6 +1,4 @@
-# This module has a function which generates assembly program to fill the
-# BTB with entries # there are 33 control insts in the generated program,
-# 1 jump from the includes and 32  in the program
+# See LICENSE.incore for details
 
 from yapsy.IPlugin import IPlugin
 from ruamel.yaml import YAML
@@ -37,7 +35,7 @@ class utg_gshare_fa_btb_fill_01(IPlugin):
         """
         _en_bpu = _bpu_dict['instantiate']        # States if the DUT has a branch predictor
         self._btb_depth = _bpu_dict['btb_depth']  # states the depth of the BTB to customize the test
-        if _en_bpu and self._btb_depth:           # check condition, if BPU exits as well as btb_depth is an integer.
+        if _en_bpu and self._btb_depth:           # check condition, if BPU exists as well as btb_depth is an integer.
             return True                           # return true if this test can exist. 
         else:
             return False                          # return false if this test cannot.
