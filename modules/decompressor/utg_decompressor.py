@@ -2,17 +2,13 @@
 # occur In addition to this, the GHR is also filled with ones (additional
 # test case) uses assembly macros
 
-# To-Do -> Create another function which prints the includes and other
+# TODO -> Create another function which prints the includes and other
 # assembler directives complying to the test format spec
 
 from yapsy.IPlugin import IPlugin
-from ruamel.yaml import YAML
-import uatg.regex_formats as rf
-import re
-import os
-from configparser import ConfigParser
 
-class utg_decompressor(IPlugin):
+
+class uatg_decompressor(IPlugin):
 
     def __init__(self):
         super().__init__()

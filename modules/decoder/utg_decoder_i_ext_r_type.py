@@ -1,9 +1,8 @@
 from yapsy.IPlugin import IPlugin
 from uatg.instruction_constants import base_reg_file, arithmetic_instructions
-from random import randint
 
 
-class utg_decoder_arith_tests(IPlugin):
+class uatg_decoder_arith_tests(IPlugin):
 
     def __init__(self) -> None:
         pass
