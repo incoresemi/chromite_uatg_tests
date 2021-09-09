@@ -1,0 +1,22 @@
+# Pycache stuff
+**.pyc
+**.pyo
+
+# text and misc files
+
+**.txt
+**.yaml
+!aliasing.yaml
+!modules/index.yaml
+**.xml
+
+# Assembly, Plugins
+**.S
+**.yapsy-plugin
+
+# IDE Settings
+.idea/*
+
+.*
+*.egg-info
+docs/build/
