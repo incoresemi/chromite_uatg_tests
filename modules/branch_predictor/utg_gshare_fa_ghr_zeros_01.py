@@ -6,7 +6,7 @@ import re
 import os
 
 
-class utg_gshare_fa_ghr_zeros_01(IPlugin):
+class uatg_gshare_fa_ghr_zeros_01(IPlugin):
     """
     This class contains methods to
     1. generate asm tests that fills global history register with zeros

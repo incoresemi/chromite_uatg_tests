@@ -6,7 +6,7 @@ import re
 import os
 
 
-class utg_gshare_fa_mispredict_loop_01(IPlugin):
+class uatg_gshare_fa_mispredict_loop_01(IPlugin):
     """
     Class with methods to generate an assembly which checks if mis-predictions
     occur. Also, the GHR is also filled with ones (additional test case)

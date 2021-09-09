@@ -7,7 +7,7 @@ import re
 import os
 
 
-class utg_gshare_fa_ras_push_pop_01(IPlugin):
+class uatg_gshare_fa_ras_push_pop_01(IPlugin):
     """
     This class contains methods to
     1. generate asm tests that pushes & pops addresses in return address stack
