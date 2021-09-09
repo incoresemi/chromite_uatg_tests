@@ -107,7 +107,7 @@ class uatg_gshare_fa_ghr_zeros_01(IPlugin):
            returns the covergroups for this test
         """
         config = config_file
-        rg_ghr = config['bpu']['register']['bpu_rg_ghr']
+        rg_ghr = config['branch_predictor']['register']['bpu_rg_ghr']
 
         sv = f"covergroup bpu_rg_ghr_cg @(posedge CLK); " \
              f"\noption.per_instance=1;\n///coverpoint label can be any name " \
