@@ -65,8 +65,8 @@ class utg_gshare_fa_btb_fill_01(IPlugin):
             if i <= branch_count:                                   # first populate the BTB with branch instructions
                 if (i % 2) == 1:                                    # conditions to return branch and loop directives
                     asm_branch += "entry_" + str(i) + ":\n"         # we do this in order to increment and decrement the control variable 
-                    asm_branch += "\tadd t1,t1,t2\n\tbeq t1,t2," \  # in the loop/branch. 
-                                  "entry_" + str(i) + "\n\n"
+                    asm_branch += "\tadd t1,t1,t2\n\tbeq t1,t2," \
+                                  "entry_" + str(i) + "\n\n"        # in the loop/branch. 
                 else:
                     asm_branch += "entry_" + str(i) + ":\n"
                     asm_branch += "\tsub t1,t1,t2\n\tbeq t1,t2," \
@@ -174,9 +174,9 @@ class utg_gshare_fa_btb_fill_01(IPlugin):
         config = config_file           # contains the aliasing file as a dict.
 
         # variables required in the covergroup
-        rg_initialize = config['bpu']['register']['bpu_rg_initialize']
-        rg_allocate = config['bpu']['register']['bpu_rg_allocate']
-        btb_entry = config['bpu']['wire']['bpu_btb_entry']
+        rg_initialize = config['branch_predictor']['register']['bpu_rg_initialize']
+        rg_allocate = config['branch_predictor']['register']['bpu_rg_allocate']
+        btb_entry = config['branch_predictor']['wire']['bpu_btb_entry']
         
         # SV syntax to be written into the file.
         # The syntax witll check if the BTB filling was as expected.

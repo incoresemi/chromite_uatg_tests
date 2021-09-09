@@ -106,7 +106,7 @@ class utg_gshare_fa_mispredict_loop_01(IPlugin):
         returns the covergroups for this test
         """
         config = config_file
-        mispredict_flag = config['bpu']['wire']['bpu_mispredict_flag']
+        mispredict_flag = config['branch_predictor']['wire']['bpu_mispredict_flag']
         sv = "covergroup gshare_fa_mispredict_loop_cg @(posedge " \
              "CLK);\noption.per_instance=1;\n///Coverpoint : MSB of reg " \
              "ma_mispredict_g should be 1 atleast once. When, the MSB is one," \

@@ -127,12 +127,12 @@ class utg_gshare_fa_fence_01(IPlugin):
         config = config_file # contains the aliasing file as a dict.
 
         # variables required in the covergroup
-        rg_initialize = config['bpu']['register']['bpu_rg_initialize']
-        rg_allocate = config['bpu']['register']['bpu_rg_allocate']
-        btb_tag = config['bpu']['wire']['bpu_btb_tag']
-        btb_tag_valid = config['bpu']['wire']['bpu_btb_tag_valid']
-        ras_top_index = config['bpu']['wire']['bpu_ras_top_index']
-        rg_ghr = config['bpu']['register']['bpu_rg_ghr']
+        rg_initialize = config['branch_predictor']['register']['bpu_rg_initialize']
+        rg_allocate = config['branch_predictor']['register']['bpu_rg_allocate']
+        btb_tag = config['branch_predictor']['wire']['bpu_btb_tag']
+        btb_tag_valid = config['branch_predictor']['wire']['bpu_btb_tag_valid']
+        ras_top_index = config['branch_predictor']['wire']['bpu_ras_top_index']
+        rg_ghr = config['branch_predictor']['register']['bpu_rg_ghr']
 
         # SV syntax as python strings
         sv = ("covergroup  gshare_fa_fence_cg @(posedge CLK);\n"
