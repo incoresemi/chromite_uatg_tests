@@ -4,7 +4,7 @@ tb_top:
   path_to_stage0: mktbsoc.soc.ccore.riscv.stage0
   path_to_fn_decompress: mktbsoc.soc.ccore.riscv.stage1.instance_fn_decompress_0
 
-bpu:
+branch_predictor:
   input:
   output:
   register:
