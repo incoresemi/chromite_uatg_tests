@@ -2,7 +2,7 @@ from yapsy.IPlugin import IPlugin
 from uatg.instruction_constants import base_reg_file, arithmetic_instructions
 
 
-class utg_decoder_arith_tests(IPlugin):
+class uatg_decoder_arith_tests(IPlugin):
     """
     This class contains methods to generate and validate the tests for
     arithmetic instructions.
