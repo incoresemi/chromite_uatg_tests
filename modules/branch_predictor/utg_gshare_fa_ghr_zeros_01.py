@@ -1,7 +1,7 @@
 # This program generates a assembly code which fills the ghr with zeros
 from yapsy.IPlugin import IPlugin
 from ruamel.yaml import YAML
-import utg.regex_formats as rf
+import uatg.regex_formats as rf
 import re
 import os
 

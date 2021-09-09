@@ -1,5 +1,5 @@
 from yapsy.IPlugin import IPlugin
-from utg.instruction_constants import base_reg_file, arithmetic_instructions
+from uatg.instruction_constants import base_reg_file, arithmetic_instructions
 from random import randint
 
 
