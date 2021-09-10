@@ -1,5 +1,6 @@
 from yapsy.IPlugin import IPlugin
-from uatg.instruction_constants import base_reg_file, arithmetic_instructions
+from uatg.instruction_constants import base_reg_file, arithmetic_instructions, \
+    bit_walker
 
 
 class uatg_decoder_arith_tests(IPlugin):
@@ -9,7 +10,7 @@ class uatg_decoder_arith_tests(IPlugin):
     """
 
     def __init__(self) -> None:
-        pass
+        super().__init__()
 
     def execute(self, _null) -> bool:
         return True
@@ -40,12 +41,23 @@ class uatg_decoder_arith_tests(IPlugin):
 
         # Again rd, rs1, rs2 iterate through the 32 register combinations for
         # every instruction in arithmetic_instructions['shift-rl-reg']
-        asm = '\n' * 2 + '#' * 5 + ' shift_inst reg, reg, reg ' + '#' * 5 + '\n'
+        asm = '\n\n' + '#' * 5 + ' shift_inst reg, reg, reg ' + '#' * 5 + '\n'
         for inst in arithmetic_instructions['shift-rl-reg']:
             for rd in base_reg_file:
                 for rs in base_reg_file:
                     for sh_amt in range(0, 2 ** 5 - 1):
                         asm += f'{inst} {rd}, {rs}, {sh_amt}\n'
+
+        # Iterate through the 32 register combinations and 12-bit walking ones
+        # for every instruction in arithmetic_instructions['add-sub-reg']
+        asm = '\n\n' + '#' * 5 + 'ADDI, ADDIW immediate insts' + '#' * 5 + '\n'
+        for inst in arithmetic_instructions['add-imm']:
+            imm = [val for i in range(1, 8) for val in
+                   bit_walker(bit_width=12, n_ones=1, invert=False)]
+            for rd in base_reg_file:
+                for rs in base_reg_file:
+                    for imm_val in imm:
+                        asm += f'{inst} {rd}, {rs}, {imm_val}'
         return asm
 
     def check_log(self, log_file_path, reports_dir):
