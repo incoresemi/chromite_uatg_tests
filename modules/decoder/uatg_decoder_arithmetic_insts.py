@@ -42,6 +42,7 @@ class uatg_decoder_arith_tests(IPlugin):
         # Again rd, rs1, rs2 iterate through the 32 register combinations for
         # every instruction in arithmetic_instructions['shift-rl-reg']
         asm += '\n\n' + '#' * 5 + ' shift_inst reg, reg, reg ' + '#' * 5 + '\n'
+
         for inst in arithmetic_instructions['shift-rl-reg']:
             for rd in base_reg_file:
                 for rs in base_reg_file:
@@ -53,6 +54,7 @@ class uatg_decoder_arith_tests(IPlugin):
         asm += '\n\n' + '#' * 5 + 'ADDI, ADDIW immediate insts' + '#' * 5 + '\n'
         for inst in arithmetic_instructions['add-imm']:
             imm = [val for _ in range(1, 8) for val in
+
                    bit_walker(bit_width=12, n_ones=1, invert=False)]
             for rd in base_reg_file:
                 for rs in base_reg_file:

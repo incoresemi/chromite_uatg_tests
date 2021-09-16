@@ -198,9 +198,9 @@ class uatg_gshare_fa_btb_fill_01(IPlugin):
         config = config_file           # contains the aliasing file as a dict.
 
         # variables required in the covergroup
-        rg_initialize = config['bpu']['register']['bpu_rg_initialize']
-        rg_allocate = config['bpu']['register']['bpu_rg_allocate']
-        btb_entry = config['bpu']['wire']['bpu_btb_entry']
+        rg_initialize = config['branch_predictor']['register']['bpu_rg_initialize']
+        rg_allocate = config['branch_predictor']['register']['bpu_rg_allocate']
+        btb_entry = config['branch_predictor']['wire']['bpu_btb_entry']
         
         # SV syntax to be written into the file.
         # The syntax will check if the BTB filling was as expected.
