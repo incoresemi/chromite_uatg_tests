@@ -3,7 +3,7 @@ from uatg.instruction_constants import base_reg_file, arithmetic_instructions
 from uatg.utils import rvtest_data
 
 
-class uatg_decoder_arith_insts_4(IPlugin):
+class uatg_decoder_arithmetic_insts_4(IPlugin):
     """
     This class contains methods to generate and validate the tests for
     ADD immediate instructions.
