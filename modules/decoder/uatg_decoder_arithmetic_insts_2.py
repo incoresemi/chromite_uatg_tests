@@ -2,7 +2,7 @@ from yapsy.IPlugin import IPlugin
 from uatg.instruction_constants import base_reg_file, arithmetic_instructions
 
 
-class uatg_decoder_arith_insts_2(IPlugin):
+class uatg_decoder_arithmetic_insts_2(IPlugin):
     """
     This class contains methods to generate and validate the tests for
     arithmetic shift register register instructions.
