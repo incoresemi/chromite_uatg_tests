@@ -1,5 +1,6 @@
 from yapsy.IPlugin import IPlugin
 from uatg.instruction_constants import base_reg_file, arithmetic_instructions
+from uatg.utils import rvtest_data
 
 
 class uatg_decoder_arith_insts_4(IPlugin):
@@ -35,13 +36,13 @@ class uatg_decoder_arith_insts_4(IPlugin):
                                                     f'imm']:
                     if self.isa_bit == 'rv32':
                         for imm_val in range(32):
-                            asm += f'la {rs}, sample_data\n' \
+                            asm += f'la {rs}, RAND_VAL\n' \
                                    f'{inst} {rd}, {rs}, {imm_val}\n'
 
                     elif self.isa_bit == 'rv64':
                         if inst[-1] == 'w':
                             for imm_val in range(32):
-                                asm += f'la {rs}, sample_data\n' \
+                                asm += f'la {rs}, RAND_VAL\n' \
                                        f'{inst} {rd}, {rs}, {imm_val}\n'
                         if inst[-1] == 'i':
                             for imm_val in range(64):
@@ -62,6 +63,9 @@ class uatg_decoder_arith_insts_4(IPlugin):
                                 asm += f'la {rs}, sample_data\n' \
                                        f'{inst} {rd}, {rs}, {imm_val}\n'
 
+        asm += '\nRVTEST_CODE_END\nRVMODEL_HALT\n\n' + '\nRVTEST_DATA_BEGIN\n'
+        asm += rvtest_data(bit_width=32, num_vals=5, random=True, signed=False,
+                           align=4) + '\nRVTEST_DATA_END\n\n'
         return asm
 
     def check_log(self, log_file_path, reports_dir):
