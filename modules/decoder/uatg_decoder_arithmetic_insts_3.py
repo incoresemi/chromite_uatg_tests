@@ -3,7 +3,7 @@ from uatg.instruction_constants import base_reg_file, arithmetic_instructions,\
     bit_walker
 
 
-class uatg_decoder_arith_insts_3(IPlugin):
+class uatg_decoder_arithmetic_insts_3(IPlugin):
     """
     This class contains methods to generate and validate the tests for
     ADD immediate instructions.
