@@ -36,8 +36,7 @@ class uatg_gshare_fa_ghr_alternating_01(IPlugin):
         else:
             return False  # return false if this test cannot.
 
-
-    def generate_asm(self) -> Dict[str]:
+    def generate_asm(self) -> Dict[str, str]:
         """
         This method returns a string of the ASM file to be generated.
 
@@ -80,7 +79,6 @@ class uatg_gshare_fa_ghr_alternating_01(IPlugin):
         asm = asm + '\tbeq  t2,x0,lab0\n'
 
         return {'asm_code': asm}  # return string
-
 
     def check_log(self, log_file_path, reports_dir):
         """

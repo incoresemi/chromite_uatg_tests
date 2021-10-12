@@ -1,6 +1,7 @@
 from yapsy.IPlugin import IPlugin
 from uatg.instruction_constants import base_reg_file, logic_instructions
 from uatg.utils import rvtest_data
+from typing import Dict
 import random
 
 

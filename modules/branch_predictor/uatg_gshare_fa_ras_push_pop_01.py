@@ -33,7 +33,7 @@ class uatg_gshare_fa_ras_push_pop_01(IPlugin):
         else:
             return False
 
-    def generate_asm(self) -> Dict:
+    def generate_asm(self) -> Dict[str, str]:
         # reg x30 is used as looping variable. reg x31 used as a temp variable
 
         recurse_level = self.recurse_level

@@ -43,7 +43,7 @@ class uatg_gshare_fa_fence_01(IPlugin):
             # return false if this test cannot.
             return False
 
-    def generate_asm(self) -> Dict[str]:
+    def generate_asm(self) -> Dict[str, str]:
         """
         This method returns a string of the ASM file to be generated.
 

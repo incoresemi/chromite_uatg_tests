@@ -2,8 +2,7 @@ from yapsy.IPlugin import IPlugin
 from uatg.instruction_constants import base_reg_file, arithmetic_instructions,\
     bit_walker
 from uatg.utils import rvtest_data
-from typing import Dict, Any
-from random import randint
+from typing import Dict
 import random
 
 
@@ -82,14 +81,17 @@ class uatg_decoder_arithmetic_insts_4(IPlugin):
                             swreg = newswreg
 
                         # perform the  required assembly operation
-                        asm_code += f'\n#operation: {inst}, rs1={rs1}, imm={imm_val}, rd={rd}\n'
+                        if 'w' in inst:
+                            imm_val = hex(int(imm_val, 16) % 32)
+
+                        asm_code += f'\n#operation: {inst}, rs1={rs1}, imm={imm_val}, rd={rd}\n '
                         asm_code += f'TEST_IMM_OP({inst}, {rd}, {rs1}, 0, {rs1_val}, {imm_val}, {swreg}, {offset}, x0)\n'
 
                         # adjust the offset. reset to 0 if it crosses 2048 and
                         # increment the current signature pointer with the
                         # current offset value
                         if offset+self.offset_inc >= 2048:
-                            asm_code += f'addi {swreg}, {offset}\n'
+                            asm_code += f'addi {swreg}, {swreg}, {offset}\n'
                             offset = 0
 
                         # increment offset by the amount of bytes updated in
@@ -107,7 +109,6 @@ class uatg_decoder_arithmetic_insts_4(IPlugin):
         # return asm_code and sig_code
 
         return {'asm_code': asm_code, 'asm_data': '', 'asm_sig': sig_code}
-        return {'asm_code': asm_code, 'asm_data': '', 'asm_sig': ''}
 
     def check_log(self, log_file_path, reports_dir) -> bool:
         return False

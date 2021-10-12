@@ -34,7 +34,7 @@ class uatg_gshare_fa_ghr_zeros_01(IPlugin):
         else:
             return False
 
-    def generate_asm(self) -> Dict[str]:
+    def generate_asm(self) -> Dict[str, str]:
         """
           the for loop iterates ghr_width + 2 times printing an
           assembly program which contains ghr_width + 2 branches which

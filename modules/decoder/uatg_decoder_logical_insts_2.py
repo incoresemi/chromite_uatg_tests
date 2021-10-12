@@ -3,6 +3,7 @@ from uatg.instruction_constants import base_reg_file, logic_instructions, \
     bit_walker
 from uatg.utils import rvtest_data
 import random
+from typing import Dict
 
 
 class uatg_decoder_logical_insts_2(IPlugin):

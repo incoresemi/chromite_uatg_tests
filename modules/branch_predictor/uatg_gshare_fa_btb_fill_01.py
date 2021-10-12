@@ -47,7 +47,7 @@ class uatg_gshare_fa_btb_fill_01(IPlugin):
             return False
             # return false if this test cannot.
 
-    def generate_asm(self) -> Dict[str]:
+    def generate_asm(self):
         """
         This method returns a string of the ASM file to be generated.
 

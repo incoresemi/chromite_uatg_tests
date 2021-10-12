@@ -24,7 +24,7 @@ class uatg_decompressor_02(IPlugin):
         else:
             return False
 
-    def generate_asm(self) -> Dict[str]:
+    def generate_asm(self) -> Dict[str, str]:
         """This function will return all the compressed_RV32 instructions"""
 
         asm = f"#define RVTEST_FP_ENABLE()\n" \
@@ -200,4 +200,4 @@ class uatg_decompressor_02(IPlugin):
    wildcard bins C_SDSP	              = {16'b111_xxxxxx_xxxxx_10};//(RV64/128)\n
    `endif\n}\nendgroup\n\n"""
 
-        return (sv)
+        return sv

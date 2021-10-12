@@ -36,7 +36,7 @@ class uatg_gshare_fa_mispredict_loop_01(IPlugin):
         else:
             return False
 
-    def generate_asm(self) -> Dict[str]:
+    def generate_asm(self) -> Dict[str, str]:
         """
         The function creates a simple loop in assembly which checks if
         mis-predictions occur during the warm-up phase of the BPU

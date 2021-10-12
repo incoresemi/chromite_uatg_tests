@@ -7,13 +7,14 @@
 from yapsy.IPlugin import IPlugin
 from typing import Dict
 
+
 class uatg_decompressor_floating_01(IPlugin):
 
     def __init__(self):
         super().__init__()
         self.isa = "RV64I"
         self.split_isa = "RV64I"
-        pass
+
 
     def execute(self, _bpu_dict):
         self.isa = (_bpu_dict['isa']).lower()
@@ -27,7 +28,7 @@ class uatg_decompressor_floating_01(IPlugin):
         else:
             return False
 
-    def generate_asm(self) -> Dict:
+    def generate_asm(self) -> Dict[str, str]:
         """This function will return all the compressed instructions"""
         asm = """#define RVTEST_FP_ENABLE()
     LI x2, MSTATUS_FS;
