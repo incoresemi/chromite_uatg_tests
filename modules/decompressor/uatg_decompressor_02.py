@@ -6,6 +6,7 @@
 # assembler directives complying to the test format spec
 
 from yapsy.IPlugin import IPlugin
+from typing import Dict
 
 
 class uatg_decompressor_02(IPlugin):
@@ -23,7 +24,7 @@ class uatg_decompressor_02(IPlugin):
         else:
             return False
 
-    def generate_asm(self):
+    def generate_asm(self) -> Dict[str]:
         """This function will return all the compressed_RV32 instructions"""
 
         asm = f"#define RVTEST_FP_ENABLE()\n" \
@@ -105,10 +106,10 @@ class uatg_decompressor_02(IPlugin):
                f"c.add x9,x10\n" \
                f"c.nop\n\n" \
 
-        return asm
+        return {'asm_code': asm}
 
     def check_log(self):
-        return none
+        return None
 
     def generate_covergroups(self, config_file):
         """
