@@ -47,29 +47,30 @@ class uatg_decoder_logical_insts_1(IPlugin):
         # every instruction in logical_instructions['logic-reg']
 
         reg_file = base_reg_file.copy()
-
-        asm_code = '#'*5 + ' add/sub reg, reg, reg ' + '#'*5 + '\n'
-        
-        # initial register to use as signature pointer
-        swreg = 'x31'
-
-        # initialize swreg to point to signature_start label
-        asm_code += f'RVTEST_SIGBASE({swreg}, signature_start)\n'
-       
-        # initial offset to with respect to signature label
-        offset = 0
-
-        # variable to hold the total number of signature bytes to be used.
-        sig_bytes = 0
-
-        rs1_val = hex(random.getrandbits(self.xlen))
-        rs2_val = hex(random.getrandbits(self.xlen))
-
+        test_dict = []
         for inst in logic_instructions['logic-reg']:
+
+            asm_code = '#'*5 + ' add/sub reg, reg, reg ' + '#'*5 + '\n'
+            
+            # initial register to use as signature pointer
+            swreg = 'x31'
+
+            # initialize swreg to point to signature_start label
+            asm_code += f'RVTEST_SIGBASE({swreg}, signature_start)\n'
+           
+            # initial offset to with respect to signature label
+            offset = 0
+
+            # variable to hold the total number of signature bytes to be used.
+            sig_bytes = 0
+
             for rd in reg_file:
                 for rs1 in reg_file:
                     for rs2 in reg_file:
                         assert isinstance(logic_instructions, dict)
+
+                        rs1_val = hex(random.getrandbits(self.xlen))
+                        rs2_val = hex(random.getrandbits(self.xlen))
 
                         # if signature register needs to be used for operations
                         # then first choose a new signature pointer and move the
@@ -98,12 +99,14 @@ class uatg_decoder_logical_insts_1(IPlugin):
                         # so far.
                         sig_bytes = sig_bytes + self.offset_inc
 
-        # asm code to populate the signature region
-        sig_code = 'signature_start:\n'
-        sig_code += ' .fill {0},4,0xdeadbeef'.format(int(sig_bytes/4))
+            # asm code to populate the signature region
+            sig_code = 'signature_start:\n'
+            sig_code += ' .fill {0},4,0xdeadbeef'.format(int(sig_bytes/4))
 
-        # return asm_code and sig_code
-        return {'asm_code': asm_code, 'asm_data': '', 'asm_sig': sig_code}
+
+            # return asm_code and sig_code
+            test_dict.append({'asm_code': asm_code, 'asm_data': '', 'asm_sig': sig_code})
+        return test_dict
 
 
     def check_log(self, log_file_path, reports_dir) -> bool:
