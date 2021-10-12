@@ -43,7 +43,7 @@ class uatg_decoder_arithmetic_insts_2(IPlugin):
         # For all rd, rs1, rs2 iterate through the 31 register combinations for
         # every instruction in arithmetic_instructions['rv32-shift-reg']
 
-        asm_code = '\n\n' + '#' * 5 + ' shift_inst reg, reg, reg ' + '#' * 5
+        asm_code = '\n\n' + '#' * 5 + ' shift_inst reg, reg, reg ' + '#' * 5+'\n'
         
         # initial register to use as signature pointer
         swreg = 'x31'

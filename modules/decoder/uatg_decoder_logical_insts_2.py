@@ -41,7 +41,7 @@ class uatg_decoder_logical_insts_2(IPlugin):
         # every instruction in logical_instructions['logic-imm']
         reg_file = base_reg_file.copy()
 
-        asm_code = '\n\n' + '#' * 5 + ' shift_inst reg, reg, reg ' + '#' * 5
+        asm_code = '\n\n' + '#' * 5 + ' shift_inst reg, reg, reg ' + '#' * 5+'\n'
         
         # initial register to use as signature pointer
         swreg = 'x31'
