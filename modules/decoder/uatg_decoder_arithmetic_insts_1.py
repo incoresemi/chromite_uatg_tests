@@ -1,7 +1,7 @@
 from yapsy.IPlugin import IPlugin
 from uatg.instruction_constants import base_reg_file, arithmetic_instructions
 from uatg.utils import rvtest_data
-from typing import Tuple, Any
+from typing import Dict, Any
 from random import randint
 
 
@@ -29,23 +29,25 @@ class uatg_decoder_arithmetic_insts_1(IPlugin):
                 self.load_inc = k
         return True
 
-    def generate_asm(self) -> Tuple[str, Any]:
+    def generate_asm(self) -> Dict[str, str]:
         """x
             Generates the ASM instructions for R type arithmetic instructions.
             It creates asm for the following instructions based upon ISA
                 add, addw, addd, sub, subw, subd
         """
-        # rd, rs1, rs2 iterate through all the 32 register combinations for
-        # every instruction in arithmetic_instructions['rv32-add-reg']
-
-        asm_data = rvtest_data(bit_width=int(self.isa_bit[2:]), random=True,
-                               num_vals=self.num_rand_var, signed=False,
+        asm_data = rvtest_data(bit_width=int(self.isa_bit[2:]),
+                               random=True,
+                               num_vals=self.num_rand_var,
+                               signed=False,
                                align=4)
 
         reg_file = base_reg_file.copy()
-        reg_file.remove('x1')   # Removing X1 register to store Offset address
+        reg_file.remove('x1')  # Removing X1 register to store Offset address
 
-        asm_code = '#'*5 + ' add/sub reg, reg, reg ' + '#'*5 + '\n'
+        # rd, rs1, rs2 iterate through all the 32 register combinations for
+        # every instruction in arithmetic_instructions['rv32-add-reg']
+
+        asm_code = '#' * 5 + ' add/sub reg, reg, reg ' + '#' * 5 + '\n'
         asm_code += 'la x1, DATA_SEC\n'
 
         for rd in reg_file:
@@ -53,11 +55,11 @@ class uatg_decoder_arithmetic_insts_1(IPlugin):
                 for rs2 in reg_file:
                     assert isinstance(arithmetic_instructions, dict)
                     for inst in arithmetic_instructions[
-                                                     f'{self.isa_bit}-add-reg']:
+                        f'{self.isa_bit}-add-reg']:
                         asm_code += f'{self.isa_load} {rs1}, {randint(0, self.num_rand_var) * self.load_inc}(x1)\n' \
                                     f'{self.isa_load} {rs2}, {randint(0, self.num_rand_var) * self.load_inc}(x1)\n' \
                                     f'{inst} {rd}, {rs1}, {rs2}\n'
-        return asm_code, asm_data
+        return {'asm_code': asm_code, 'asm_data': asm_data}
 
     def check_log(self, log_file_path, reports_dir) -> bool:
         return False
