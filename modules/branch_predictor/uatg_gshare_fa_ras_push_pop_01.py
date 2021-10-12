@@ -5,6 +5,7 @@ from ruamel.yaml import YAML
 import uatg.regex_formats as rf
 import re
 import os
+from typing import Dict
 
 
 class uatg_gshare_fa_ras_push_pop_01(IPlugin):
@@ -32,7 +33,7 @@ class uatg_gshare_fa_ras_push_pop_01(IPlugin):
         else:
             return False
 
-    def generate_asm(self) -> str:
+    def generate_asm(self) -> Dict:
         # reg x30 is used as looping variable. reg x31 used as a temp variable
 
         recurse_level = self.recurse_level
@@ -51,7 +52,7 @@ class uatg_gshare_fa_ras_push_pop_01(IPlugin):
             asm += no_ops * 3 + '\tret\n'
             # getting out recursively using rets
         asm += 'end:\n\tnop\n'
-        return asm
+        return {'asm_code': asm}
 
     def check_log(self, log_file_path, reports_dir) -> bool:
         """

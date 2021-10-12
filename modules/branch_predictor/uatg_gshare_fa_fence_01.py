@@ -5,6 +5,7 @@ from ruamel.yaml import YAML
 import uatg.regex_formats as rf
 import re
 import os
+from typing import Dict
 
 
 class uatg_gshare_fa_fence_01(IPlugin):
@@ -21,7 +22,7 @@ class uatg_gshare_fa_fence_01(IPlugin):
         self._btb_depth = 32
         # we assume that the default BTB depth is 32
 
-    def execute(self, _bpu_dict):
+    def execute(self, _bpu_dict) -> bool:
         """
         The method returns true or false.
         In order to make test_generation targeted, we adopt this approach. Based
@@ -39,9 +40,10 @@ class uatg_gshare_fa_fence_01(IPlugin):
             # check condition, if BPU exists and btb depth is valid
             return True  # return true if this test can exist.
         else:
-            return False  # return false if this test cannot.
+            # return false if this test cannot.
+            return False
 
-    def generate_asm(self):
+    def generate_asm(self) -> Dict[str]:
         """
         This method returns a string of the ASM file to be generated.
 
@@ -52,7 +54,7 @@ class uatg_gshare_fa_fence_01(IPlugin):
         # introduced.reg x30 is used as looping variable. reg x31 used as
         # a temp variable
         # ASM will just fence the Core. We check if the fence happens properly.
-        
+
         recurse_level = self.recurse_level  # reuse the self variable
         no_ops = "\taddi x31, x0, 5\n\taddi x31, x0, -5\n"  # no templates
         asm = f"\taddi x30, x0, {recurse_level}\n"  # tempate asm directives
@@ -68,15 +70,15 @@ class uatg_gshare_fa_fence_01(IPlugin):
             asm += no_ops * 3 + "\tret\n"
         asm += "end:\n\tnop\n"  # concatenate
 
-        return asm  # return string
+        return {'asm_code': asm}
 
     def check_log(self, log_file_path, reports_dir):
         """
         This method performs a minimal check of the logs generated from the DUT
         when the ASM test generated from this class is run.
 
-        We use regular expressions to parse and check if the execution is as 
-        expected. 
+        We use regular expressions to parse and check if the execution is as
+        expected.
         """
 
         # check if rg_allocate becomes zero after encountering fence.
@@ -122,7 +124,8 @@ class uatg_gshare_fa_fence_01(IPlugin):
         yaml.default_flow_style = False
         yaml.dump(test_report, f)
         f.close()
-        return res  # return the result.
+        # return the result.
+        return res
 
     def generate_covergroups(self, config_file):
         """
@@ -130,7 +133,7 @@ class uatg_gshare_fa_fence_01(IPlugin):
 
            The covergroups are used to check for coverage.
         """
-        
+
         config = config_file  # contains the aliasing file as a dict.
 
         # variables required in the covergroup

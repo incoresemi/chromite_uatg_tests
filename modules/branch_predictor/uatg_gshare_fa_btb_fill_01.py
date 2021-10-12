@@ -3,6 +3,7 @@
 from yapsy.IPlugin import IPlugin
 from ruamel.yaml import YAML
 import uatg.regex_formats as rf
+from typing import Dict
 import re
 import os
 
@@ -46,7 +47,7 @@ class uatg_gshare_fa_btb_fill_01(IPlugin):
             return False
             # return false if this test cannot.
 
-    def generate_asm(self):
+    def generate_asm(self) -> Dict[str]:
         """
         This method returns a string of the ASM file to be generated.
 
@@ -112,7 +113,7 @@ class uatg_gshare_fa_btb_fill_01(IPlugin):
 
         asm = asm_start + asm_branch + asm_jump + asm_call + asm_end
         # concatenate the strings to form the final ASM sting to be returned
-        return asm
+        return {'asm_code': asm}
 
     def check_log(self, log_file_path, reports_dir):
         """
