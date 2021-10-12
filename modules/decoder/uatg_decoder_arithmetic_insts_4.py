@@ -76,7 +76,7 @@ class uatg_decoder_arithmetic_insts_4(IPlugin):
                         # then first choose a new signature pointer and move the
                         # value to it.
                         if swreg in [rd, rs1]:
-                            newswreg = random.choice([x for x in reg_file if x not in [rd, rs1]])
+                            newswreg = random.choice([x for x in reg_file if x not in [rd, rs1, 'x0']])
                             asm_code += f'mv {newswreg}, {swreg}\n'
                             swreg = newswreg
 
