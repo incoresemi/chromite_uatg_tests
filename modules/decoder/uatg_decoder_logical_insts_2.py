@@ -83,7 +83,7 @@ class uatg_decoder_logical_insts_2(IPlugin):
                         # increment the current signature pointer with the
                         # current offset value
                         if offset+self.offset_inc >= 2048:
-                            asm_code += f'addi {swreg}, {offset}\n'
+                            asm_code += f'addi {swreg}, {swreg}, {offset}\n'
                             offset = 0
 
                         # increment offset by the amount of bytes updated in
