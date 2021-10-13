@@ -1,0 +1,15 @@
+addiw    xxxxxxxxxxxxxxxxx000xxxxx0110011
+slliw    0000000xxxxxxxxxx100xxxxx0110011
+srliw    0000000xxxxxxxxxx101xxxxx0110011
+sraiw    0100110xxxxxxxxxx101xxxxx0110011
+addw     0000000xxxxxxxxxx000xxxxx0111011
+subw     0100110xxxxxxxxxx000xxxxx0111011
+sllw     0000000xxxxxxxxxx100xxxxx0111011
+srlw     0000000xxxxxxxxxx101xxxxx0111011
+sraw     0100110xxxxxxxxxx101xxxxx0111011
+ld       xxxxxxxxxxxxxxxxx110xxxxx0000011
+lwu      xxxxxxxxxxxxxxxxx011xxxxx0000011
+sd       xxxxxxxxxxxxxxxxx110xxxxx0001011
+slli     000000xxxxxxxxxxx100xxxxx0010011
+srli     000000xxxxxxxxxxx101xxxxx0010011
+srai     011010xxxxxxxxxxx101xxxxx0010011
