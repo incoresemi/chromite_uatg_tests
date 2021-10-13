@@ -5,7 +5,7 @@ from ruamel.yaml import YAML
 import uatg.regex_formats as rf
 import re
 import os
-from typing import Dict
+from typing import Dict, List
 
 
 class uatg_gshare_fa_btb_selfmodifying_01(IPlugin):
@@ -34,7 +34,7 @@ class uatg_gshare_fa_btb_selfmodifying_01(IPlugin):
         else:
             return False  # return false if this test cannot.
 
-    def generate_asm(self) -> Dict[str, str]:
+    def generate_asm(self) -> List[Dict[str, str]]:
         """
         This method returns a string of the ASM file to be generated.
 
@@ -59,7 +59,7 @@ class uatg_gshare_fa_btb_selfmodifying_01(IPlugin):
                + "fence.i\n\tjal x0,first\n\n"
         asm = asm + "fin:\n"
 
-        return {'asm_code': asm}
+        return [{'asm_code': asm}]
 
     def check_log(self, log_file_path, reports_dir):
         """

@@ -5,7 +5,7 @@ from ruamel.yaml import YAML
 import uatg.regex_formats as rf
 import re
 import os
-from typing import Dict
+from typing import Dict, List
 
 
 class uatg_gshare_fa_fence_01(IPlugin):
@@ -43,7 +43,7 @@ class uatg_gshare_fa_fence_01(IPlugin):
             # return false if this test cannot.
             return False
 
-    def generate_asm(self) -> Dict[str, str]:
+    def generate_asm(self) -> List[Dict[str, str]]:
         """
         This method returns a string of the ASM file to be generated.
 
@@ -70,7 +70,7 @@ class uatg_gshare_fa_fence_01(IPlugin):
             asm += no_ops * 3 + "\tret\n"
         asm += "end:\n\tnop\n"  # concatenate
 
-        return {'asm_code': asm}
+        return [{'asm_code': asm}]
 
     def check_log(self, log_file_path, reports_dir):
         """
@@ -137,7 +137,8 @@ class uatg_gshare_fa_fence_01(IPlugin):
         config = config_file  # contains the aliasing file as a dict.
 
         # variables required in the covergroup
-        rg_initialize = config['branch_predictor']['register']['bpu_rg_initialize']
+        rg_initialize = \
+            config['branch_predictor']['register']['bpu_rg_initialize']
         rg_allocate = config['branch_predictor']['register']['bpu_rg_allocate']
         btb_tag = config['branch_predictor']['wire']['bpu_btb_tag']
         btb_tag_valid = config['branch_predictor']['wire']['bpu_btb_tag_valid']

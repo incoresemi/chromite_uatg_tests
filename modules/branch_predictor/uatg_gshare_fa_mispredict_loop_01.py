@@ -3,7 +3,7 @@ from ruamel.yaml import YAML
 import uatg.regex_formats as rf
 import re
 import os
-from typing import Dict
+from typing import Dict, List
 
 
 class uatg_gshare_fa_mispredict_loop_01(IPlugin):
@@ -36,7 +36,7 @@ class uatg_gshare_fa_mispredict_loop_01(IPlugin):
         else:
             return False
 
-    def generate_asm(self) -> Dict[str, str]:
+    def generate_asm(self) -> List[Dict[str, str]]:
         """
         The function creates a simple loop in assembly which checks if
         mis-predictions occur during the warm-up phase of the BPU
@@ -55,7 +55,7 @@ class uatg_gshare_fa_mispredict_loop_01(IPlugin):
                + "\tadd t2,t2,t2\n\taddi t2,t2,-10\n" \
                + "\tblt t1,t0,loop\n\n"
         asm += "\tadd t2,t0,t1\n"
-        return {'asm_code': asm}
+        return [{'asm_code': asm}]
 
     def check_log(self, log_file_path, reports_dir) -> bool:
         """

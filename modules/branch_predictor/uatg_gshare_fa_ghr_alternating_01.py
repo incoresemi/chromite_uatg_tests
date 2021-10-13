@@ -4,7 +4,7 @@ from ruamel.yaml import YAML
 import uatg.regex_formats as rf
 import re
 import os
-from typing import Dict
+from typing import Dict, List
 
 
 class uatg_gshare_fa_ghr_alternating_01(IPlugin):
@@ -36,7 +36,7 @@ class uatg_gshare_fa_ghr_alternating_01(IPlugin):
         else:
             return False  # return false if this test cannot.
 
-    def generate_asm(self) -> Dict[str, str]:
+    def generate_asm(self) -> List[Dict[str, str]]:
         """
         This method returns a string of the ASM file to be generated.
 
@@ -78,7 +78,7 @@ class uatg_gshare_fa_ghr_alternating_01(IPlugin):
         asm = asm + '\tbeq  t1,x0,lab0\n\taddi t0,t0,2\n'
         asm = asm + '\tbeq  t2,x0,lab0\n'
 
-        return {'asm_code': asm}  # return string
+        return [{'asm_code': asm}]  # return string
 
     def check_log(self, log_file_path, reports_dir):
         """

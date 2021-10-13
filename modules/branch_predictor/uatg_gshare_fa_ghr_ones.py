@@ -5,7 +5,8 @@ from ruamel.yaml import YAML
 import uatg.regex_formats as rf
 import re
 import os
-from typing import Dict
+from typing import Dict, List
+
 
 class uatg_gshare_fa_ghr_ones_01(IPlugin):
     """
@@ -34,7 +35,7 @@ class uatg_gshare_fa_ghr_ones_01(IPlugin):
         else:
             return False
 
-    def generate_asm(self) -> Dict[str, str]:
+    def generate_asm(self) -> List[Dict[str, str]]:
         """
           the for loop iterates ghr_width + 2 times printing an
           assembly program which contains ghr_width + 2 branches which
@@ -48,7 +49,7 @@ class uatg_gshare_fa_ghr_ones_01(IPlugin):
         asm = f"\n\taddi t0, x0, {loop_count}\n\taddi t1,x0 ,0 \n\nloop:\n"
         asm += "\taddi t1, t1, 1\n\tblt t1, t0, loop\n"
 
-        return {'asm_code': asm}
+        return [{'asm_code': asm}]
 
     def check_log(self, log_file_path, reports_dir):
         """
