@@ -97,9 +97,7 @@ class uatg_decoder_arithmetic_insts_1(IPlugin):
 
             # asm code to populate the signature region
             sig_code = 'signature_start:\n'
-            sig_code += ' .fill {0},4,0xdeadbeef'.format(int(sig_bytes/4))
-            sig_code += 'mtrap_sigptr:\n  .fill 12, REGWIDTH, 0xdeadbeef'
-            sig_code += 'mtrap_count:\n  .fill 12, REGWIDTH, 0xdeadbeef'
+            sig_code += ' .fill {0},4,0xdeadbeef\n'.format(int(sig_bytes/4))
 
             # compile macros for the test
             compile_macros = []

@@ -36,7 +36,7 @@ class uatg_decoder_arithmetic_insts_4(IPlugin):
         """
             Generates the ASM instructions for R type arithmetic instructions.
             It creates asm for the following instructions (based upon input isa)
-                addi', 'addiw', 'addid
+                slli[w], srai[w], srli[w]
         """
         # Iterate through the 32 register combinations and all 32/64 shift
         # for every instruction in arithmetic_instructions['rv32-shift-imm']
@@ -66,8 +66,10 @@ class uatg_decoder_arithmetic_insts_4(IPlugin):
             sig_bytes = 0
 
             # Bit walking through 11 bits for immediate field
-            imm = [val for i in range(1, 4) for val in
-                   bit_walker(bit_width=shift_sz, n_ones=i, invert=False)]
+            imm = [val for i in range(1, shift_sz) for val in
+                   bit_walker(bit_width=shift_sz, n_ones=i, invert=False, signed=False)]
+            imm = imm + [val for i in range(1, shift_sz) for val in
+                   bit_walker(bit_width=shift_sz, n_ones=i, invert=True, signed= False)]
             for rd in reg_file:
                 for rs1 in reg_file:
                     for imm_val in imm:
@@ -84,7 +86,7 @@ class uatg_decoder_arithmetic_insts_4(IPlugin):
 
                         # perform the  required assembly operation
                         if 'w' in inst:
-                            imm_val = hex(int(imm_val, 16) % 32)
+                            imm_val = int(imm_val % 32)
 
                         asm_code += f'\n#operation: {inst}, rs1={rs1}, imm={imm_val}, rd={rd}\n '
                         asm_code += f'TEST_IMM_OP({inst}, {rd}, {rs1}, 0, {rs1_val}, {imm_val}, {swreg}, {offset}, x0)\n'

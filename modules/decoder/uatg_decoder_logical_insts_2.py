@@ -59,8 +59,10 @@ class uatg_decoder_logical_insts_2(IPlugin):
             # variable to hold the total number of signature bytes to be used.
             sig_bytes = 0
             # Bit walking through 11 bits for immediate field
-            imm = [val for i in range(1, 8) for val in
-                   bit_walker(bit_width=11, n_ones=i, invert=False)]
+            imm = [val for i in range(1, 4) for val in
+                   bit_walker(bit_width=12, n_ones=i, invert=False)]
+            imm = imm + [val for i in range(1, 4) for val in
+                   bit_walker(bit_width=12, n_ones=i, invert=True)]
             for rd in reg_file:
                 for rs1 in reg_file:
                     for imm_val in imm:

@@ -60,8 +60,10 @@ class uatg_decoder_arithmetic_insts_3(IPlugin):
             sig_bytes = 0
 
             # Bit walking through 11 bits for immediate field
-            imm = [val for i in range(1, 8) for val in
+            imm = [val for i in range(1, 4) for val in
                    bit_walker(bit_width=11, n_ones=i, invert=False)]
+            imm = imm + [val for i in range(1, 4) for val in
+                   bit_walker(bit_width=11, n_ones=i, invert=True)]
             for rd in reg_file:
                 for rs1 in reg_file:
                     for imm_val in imm:
@@ -76,7 +78,7 @@ class uatg_decoder_arithmetic_insts_3(IPlugin):
                             swreg = newswreg
 
                         # perform the  required assembly operation
-                        asm_code += f'\n#operation: {inst}, rs1={rs1}, imm={imm_val}, rd={rd}\n'
+                        asm_code += f'\n#operation: {inst}, rs1={rs1}, rs1_val={rs1_val}, imm={imm_val}, rd={rd}\n'
                         asm_code += f'TEST_IMM_OP({inst}, {rd}, {rs1}, 0, {rs1_val}, {imm_val}, {swreg}, {offset}, x0)\n'
 
                         # adjust the offset. reset to 0 if it crosses 2048 and
