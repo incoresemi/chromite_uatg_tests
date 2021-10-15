@@ -10,6 +10,7 @@ branch_predictor:
 
 decoder:
   uatg_decoder_arithmetic_insts: "tests arithmetic instructions"
+  uatg_decoder_memory_insts: "test for memory load operations"
 
 decompressor:
   uatg_decompressor: "checks if mis-predictions occur and tests macro's"
