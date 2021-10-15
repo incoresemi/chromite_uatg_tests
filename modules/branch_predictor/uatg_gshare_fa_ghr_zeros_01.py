@@ -47,7 +47,10 @@ class uatg_gshare_fa_ghr_zeros_01(IPlugin):
         for i in range(1, loop_count):
             asm += f"branch_{i}:\n\tbeq t0, x0, branch_{i}\n\taddi t0, t0, 1\n"
 
-        return [{'asm_code': asm}]
+        # compile macros for the test
+        compile_macros = []
+
+        return [{'asm_code': asm, 'asm_data': '', 'asm_sig': '', 'compile_macros': compile_macros}]
 
     def check_log(self, log_file_path, reports_dir):
         """

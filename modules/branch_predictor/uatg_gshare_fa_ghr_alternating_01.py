@@ -78,7 +78,10 @@ class uatg_gshare_fa_ghr_alternating_01(IPlugin):
         asm = asm + '\tbeq  t1,x0,lab0\n\taddi t0,t0,2\n'
         asm = asm + '\tbeq  t2,x0,lab0\n'
 
-        return [{'asm_code': asm}]  # return string
+        # compile macros for the test
+        compile_macros = []
+
+        return [{'asm_code': asm, 'asm_data': '', 'asm_sig': '', 'compile_macros': compile_macros}]
 
     def check_log(self, log_file_path, reports_dir):
         """

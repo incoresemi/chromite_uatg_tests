@@ -98,9 +98,14 @@ class uatg_decoder_arithmetic_insts_1(IPlugin):
             # asm code to populate the signature region
             sig_code = 'signature_start:\n'
             sig_code += ' .fill {0},4,0xdeadbeef'.format(int(sig_bytes/4))
+            sig_code += 'mtrap_sigptr:\n  .fill 12, REGWIDTH, 0xdeadbeef'
+            sig_code += 'mtrap_count:\n  .fill 12, REGWIDTH, 0xdeadbeef'
+
+            # compile macros for the test
+            compile_macros = []
 
             # return asm_code and sig_code
-            test_dict.append({'asm_code': asm_code, 'asm_data': '', 'asm_sig': sig_code})
+            test_dict.append({'asm_code': asm_code, 'asm_data': '', 'asm_sig': sig_code, 'compile_macros': compile_macros})
         return test_dict
 
     def check_log(self, log_file_path, reports_dir) -> bool:

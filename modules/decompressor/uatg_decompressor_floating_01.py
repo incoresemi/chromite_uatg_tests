@@ -47,7 +47,10 @@ c.fsd f11,8(x10)
 LA (x12,sample_data)
 c.fld f9,8(x12)
 """
-        return [{'asm_code': asm}]
+        # compile macros for the test
+        compile_macros = []
+
+        return [{'asm_code': asm, 'asm_data': '', 'asm_sig': '', 'compile_macros': compile_macros}]
 
     def check_log(self):
         return None

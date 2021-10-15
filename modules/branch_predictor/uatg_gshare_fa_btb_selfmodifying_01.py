@@ -59,7 +59,10 @@ class uatg_gshare_fa_btb_selfmodifying_01(IPlugin):
                + "fence.i\n\tjal x0,first\n\n"
         asm = asm + "fin:\n"
 
-        return [{'asm_code': asm}]
+        # compile macros for the test
+        compile_macros = []
+
+        return [{'asm_code': asm, 'asm_data': '', 'asm_sig': '', 'compile_macros': compile_macros}]
 
     def check_log(self, log_file_path, reports_dir):
         """

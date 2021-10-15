@@ -52,7 +52,10 @@ class uatg_gshare_fa_ras_push_pop_01(IPlugin):
             asm += no_ops * 3 + '\tret\n'
             # getting out recursively using rets
         asm += 'end:\n\tnop\n'
-        return [{'asm_code': asm}]
+        # compile macros for the test
+        compile_macros = []
+
+        return [{'asm_code': asm, 'asm_data': '', 'asm_sig': '', 'compile_macros': compile_macros}]
 
     def check_log(self, log_file_path, reports_dir) -> bool:
         """

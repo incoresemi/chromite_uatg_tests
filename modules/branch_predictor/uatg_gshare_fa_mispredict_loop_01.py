@@ -55,7 +55,10 @@ class uatg_gshare_fa_mispredict_loop_01(IPlugin):
                + "\tadd t2,t2,t2\n\taddi t2,t2,-10\n" \
                + "\tblt t1,t0,loop\n\n"
         asm += "\tadd t2,t0,t1\n"
-        return [{'asm_code': asm}]
+        # compile macros for the test
+        compile_macros = []
+
+        return [{'asm_code': asm, 'asm_data': '', 'asm_sig': '', 'compile_macros': compile_macros}]
 
     def check_log(self, log_file_path, reports_dir) -> bool:
         """

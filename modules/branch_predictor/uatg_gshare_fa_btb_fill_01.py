@@ -111,9 +111,13 @@ class uatg_gshare_fa_btb_fill_01(IPlugin):
                     asm_call = asm_call + "\taddi x0,x0,0\n"
                 asm_call = asm_call + "\tret\n\n"
 
-        asm = asm_start + asm_branch + asm_jump + asm_call + asm_end
         # concatenate the strings to form the final ASM sting to be returned
-        return [{'asm_code': asm}]
+        asm = asm_start + asm_branch + asm_jump + asm_call + asm_end
+        
+        # compile macros for the test
+        compile_macros = []
+
+        return [{'asm_code': asm, 'asm_data': '', 'asm_sig': '', 'compile_macros': compile_macros}]
 
     def check_log(self, log_file_path, reports_dir):
         """

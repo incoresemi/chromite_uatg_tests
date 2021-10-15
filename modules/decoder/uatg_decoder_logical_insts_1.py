@@ -103,9 +103,11 @@ class uatg_decoder_logical_insts_1(IPlugin):
             sig_code = 'signature_start:\n'
             sig_code += ' .fill {0},4,0xdeadbeef'.format(int(sig_bytes/4))
 
+            # compile macros for the test
+            compile_macros = []
 
             # return asm_code and sig_code
-            test_dict.append({'asm_code': asm_code, 'asm_data': '', 'asm_sig': sig_code})
+            test_dict.append({'asm_code': asm_code, 'asm_data': '', 'asm_sig': sig_code, 'compile_macros':compile_macros})
         return test_dict
 
 

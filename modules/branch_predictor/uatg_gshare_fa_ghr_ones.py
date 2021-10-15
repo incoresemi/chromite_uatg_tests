@@ -49,7 +49,10 @@ class uatg_gshare_fa_ghr_ones_01(IPlugin):
         asm = f"\n\taddi t0, x0, {loop_count}\n\taddi t1,x0 ,0 \n\nloop:\n"
         asm += "\taddi t1, t1, 1\n\tblt t1, t0, loop\n"
 
-        return [{'asm_code': asm}]
+        # compile macros for the test
+        compile_macros = []
+
+        return [{'asm_code': asm, 'asm_data': '', 'asm_sig': '', 'compile_macros': compile_macros}]
 
     def check_log(self, log_file_path, reports_dir):
         """
