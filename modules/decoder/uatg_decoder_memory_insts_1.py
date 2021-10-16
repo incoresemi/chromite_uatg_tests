@@ -66,11 +66,11 @@ class uatg_decoder_memory_insts_1(IPlugin):
 
             # Bit walking through 11 bits for immediate field
             imm = [
-                val for i in range(1, 2)
+                val for i in range(1, 12)
                 for val in bit_walker(bit_width=12, n_ones=i, invert=False)
             ]
             imm = imm + [
-                val for i in range(1, 2)
+                val for i in range(1, 12)
                 for val in bit_walker(bit_width=12, n_ones=i, invert=True)
             ]
             count = 0
