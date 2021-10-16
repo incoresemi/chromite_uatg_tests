@@ -7,7 +7,7 @@ from random import randint
 import random
 
 
-class uatg_decoder_arithmetic_insts_3(IPlugin):
+class uatg_decoder_arithmetic_insts_ui(IPlugin):
     """
     This class contains methods to generate and validate the tests for
     ADD immediate instructions.
@@ -37,15 +37,17 @@ class uatg_decoder_arithmetic_insts_3(IPlugin):
         """
             Generates the ASM instructions for R type arithmetic instructions.
             It creates asm for the following instructions (based upon input isa)
-                addi', 'addiw', 'addid
+                auipc, lui
         """
         reg_file = base_reg_file.copy()
 
         test_dict = []
 
-        for inst in arithmetic_instructions[f'{self.isa_bit}-add-imm']:
+        inst_count = 0
 
-            asm_code = '\n\n' + '#' * 5 + ' inst reg, reg, imm_val ' + '#' * 5 + '\n'
+        for inst in arithmetic_instructions[f'{self.isa_bit}-ui']:
+
+            asm_code = '\n\n' + '#' * 5 + ' auipc/lui reg ' + '#' * 5 + '\n'
 
             # initial register to use as signature pointer
             swreg = 'x31'
@@ -62,45 +64,49 @@ class uatg_decoder_arithmetic_insts_3(IPlugin):
             # Bit walking through 11 bits for immediate field
             imm = [
                 val for i in range(1, 4)
-                for val in bit_walker(bit_width=11, n_ones=i, invert=False)
+                for val in bit_walker(bit_width=20, n_ones=i, invert=False)
             ]
             imm = imm + [
                 val for i in range(1, 4)
-                for val in bit_walker(bit_width=11, n_ones=i, invert=True)
+                for val in bit_walker(bit_width=20, n_ones=i, invert=True)
             ]
             for rd in reg_file:
-                for rs1 in reg_file:
-                    for imm_val in imm:
+                for imm_val in imm:
 
-                        rs1_val = hex(random.getrandbits(self.xlen))
-                        # if signature register needs to be used for operations
-                        # then first choose a new signature pointer and move the
-                        # value to it.
-                        if swreg in [rd, rs1]:
-                            newswreg = random.choice([
-                                x for x in reg_file if x not in [rd, rs1, 'x0']
-                            ])
-                            asm_code += f'mv {newswreg}, {swreg}\n'
-                            swreg = newswreg
+                    # if signature register needs to be used for operations
+                    # then first choose a new signature pointer and move the
+                    # value to it.
+                    if swreg in [rd]:
+                        newswreg = random.choice([
+                            x for x in reg_file if x not in [rd, 'x0']
+                        ])
+                        asm_code += f'mv {newswreg}, {swreg}\n'
+                        swreg = newswreg
 
-                        # perform the  required assembly operation
-                        asm_code += f'\n#operation: {inst}, rs1={rs1}, rs1_val={rs1_val}, imm={imm_val}, rd={rd}\n'
-                        asm_code += f'TEST_IMM_OP({inst}, {rd}, {rs1}, 0, {rs1_val}, {imm_val}, {swreg}, {offset}, x0)\n'
+                    # perform the  required assembly operation
+                    asm_code += f'\ninst_{inst_count}:'
+                    asm_code += f'\n#operation: {inst}, imm={imm_val}, rd={rd}\n'
+                    if 'auipc' in inst:
+                        asm_code += f'TEST_AUIPC({inst}, {rd}, 0, {imm_val}, {swreg}, {offset}, x0)\n'
+                    elif 'lui' in inst:
+                        asm_code += f'TEST_CASE(x0, {rd}, 0, {swreg}, {offset}, lui {rd}, {imm_val})\n'
 
-                        # adjust the offset. reset to 0 if it crosses 2048 and
-                        # increment the current signature pointer with the
-                        # current offset value
-                        if offset + self.offset_inc >= 2048:
-                            asm_code += f'addi {swreg}, {swreg},{offset}\n'
-                            offset = 0
+                    # adjust the offset. reset to 0 if it crosses 2048 and
+                    # increment the current signature pointer with the
+                    # current offset value
+                    if offset + self.offset_inc >= 2048:
+                        asm_code += f'addi {swreg}, {swreg},{offset}\n'
+                        offset = 0
 
-                        # increment offset by the amount of bytes updated in
-                        # signature by each test-macro.
-                        offset = offset + self.offset_inc
+                    # increment offset by the amount of bytes updated in
+                    # signature by each test-macro.
+                    offset = offset + self.offset_inc
 
-                        # keep track of the total number of signature bytes used
-                        # so far.
-                        sig_bytes = sig_bytes + self.offset_inc
+                    # keep track of the total number of signature bytes used
+                    # so far.
+                    sig_bytes = sig_bytes + self.offset_inc
+
+                    inst_count += 1
 
             # asm code to populate the signature region
             sig_code = 'signature_start:\n'
@@ -126,3 +132,4 @@ class uatg_decoder_arithmetic_insts_3(IPlugin):
     def generate_covergroups(self, config_file) -> str:
         sv = ""
         return sv
+
