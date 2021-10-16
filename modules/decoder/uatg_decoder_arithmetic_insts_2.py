@@ -20,8 +20,8 @@ class uatg_decoder_arithmetic_insts_2(IPlugin):
         self.xlen = 32
         self.num_rand_var = 100
 
-    def execute(self, _decoder_dict) -> bool:
-        self.isa = _decoder_dict['isa']
+    def execute(self, core_yaml, isa_yaml) -> bool:
+        self.isa = isa_yaml['hart0']['ISA']
         if 'rv32' in self.isa:
             self.isa_bit = 'rv32'
             self.xlen = 32
@@ -47,14 +47,14 @@ class uatg_decoder_arithmetic_insts_2(IPlugin):
 
         for inst in arithmetic_instructions[f'{self.isa_bit}-shift-reg']:
 
-            asm_code = '\n\n' + '#' * 5 + ' shift_inst reg, reg, reg ' + '#' * 5+'\n'
-            
+            asm_code = '\n\n' + '#' * 5 + ' shift_inst reg, reg, reg ' + '#' * 5 + '\n'
+
             # initial register to use as signature pointer
             swreg = 'x31'
 
             # initialize swreg to point to signature_start label
             asm_code += f'RVTEST_SIGBASE({swreg}, signature_start)\n'
-           
+
             # initial offset to with respect to signature label
             offset = 0
 
@@ -73,7 +73,10 @@ class uatg_decoder_arithmetic_insts_2(IPlugin):
                         # then first choose a new signature pointer and move the
                         # value to it.
                         if swreg in [rd, rs1, rs2]:
-                            newswreg = random.choice([x for x in reg_file if x not in [rd, rs1, rs2, 'x0']])
+                            newswreg = random.choice([
+                                x for x in reg_file
+                                if x not in [rd, rs1, rs2, 'x0']
+                            ])
                             asm_code += f'mv {newswreg}, {swreg}\n'
                             swreg = newswreg
 
@@ -84,7 +87,7 @@ class uatg_decoder_arithmetic_insts_2(IPlugin):
                         # adjust the offset. reset to 0 if it crosses 2048 and
                         # increment the current signature pointer with the
                         # current offset value
-                        if offset+self.offset_inc >= 2048:
+                        if offset + self.offset_inc >= 2048:
                             asm_code += f'addi {swreg}, {swreg}, {offset}\n'
                             offset = 0
 
@@ -98,13 +101,19 @@ class uatg_decoder_arithmetic_insts_2(IPlugin):
 
             # asm code to populate the signature region
             sig_code = 'signature_start:\n'
-            sig_code += ' .fill {0},4,0xdeadbeef'.format(int(sig_bytes/4))
+            sig_code += ' .fill {0},4,0xdeadbeef'.format(int(sig_bytes / 4))
 
             # assign compile time macros for the test
             compile_macros = []
 
             # return asm_code and sig_code
-            test_dict.append({'asm_code': asm_code, 'asm_data': '', 'asm_sig': sig_code, 'compile_macros': compile_macros})        
+            test_dict.append({
+                'asm_code': asm_code,
+                'asm_data': '',
+                'asm_sig': sig_code,
+                'compile_macros': compile_macros,
+                'name_postfix': inst
+            })
         return test_dict
 
     def check_log(self, log_file_path, reports_dir) -> bool:

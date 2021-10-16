@@ -16,8 +16,8 @@ class uatg_decompressor_02(IPlugin):
         self.isa = "RV64I"
         self.split_isa = "RV64I"
 
-    def execute(self, _bpu_dict):
-        self.isa = (_bpu_dict['isa']).lower()
+    def execute(self, core_yaml, isa_yaml):
+        self.isa = (isa_yaml['hart0']['ISA']).lower()
         self.split_isa = self.isa.split('z')
         if 'c' in self.isa:
             return True
@@ -46,7 +46,7 @@ class uatg_decompressor_02(IPlugin):
                    f"c.fsw f11,4(x10)\n" \
                    f"LA(x9,sample_data)\n" \
                    f"c.flw f12,4(x9)\n\n"
-        
+
         if 'rv32' in self.split_isa[0]:
             asm += f"### control transfers instructions(RV32 only) ###\n" \
                    f"LA (x29,entry_jal)\n" \
@@ -72,7 +72,7 @@ class uatg_decompressor_02(IPlugin):
                    f"LA (x10,sample_data)\n " \
                    f"c.fsd f11,8(x10)\n" \
                    f"LA (x12,sample_data)\n" \
-                   f"c.fld f9,8(x12)\n\n" 
+                   f"c.fld f9,8(x12)\n\n"
 
         asm += f"###Integer Constant-Generation Instructions###\n" \
                f"c.li x1,1   ## x1=1\n" \
@@ -105,11 +105,15 @@ class uatg_decompressor_02(IPlugin):
                f"entry_jr:\n" \
                f"c.add x9,x10\n" \
                f"c.nop\n\n" \
-               
+
         # compile macros for the test
         compile_macros = []
 
-        return [{'asm_code': asm, 'asm_data': '', 'asm_sig': '', 'compile_macros': compile_macros}]
+        return [{
+            'asm_code': asm,
+            'asm_sig': '',
+            'compile_macros': compile_macros
+        }]
 
     def check_log(self):
         return None

@@ -15,10 +15,9 @@ class uatg_decompressor_floating_01(IPlugin):
         self.isa = "RV64I"
         self.split_isa = "RV64I"
 
-
-    def execute(self, _bpu_dict):
-        self.isa = (_bpu_dict['isa']).lower()
-        # we split the ISA based on Z because, we are checking for 
+    def execute(self, core_yaml, isa_yaml):
+        self.isa = (isa_yaml['hart0']['ISA']).lower()
+        # we split the ISA based on Z because, we are checking for
         # 'C' and 'F' standard extensions. When Zifencei or Zicsr are
         # enabled, the test using 'in' keyword will not return the expected
         # result.
@@ -50,7 +49,11 @@ c.fld f9,8(x12)
         # compile macros for the test
         compile_macros = []
 
-        return [{'asm_code': asm, 'asm_data': '', 'asm_sig': '', 'compile_macros': compile_macros}]
+        return [{
+            'asm_code': asm,
+            'asm_sig': '',
+            'compile_macros': compile_macros
+        }]
 
     def check_log(self):
         return None

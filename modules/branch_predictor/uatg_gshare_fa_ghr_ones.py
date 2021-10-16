@@ -18,15 +18,17 @@ class uatg_gshare_fa_ghr_ones_01(IPlugin):
     NOTE: The SV covergroup for this test is written in
           utg_gshare_fa_ghr_zeros_01.py
     """
+
     def __init__(self):
         # initializing variables
         super().__init__()
         self._history_len = 8
 
-    def execute(self, _bpu_dict):
+    def execute(self, core_yaml, isa_yaml):
         # Function to check whether to generate/validate this test or not
 
         # extract needed values from bpu's parameters
+        _bpu_dict = core_yaml['branch_predictor']
         _en_bpu = _bpu_dict['instantiate']
         self._history_len = _bpu_dict['history_len']
 
@@ -52,7 +54,11 @@ class uatg_gshare_fa_ghr_ones_01(IPlugin):
         # compile macros for the test
         compile_macros = []
 
-        return [{'asm_code': asm, 'asm_data': '', 'asm_sig': '', 'compile_macros': compile_macros}]
+        return [{
+            'asm_code': asm,
+            'asm_sig': '',
+            'compile_macros': compile_macros
+        }]
 
     def check_log(self, log_file_path, reports_dir):
         """

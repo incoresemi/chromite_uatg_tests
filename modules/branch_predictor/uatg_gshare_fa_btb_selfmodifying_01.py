@@ -18,7 +18,7 @@ class uatg_gshare_fa_btb_selfmodifying_01(IPlugin):
         super().__init__()
         pass  # we do not have any variable to declare.
 
-    def execute(self, _bpu_dict) -> bool:
+    def execute(self, core_yaml, isa_yaml) -> bool:
         """
         The method returns true or false.
         In order to make test_generation targeted, we adopt this approach. Based
@@ -27,6 +27,7 @@ class uatg_gshare_fa_btb_selfmodifying_01(IPlugin):
         This method also doubles up as the only method which has access to the 
         hardware configuration of the DUt in the test_class. 
         """
+        _bpu_dict = core_yaml['branch_predictor']
         _en_bpu = _bpu_dict[
             'instantiate']  # States if the DUT has a branch predictor
         if _en_bpu:  # check condition, if BPU exists
@@ -62,7 +63,11 @@ class uatg_gshare_fa_btb_selfmodifying_01(IPlugin):
         # compile macros for the test
         compile_macros = []
 
-        return [{'asm_code': asm, 'asm_data': '', 'asm_sig': '', 'compile_macros': compile_macros}]
+        return [{
+            'asm_code': asm,
+            'asm_sig': '',
+            'compile_macros': compile_macros
+        }]
 
     def check_log(self, log_file_path, reports_dir):
         """

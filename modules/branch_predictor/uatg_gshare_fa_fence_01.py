@@ -22,7 +22,7 @@ class uatg_gshare_fa_fence_01(IPlugin):
         self._btb_depth = 32
         # we assume that the default BTB depth is 32
 
-    def execute(self, _bpu_dict) -> bool:
+    def execute(self, core_yaml, isa_yaml) -> bool:
         """
         The method returns true or false.
         In order to make test_generation targeted, we adopt this approach. Based
@@ -31,11 +31,12 @@ class uatg_gshare_fa_fence_01(IPlugin):
         This method also doubles up as the only method which has access to the 
         hardware configuration of the DUt in the test_class. 
         """
+        _bpu_dict = core_yaml['branch_predictor']
         self._btb_depth = _bpu_dict['btb_depth']
         # states the depth of the BTB
         _en_bpu = _bpu_dict['instantiate']
         # States if the DUT has a branch predictor
-        
+
         if self._btb_depth and _en_bpu:
             # check condition, if BPU exists and btb depth is valid
             return True  # return true if this test can exist.
@@ -73,7 +74,11 @@ class uatg_gshare_fa_fence_01(IPlugin):
         # compile macros for the test
         compile_macros = []
 
-        return [{'asm_code': asm, 'asm_data': '', 'asm_sig': '', 'compile_macros': compile_macros}]
+        return [{
+            'asm_code': asm,
+            'asm_sig': '',
+            'compile_macros': compile_macros
+        }]
 
     def check_log(self, log_file_path, reports_dir):
         """
