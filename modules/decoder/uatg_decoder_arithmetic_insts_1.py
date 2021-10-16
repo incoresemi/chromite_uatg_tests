@@ -22,7 +22,7 @@ class uatg_decoder_arithmetic_insts_1(IPlugin):
 
     def execute(self, core_yaml, isa_yaml) -> bool:
         self.isa = isa_yaml['hart0']['ISA']
-        if 'rv32' in self.isa:
+        if 'RV32' in self.isa:
             self.isa_bit = 'rv32'
             self.xlen = 32
             self.offset_inc = 4
@@ -60,6 +60,8 @@ class uatg_decoder_arithmetic_insts_1(IPlugin):
             # variable to hold the total number of signature bytes to be used.
             sig_bytes = 0
 
+            inst_count = 0
+
             for rd in reg_file:
                 for rs1 in reg_file:
                     for rs2 in reg_file:
@@ -80,6 +82,7 @@ class uatg_decoder_arithmetic_insts_1(IPlugin):
                             swreg = newswreg
 
                         # perform the  required assembly operation
+                        asm_code += f'\ninst_{inst_count}:'
                         asm_code += f'\n#operation: {inst}, rs1={rs1}, rs2={rs2}, rd={rd}\n'
                         asm_code += f'TEST_RR_OP({inst}, {rd}, {rs1}, {rs2}, 0, {rs1_val}, {rs2_val}, {swreg}, {offset}, x0)\n'
 
@@ -97,6 +100,8 @@ class uatg_decoder_arithmetic_insts_1(IPlugin):
                         # keep track of the total number of signature bytes used
                         # so far.
                         sig_bytes = sig_bytes + self.offset_inc
+
+                        inst_count += 1
 
             # asm code to populate the signature region
             sig_code = 'signature_start:\n'

@@ -22,7 +22,7 @@ class uatg_decoder_logical_insts_2(IPlugin):
 
     def execute(self, core_yaml, isa_yaml) -> bool:
         self.isa = isa_yaml['hart0']['ISA']
-        if 'rv32' in self.isa:
+        if 'RV32' in self.isa:
             self.isa_bit = 'rv32'
             self.xlen = 32
             self.offset_inc = 4

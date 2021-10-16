@@ -17,9 +17,9 @@ class uatg_decompressor_02(IPlugin):
         self.split_isa = "RV64I"
 
     def execute(self, core_yaml, isa_yaml):
-        self.isa = (isa_yaml['hart0']['ISA']).lower()
-        self.split_isa = self.isa.split('z')
-        if 'c' in self.isa:
+        self.isa = isa_yaml['hart0']['ISA']
+        self.split_isa = self.isa.split('Z')
+        if 'C' in self.isa:
             return True
         else:
             return False
@@ -35,7 +35,7 @@ class uatg_decompressor_02(IPlugin):
 
         asm += f'\n\n## test: decompressor_RV32 ##\n\n'
 
-        if 'rv32' and 'f' in self.split_isa[0]:
+        if 'RV32' and 'F' in self.split_isa[0]:
             asm += f"###register based load and store###\n" \
                    f"###stack pointer based load and store floating point instructions(RV32 only)###\n" \
                    f"LA(x2,sample_data)\n" \
@@ -47,7 +47,7 @@ class uatg_decompressor_02(IPlugin):
                    f"LA(x9,sample_data)\n" \
                    f"c.flw f12,4(x9)\n\n"
 
-        if 'rv32' in self.split_isa[0]:
+        if 'RV32' in self.split_isa[0]:
             asm += f"### control transfers instructions(RV32 only) ###\n" \
                    f"LA (x29,entry_jal)\n" \
                    f"c.jal x29\n\n" \
@@ -63,7 +63,7 @@ class uatg_decompressor_02(IPlugin):
                f"entry_jalr:\n" \
                f"c.srli x10,5      ## x10=x10<<5\n\n" \
 
-        if 'f' in self.split_isa[0]:
+        if 'F' in self.split_isa[0]:
             asm += f"###stack pointer based load and store instructions(RV32/RV64)###\n" \
                    f"LA (x2, sample_data)\n" \
                    f"c.fsdsp f8,8(x2)\n" \

@@ -16,13 +16,13 @@ class uatg_decompressor_floating_01(IPlugin):
         self.split_isa = "RV64I"
 
     def execute(self, core_yaml, isa_yaml):
-        self.isa = (isa_yaml['hart0']['ISA']).lower()
+        self.isa = isa_yaml['hart0']['ISA']
         # we split the ISA based on Z because, we are checking for
         # 'C' and 'F' standard extensions. When Zifencei or Zicsr are
         # enabled, the test using 'in' keyword will not return the expected
         # result.
-        self.split_isa = self.isa.split('z')
-        if 'c' and 'f' in self.split_isa[0]:
+        self.split_isa = self.isa.split('Z')
+        if 'C' and 'F' in self.split_isa[0]:
             return True
         else:
             return False
