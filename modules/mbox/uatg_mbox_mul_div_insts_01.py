@@ -48,8 +48,11 @@ class uatg_mbox_mul_div_insts_01(IPlugin):
 
         reg_file = base_reg_file.copy()
 
+<<<<<<< HEAD
         reg_file.remove('x0')
 
+=======
+>>>>>>> a688fb9 (added basic tests for mbox module)
         instruction_list = []
         if 'M' in self.isa or 'Zmmul' in self.isa:
             instruction_list += mext_instructions[f'{self.isa_bit}-mul']
@@ -136,3 +139,8 @@ class uatg_mbox_mul_div_insts_01(IPlugin):
     def generate_covergroups(self, config_file) -> str:
         sv = ""
         return sv
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> a688fb9 (added basic tests for mbox module)

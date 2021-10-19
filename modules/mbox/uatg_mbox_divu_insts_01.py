@@ -46,6 +46,7 @@ class uatg_mbox_divu_insts_01(IPlugin):
         test_dict = []
 
         reg_file = base_reg_file.copy()
+<<<<<<< HEAD
         reg_file.remove('x0')
 
         instructions = []
@@ -168,6 +169,95 @@ class uatg_mbox_divu_insts_01(IPlugin):
                     'compile_macros': compile_macros,
                     'name_postfix': f'{inst}_rs1_{rs1}'
                 })
+=======
+
+        instruction_list = []
+        if 'M' in self.isa:
+            instruction_list += mext_instructions[f'{self.isa_bit}-div[u]']
+
+        for inst in instruction_list:
+            asm_code = '#' * 5 + ' divu[w]/remu[w] reg, reg, reg ' + '#' * 5 + '\n'
+
+            # initial register to use as signature pointer
+            swreg = 'x31'
+
+            # initialize swreg to point to signature_start label
+            asm_code += f'RVTEST_SIGBASE({swreg}, signature_start)\n'
+
+            # initial offset to with respect to signature label
+            offset = 0
+
+            # variable to hold the total number of signature bytes to be used.
+            sig_bytes = 0
+
+            inst_count = 0
+
+            for rd in reg_file:
+             for rd1 in reg_file:
+                for rs1 in reg_file:
+                    for rs2 in reg_file:
+
+                        rs1_val = hex(random.getrandbits(self.xlen))
+                        rs2_val = hex(random.getrandbits(self.xlen))
+
+                        # if signature register needs to be used for operations
+                        # then first choose a new signature pointer and move the
+                        # value to it.
+                        if swreg in [rd, rs1, rs2]:
+                            newswreg = random.choice([
+                                x for x in reg_file
+                                if x not in [rd, rs1, rs2, 'x0']
+                            ])
+                            asm_code += f'mv {newswreg}, {swreg}\n'
+                            swreg = newswreg
+
+                        # perform the  required assembly operation
+                        if rd!=rd1 and rd!=rs1 and rd!=rs2:
+                         asm_code += f'\ninst_{inst_count}:'
+                         asm_code += f'\n#operation: {inst}, rs1={rs1}, rs2={rs2}, rd={rd}\n'
+                         asm_code += f'TEST_RR_OP({inst}, {rd}, {rs1}, {rs2}, 0, {rs1_val}, {rs2_val}, {swreg}, {offset}, x0)\n'
+                         if f'{inst}' == 'div':
+                           asm_code += f'TEST_RR_OP(rem, {rd1}, {rs1}, {rs2}, 0, {rs1_val}, {rs2_val}, {swreg}, {offset}, x0)\n'
+                         elif f'{inst}' == 'divu':
+                           asm_code += f'TEST_RR_OP(remu, {rd1}, {rs1}, {rs2}, 0, {rs1_val}, {rs2_val}, {swreg}, {offset}, x0)\n'
+                         elif f'{inst}' == 'divuw':
+                           asm_code += f'TEST_RR_OP(remuw, {rd1}, {rs1}, {rs2}, 0, {rs1_val}, {rs2_val}, {swreg}, {offset}, x0)\n'
+                         elif f'{inst}' == 'divw':
+                           asm_code += f'TEST_RR_OP(remw, {rd1}, {rs1}, {rs2}, 0, {rs1_val}, {rs2_val}, {swreg}, {offset}, x0)\n'
+
+                        # adjust the offset. reset to 0 if it crosses 2048 and
+                        # increment the current signature pointer with the
+                        # current offset value
+                        if offset + self.offset_inc >= 2048:
+                            asm_code += f'addi {swreg}, {swreg}, {offset}\n'
+                            offset = 0
+
+                        # increment offset by the amount of bytes updated in
+                        # signature by each test-macro.
+                        offset = offset + self.offset_inc
+
+                        # keep track of the total number of signature bytes used
+                        # so far.
+                        sig_bytes = sig_bytes + self.offset_inc
+
+                        inst_count += 1
+
+            # asm code to populate the signature region
+            sig_code = 'signature_start:\n'
+            sig_code += ' .fill {0},4,0xdeadbeef\n'.format(int(sig_bytes / 4))
+
+            # compile macros for the test
+            compile_macros = []
+
+            # return asm_code and sig_code
+            test_dict.append({
+                'asm_code': asm_code,
+                'asm_data': '',
+                'asm_sig': sig_code,
+                'compile_macros': compile_macros,
+                'name_postfix': inst
+            })
+>>>>>>> a688fb9 (added basic tests for mbox module)
         return test_dict
 
     def check_log(self, log_file_path, reports_dir) -> bool:
@@ -176,3 +266,9 @@ class uatg_mbox_divu_insts_01(IPlugin):
     def generate_covergroups(self, config_file) -> str:
         sv = ""
         return sv
+<<<<<<< HEAD
+=======
+
+
+
+>>>>>>> a688fb9 (added basic tests for mbox module)
