@@ -134,4 +134,3 @@ class uatg_decoder_mext(IPlugin):
     def generate_covergroups(self, config_file) -> str:
         sv = ""
         return sv
-

@@ -77,9 +77,8 @@ class uatg_decoder_arithmetic_insts_ui(IPlugin):
                     # then first choose a new signature pointer and move the
                     # value to it.
                     if swreg in [rd]:
-                        newswreg = random.choice([
-                            x for x in reg_file if x not in [rd, 'x0']
-                        ])
+                        newswreg = random.choice(
+                            [x for x in reg_file if x not in [rd, 'x0']])
                         asm_code += f'mv {newswreg}, {swreg}\n'
                         swreg = newswreg
 
@@ -132,4 +131,3 @@ class uatg_decoder_arithmetic_insts_ui(IPlugin):
     def generate_covergroups(self, config_file) -> str:
         sv = ""
         return sv
-
