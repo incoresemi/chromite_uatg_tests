@@ -15,5 +15,10 @@ decoder:
 decompressor:
   uatg_decompressor: "checks if mis-predictions occur and tests macro's"
 
+mbox:
+  uatg_mbox_divu_insts_01: ""
+  uatg_mbox_mul_div_insts_01: ""
+  uatg_mbox_mulh_insts_01: ""
+
 fpu:
 
