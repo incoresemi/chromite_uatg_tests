@@ -64,11 +64,11 @@ class uatg_decoder_arithmetic_insts_ui(IPlugin):
             # Bit walking through 11 bits for immediate field
             imm = [
                 val for i in range(1, 4)
-                for val in bit_walker(bit_width=20, n_ones=i, invert=False)
+                for val in bit_walker(bit_width=20, n_ones=i, invert=False, signed=False)
             ]
             imm = imm + [
                 val for i in range(1, 4)
-                for val in bit_walker(bit_width=20, n_ones=i, invert=True)
+                for val in bit_walker(bit_width=20, n_ones=i, invert=True, signed=False)
             ]
             for rd in reg_file:
                 for imm_val in imm:
