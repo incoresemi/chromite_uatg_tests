@@ -23,11 +23,11 @@ decoder:
   uatg_decoder_mext: True
 
 decompressor:
-  uatg_decompressor_01: True
+  uatg_decompressor_01: False # buggy
   uatg_decompressor_02: True
   uatg_decompressor_floating_01: True
 
 mbox:
-  uatg_mbox_divu_insts_01: True
+  uatg_mbox_divu_insts_01: False # buggy
   uatg_mbox_mul_div_insts_01: True
-  uatg_mbox_mulh_insts_01: True
+  uatg_mbox_mulh_insts_01: False # buggy
