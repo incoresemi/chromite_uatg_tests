@@ -5,6 +5,7 @@ from ruamel.yaml import YAML
 import uatg.regex_formats as rf
 import re
 import os
+from typing import Dict, List
 
 
 class uatg_gshare_fa_fence_01(IPlugin):
@@ -21,7 +22,7 @@ class uatg_gshare_fa_fence_01(IPlugin):
         self._btb_depth = 32
         # we assume that the default BTB depth is 32
 
-    def execute(self, _bpu_dict):
+    def execute(self, core_yaml, isa_yaml) -> bool:
         """
         The method returns true or false.
         In order to make test_generation targeted, we adopt this approach. Based
@@ -30,18 +31,20 @@ class uatg_gshare_fa_fence_01(IPlugin):
         This method also doubles up as the only method which has access to the 
         hardware configuration of the DUt in the test_class. 
         """
+        _bpu_dict = core_yaml['branch_predictor']
         self._btb_depth = _bpu_dict['btb_depth']
         # states the depth of the BTB
         _en_bpu = _bpu_dict['instantiate']
         # States if the DUT has a branch predictor
-        
+
         if self._btb_depth and _en_bpu:
             # check condition, if BPU exists and btb depth is valid
             return True  # return true if this test can exist.
         else:
-            return False  # return false if this test cannot.
+            # return false if this test cannot.
+            return False
 
-    def generate_asm(self):
+    def generate_asm(self) -> List[Dict[str, str]]:
         """
         This method returns a string of the ASM file to be generated.
 
@@ -52,7 +55,7 @@ class uatg_gshare_fa_fence_01(IPlugin):
         # introduced.reg x30 is used as looping variable. reg x31 used as
         # a temp variable
         # ASM will just fence the Core. We check if the fence happens properly.
-        
+
         recurse_level = self.recurse_level  # reuse the self variable
         no_ops = "\taddi x31, x0, 5\n\taddi x31, x0, -5\n"  # no templates
         asm = f"\taddi x30, x0, {recurse_level}\n"  # tempate asm directives
@@ -68,15 +71,22 @@ class uatg_gshare_fa_fence_01(IPlugin):
             asm += no_ops * 3 + "\tret\n"
         asm += "end:\n\tnop\n"  # concatenate
 
-        return asm  # return string
+        # compile macros for the test
+        compile_macros = []
+
+        return [{
+            'asm_code': asm,
+            'asm_sig': '',
+            'compile_macros': compile_macros
+        }]
 
     def check_log(self, log_file_path, reports_dir):
         """
         This method performs a minimal check of the logs generated from the DUT
         when the ASM test generated from this class is run.
 
-        We use regular expressions to parse and check if the execution is as 
-        expected. 
+        We use regular expressions to parse and check if the execution is as
+        expected.
         """
 
         # check if rg_allocate becomes zero after encountering fence.
@@ -122,7 +132,8 @@ class uatg_gshare_fa_fence_01(IPlugin):
         yaml.default_flow_style = False
         yaml.dump(test_report, f)
         f.close()
-        return res  # return the result.
+        # return the result.
+        return res
 
     def generate_covergroups(self, config_file):
         """
@@ -130,11 +141,12 @@ class uatg_gshare_fa_fence_01(IPlugin):
 
            The covergroups are used to check for coverage.
         """
-        
+
         config = config_file  # contains the aliasing file as a dict.
 
         # variables required in the covergroup
-        rg_initialize = config['branch_predictor']['register']['bpu_rg_initialize']
+        rg_initialize = \
+            config['branch_predictor']['register']['bpu_rg_initialize']
         rg_allocate = config['branch_predictor']['register']['bpu_rg_allocate']
         btb_tag = config['branch_predictor']['wire']['bpu_btb_tag']
         btb_tag_valid = config['branch_predictor']['wire']['bpu_btb_tag_valid']

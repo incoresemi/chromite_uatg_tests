@@ -18,5 +18,9 @@ branch_predictor:
     bpu_ras_top_index: ras_stack_top_index_port2__read
     bpu_btb_tag_valid: btb_valids
 
+decompressor:
+  input:
+    decompressor_input: fn_decompress_inst
+
 test_case:
   test: regression

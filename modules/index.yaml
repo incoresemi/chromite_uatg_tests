@@ -1,18 +1,33 @@
 branch_predictor:
-  uatg_gshare_fa_btb_fill_01: "fill the BTB with entries"
-  uatg_gshare_fa_btb_selfmodifying_01: "ASM that modifies itself, also used to verify functioning of fence instruction"
-  uatg_gshare_fa_fence_01: "Verify the functioning of fence instruction"
-  uatg_gshare_fa_ghr_alternating_01: "fill the GHR Register with alternating 1-0 pattern"
-  uatg_gshare_fa_ghr_ones_01: "fill the GHR Register with ones"
-  uatg_gshare_fa_ghr_zeros_01: "fill the GHR Register with zeros"
-  uatg_gshare_fa_mispredict_loop_01: ""
-  uatg_gshare_fa_ras_push_pop_01: "Pushing and Popping the return address stack using call-ret instructions"
+  uatg_gshare_fa_btb_fill_01: True
+  uatg_gshare_fa_btb_selfmodifying_01: True
+  uatg_gshare_fa_fence_01: True
+  uatg_gshare_fa_ghr_alternating_01: True
+  uatg_gshare_fa_ghr_ones_01: True
+  uatg_gshare_fa_ghr_zeros_01: True
+  uatg_gshare_fa_mispredict_loop_01: True
+  uatg_gshare_fa_ras_push_pop_01: True
 
 decoder:
-  uatg_decoder_arithmetic_insts: "tests arithmetic instructions"
+  uatg_decoder_arithmetic_insts_1: True
+  uatg_decoder_arithmetic_insts_2: True
+  uatg_decoder_arithmetic_insts_3: True
+  uatg_decoder_arithmetic_insts_4: True
+  uatg_decoder_arithmetic_insts_ui: True
+  uatg_decoder_branch_insts_1: True
+  uatg_decoder_jump_jal: True
+  uatg_decoder_jump_jalr: True
+  uatg_decoder_logical_insts_1: True
+  uatg_decoder_logical_insts_2: True
+  uatg_decoder_memory_insts_1: True
+  uatg_decoder_mext: True
 
 decompressor:
-  uatg_decompressor: "checks if mis-predictions occur and tests macro's"
+  uatg_decompressor_01: False # buggy
+  uatg_decompressor_02: True
+  uatg_decompressor_floating_01: True
 
-fpu:
-
+mbox:
+  uatg_mbox_divu_insts_01: False # buggy
+  uatg_mbox_mul_div_insts_01: True
+  uatg_mbox_mulh_insts_01: False # buggy

@@ -20,3 +20,5 @@
 .*
 *.egg-info
 docs/build/
+
+!constants/*.txt

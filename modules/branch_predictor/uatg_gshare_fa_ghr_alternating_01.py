@@ -4,6 +4,7 @@ from ruamel.yaml import YAML
 import uatg.regex_formats as rf
 import re
 import os
+from typing import Dict, List
 
 
 class uatg_gshare_fa_ghr_alternating_01(IPlugin):
@@ -15,7 +16,7 @@ class uatg_gshare_fa_ghr_alternating_01(IPlugin):
         self._history_len = 8
         pass  # we do not have any variable to declare.
 
-    def execute(self, _bpu_dict):
+    def execute(self, core_yaml, isa_yaml) -> bool:
         """
         The method returns true or false.
         In order to make test_generation targeted, we adopt this approach. Based
@@ -24,6 +25,7 @@ class uatg_gshare_fa_ghr_alternating_01(IPlugin):
         This method also doubles up as the only method which has access to the 
         hardware configuration of the DUt in the test_class. 
         """
+        _bpu_dict = core_yaml['branch_predictor']
         _en_bpu = _bpu_dict['instantiate']
         # States if the DUT has a branch predictor
         self._history_len = _bpu_dict['history_len']
@@ -35,7 +37,7 @@ class uatg_gshare_fa_ghr_alternating_01(IPlugin):
         else:
             return False  # return false if this test cannot.
 
-    def generate_asm(self):
+    def generate_asm(self) -> List[Dict[str, str]]:
         """
         This method returns a string of the ASM file to be generated.
 
@@ -77,15 +79,22 @@ class uatg_gshare_fa_ghr_alternating_01(IPlugin):
         asm = asm + '\tbeq  t1,x0,lab0\n\taddi t0,t0,2\n'
         asm = asm + '\tbeq  t2,x0,lab0\n'
 
-        return asm  # return string
+        # compile macros for the test
+        compile_macros = []
+
+        return [{
+            'asm_code': asm,
+            'asm_sig': '',
+            'compile_macros': compile_macros
+        }]
 
     def check_log(self, log_file_path, reports_dir):
         """
         This method performs a minimal check of the logs genrated from the DUT
         when the ASM test generated from this class is run.
 
-        We use regular expressions to parse and check if the execution is as 
-        expected. 
+        We use regular expressions to parse and check if the execution is as
+        expected.
         """
 
         # check if the ghr value is alternating.

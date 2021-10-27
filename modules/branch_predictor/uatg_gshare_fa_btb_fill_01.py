@@ -3,12 +3,12 @@
 from yapsy.IPlugin import IPlugin
 from ruamel.yaml import YAML
 import uatg.regex_formats as rf
+from typing import Dict, List
 import re
 import os
 
 
 class uatg_gshare_fa_btb_fill_01(IPlugin):
-
     """
     The test is used to fill the Branch Target Buffer with addresses. 
     It fills the BTB with Conditional Branches and Jumps, Calls and Returns.
@@ -25,7 +25,7 @@ class uatg_gshare_fa_btb_fill_01(IPlugin):
         super().__init__()
         self._btb_depth = 32
 
-    def execute(self, _bpu_dict):
+    def execute(self, core_yaml, isa_yaml):
         """
         The method returns true or false.
         In order to make test_generation targeted, we adopt this approach. Based
@@ -34,6 +34,7 @@ class uatg_gshare_fa_btb_fill_01(IPlugin):
         This method also acts as the only method which has access to the
         hardware configuration of the DUt in the test_class. 
         """
+        _bpu_dict = core_yaml['branch_predictor']
         _en_bpu = _bpu_dict['instantiate']
         # States if the DUT has a branch predictor
         self._btb_depth = _bpu_dict['btb_depth']
@@ -46,7 +47,7 @@ class uatg_gshare_fa_btb_fill_01(IPlugin):
             return False
             # return false if this test cannot.
 
-    def generate_asm(self):
+    def generate_asm(self) -> List[Dict[str, str]]:
         """
         This method returns a string of the ASM file to be generated.
 
@@ -74,7 +75,7 @@ class uatg_gshare_fa_btb_fill_01(IPlugin):
             asm_call += f"\tcall x1,entry_{j}\n"
         asm_call += "\tj exit\n\n"
         # final directive to jump to the exit label
-        
+
         for i in range(1, self._btb_depth):
             # for loop to iterate and generate the asm string to be returned
             if i <= branch_count:
@@ -110,9 +111,17 @@ class uatg_gshare_fa_btb_fill_01(IPlugin):
                     asm_call = asm_call + "\taddi x0,x0,0\n"
                 asm_call = asm_call + "\tret\n\n"
 
-        asm = asm_start + asm_branch + asm_jump + asm_call + asm_end
         # concatenate the strings to form the final ASM sting to be returned
-        return asm
+        asm = asm_start + asm_branch + asm_jump + asm_call + asm_end
+
+        # compile macros for the test
+        compile_macros = []
+
+        return [{
+            'asm_code': asm,
+            'asm_sig': '',
+            'compile_macros': compile_macros
+        }]
 
     def check_log(self, log_file_path, reports_dir):
         """
@@ -130,7 +139,7 @@ class uatg_gshare_fa_btb_fill_01(IPlugin):
         # Received Training: Training_data........
 
         f = open(log_file_path, "r")
-        log_file = f.read()          # open the log file for parsing
+        log_file = f.read()  # open the log file for parsing
         f.close()
 
         alloc_newind_result = re.findall(rf.alloc_newind_pattern, log_file)
@@ -143,7 +152,7 @@ class uatg_gshare_fa_btb_fill_01(IPlugin):
             new_arr.append(alloc_newind_result[i][23:])
             # appending patterns to list based on requirement for this checking
 
-        new_arr = list(set(new_arr))     # sorting them and removing duplicates
+        new_arr = list(set(new_arr))  # sorting them and removing duplicates
         new_arr.sort()
         # creating the template for the YAML report for this check.
         test_report = {
@@ -155,8 +164,8 @@ class uatg_gshare_fa_btb_fill_01(IPlugin):
                 'Execution_Status': ''
             }
         }
-        ct = 0        # count variable
-        
+        ct = 0  # count variable
+
         # checking if the required string is present in the log using a loop
         for i in range(self._btb_depth):
             try:
@@ -177,7 +186,7 @@ class uatg_gshare_fa_btb_fill_01(IPlugin):
             test_report["gshare_fa_btb_fill_01_report"][
                 'Execution_Status'] = 'Fail'
             res = False
-        
+
         # write the yaml file in
         f = open(os.path.join(reports_dir, 'gshare_fa_btb_fill_01_report.yaml'),
                  'w')
@@ -186,7 +195,7 @@ class uatg_gshare_fa_btb_fill_01(IPlugin):
         yaml.dump(test_report, f)
         f.close()
 
-        return res   # return the result.
+        return res  # return the result.
 
     def generate_covergroups(self, config_file):
         """
@@ -195,13 +204,14 @@ class uatg_gshare_fa_btb_fill_01(IPlugin):
            The covergroups are used to check for coverage.
         """
 
-        config = config_file           # contains the aliasing file as a dict.
+        config = config_file  # contains the aliasing file as a dict.
 
         # variables required in the covergroup
-        rg_initialize = config['branch_predictor']['register']['bpu_rg_initialize']
+        rg_initialize = \
+            config['branch_predictor']['register']['bpu_rg_initialize']
         rg_allocate = config['branch_predictor']['register']['bpu_rg_allocate']
         btb_entry = config['branch_predictor']['wire']['bpu_btb_entry']
-        
+
         # SV syntax to be written into the file.
         # The syntax will check if the BTB filling was as expected.
         sv = "covergroup gshare_fa_btb_fill_cg @(posedge " \
@@ -220,5 +230,5 @@ class uatg_gshare_fa_btb_fill_01(IPlugin):
                   "{'d0,'d1,'d2,'d3} iff(" + f"{rg_initialize} == 0);" + "\n}\n"
 
         sv += "endgroup\n\n"
-        # return the SV string 
+        # return the SV string
         return sv

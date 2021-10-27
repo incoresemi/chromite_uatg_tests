@@ -4,6 +4,7 @@ from ruamel.yaml import YAML
 import uatg.regex_formats as rf
 import re
 import os
+from typing import Dict, List
 
 
 class uatg_gshare_fa_ghr_zeros_01(IPlugin):
@@ -21,10 +22,11 @@ class uatg_gshare_fa_ghr_zeros_01(IPlugin):
         super().__init__()
         self._history_len = 8
 
-    def execute(self, _bpu_dict):
+    def execute(self, core_yaml, isa_yaml) -> bool:
         # Function to check whether to generate/validate this test or not
 
         # extract needed values from bpu's parameters
+        _bpu_dict = core_yaml['branch_predictor']
         self._history_len = _bpu_dict['history_len']
         _en_bpu = _bpu_dict['instantiate']
 
@@ -33,7 +35,7 @@ class uatg_gshare_fa_ghr_zeros_01(IPlugin):
         else:
             return False
 
-    def generate_asm(self):
+    def generate_asm(self) -> List[Dict[str, str]]:
         """
           the for loop iterates ghr_width + 2 times printing an
           assembly program which contains ghr_width + 2 branches which
@@ -46,7 +48,14 @@ class uatg_gshare_fa_ghr_zeros_01(IPlugin):
         for i in range(1, loop_count):
             asm += f"branch_{i}:\n\tbeq t0, x0, branch_{i}\n\taddi t0, t0, 1\n"
 
-        return asm
+        # compile macros for the test
+        compile_macros = []
+
+        return [{
+            'asm_code': asm,
+            'asm_sig': '',
+            'compile_macros': compile_macros
+        }]
 
     def check_log(self, log_file_path, reports_dir):
         """
