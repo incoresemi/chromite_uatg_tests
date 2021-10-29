@@ -52,13 +52,20 @@ class uatg_gshare_fa_btb_selfmodifying_01(IPlugin):
         # ASM Syntax
         asm = ".option norvc\n\n"
         asm += "\taddi t3,x0,0\n\taddi t4,x0,3\n\tjal x0,first\n\n"
-        asm += "first:\n\taddi t3,t3,1\n\tbeq t3,t4,end\n\tjal x0,first" \
-               + "\n\tjal x0,fin\n\n"
-        asm += "end:\n\taddi x0,x0,0\n\taddi t0,x0,1\n\tslli t0,t0,31" \
-               + "\n\taddi t0,t0,0x3a4\n"
-        asm += "\taddi t1,x0,0x33\n\taddi t3,x0,4\n\tsw t1,0(t0)\n\t" \
-               + "fence.i\n\tjal x0,first\n\n"
+        asm += "first:\n\taddi t3,t3,1\n\n"
+        asm += "b_address:\n\tbeq t3,t4,end\n\n"
+        asm += "j_address:\n\tjal x0,first\n"
+        asm += "\n\tjal x0,fin\n\n"
+        asm += "end:\n\taddi x0,x0,0\n\taddi t0,x0,1\n"
+        asm += "\tla t0, b_address\n\tla t2, j_address\n" 
+        asm += "\tla t5, add_instruction\n\tlw t1, 0(t5)\n"
+        asm += "\taddi t3,x0,5\n\tsw t1, 0(t2)\n\tsw t1, 0(t0)\n"
+        asm += "\tfence.i\n\tjal x0,first\n\n"
         asm = asm + "fin:\n"
+
+        # rvtest_data
+        asm_data = "\n.align 4\n\nadd_instruction:\n"
+        asm_data += "\t.word 0x00000033\n"
 
         # compile macros for the test
         compile_macros = []
@@ -66,6 +73,7 @@ class uatg_gshare_fa_btb_selfmodifying_01(IPlugin):
         return [{
             'asm_code': asm,
             'asm_sig': '',
+            'asm_data': asm_data,
             'compile_macros': compile_macros
         }]
 
