@@ -27,8 +27,7 @@ class uatg_decompressor_02(IPlugin):
     def generate_asm(self) -> List[Dict[str, str]]:
         """This function will return all the compressed_RV32 instructions"""
 
-        asm = f"#define RVTEST_FP_ENABLE()\n" \
-              f"LI x2, MSTATUS_FS;\n" \
+        asm = f"LI x2, MSTATUS_FS;\n" \
               f"csrrs x3, mstatus,x0;\n" \
               f"or x2, x3, x2;\n" \
               f"csrrw x0,mstatus,x2;\n"
