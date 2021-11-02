@@ -177,9 +177,3 @@ class uatg_decoder_jump_jal(IPlugin):
     def generate_covergroups(self, config_file) -> str:
         sv = ''
         return sv
-
-
-if __name__ == "__main__":
-    obj = uatg_decoder_jump_jal()
-    out = obj.generate_asm()
-    print(out)
