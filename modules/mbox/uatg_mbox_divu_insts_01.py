@@ -83,44 +83,57 @@ class uatg_mbox_divu_insts_01(IPlugin):
                             # if signature register needs to be used for ops
                             # then first choose a new signature pointer and move
                             # the value to it.
-                            if swreg in [rd, rs1, rs2]:
+                            if swreg in [rd, rd1, rs1, rs2]:
                                 new_swreg = random.choice([
                                     x for x in reg_file
-                                    if x not in [rd, rs1, rs2, 'x0']
+                                    if x not in [rd, rd1, rs1, rs2, 'x0']
                                 ])
                                 asm_code += f'mv {new_swreg}, {swreg}\n'
                                 swreg = new_swreg
 
-                            # perform the  required assembly operation
-                            if rd != rd1 and rd != rs1 and rd != rs2:
-                                asm_code += f'\ninst_{inst_count}:'
-                                asm_code += f'\n#operation: {inst}, rs1={rs1}' \
-                                            f', rs2={rs2}, rd={rd}\n' \
-                                            f'TEST_RR_OP({inst}, {rd}, {rs1}' \
-                                            f', {rs2}, 0, {rs1_val}, ' \
-                                            f'{rs2_val}, {swreg}, {offset}' \
-                                            f', x0)\n'
+                            if rd1 in [rd, swreg, rs1, rs2]:
+                                new_rd1 = random.choice([
+                                    x for x in reg_file
+                                    if x not in [rd, swreg, rs2, rs1]
+                                ])
+                                rd1 = new_rd1
 
-                                if f'{inst}' == 'div':
-                                    asm_code += f'TEST_RR_OP(rem, {rd1}, ' \
-                                                f'{rs1}, {rs2}, 0, {rs1_val}' \
-                                                f', {rs2_val}, {swreg}, ' \
-                                                f'{offset}, x0)\n'
-                                elif f'{inst}' == 'divu':
-                                    asm_code += f'TEST_RR_OP(remu, {rd1}, ' \
-                                                f'{rs1}, {rs2}, 0, {rs1_val}' \
-                                                f', {rs2_val}, {swreg}, ' \
-                                                f'{offset}, x0)\n'
-                                elif f'{inst}' == 'divuw':
-                                    asm_code += f'TEST_RR_OP(remuw, {rd1}, ' \
-                                                f'{rs1}, {rs2}, 0, {rs1_val}' \
-                                                f', {rs2_val}, {swreg}, ' \
-                                                f'{offset}, x0)\n'
-                                elif f'{inst}' == 'divw':
-                                    asm_code += f'TEST_RR_OP(remw, {rd1}, ' \
-                                                f'{rs1}, {rs2}, 0, {rs1_val}' \
-                                                f', {rs2_val}, {swreg}, ' \
-                                                f'{offset}, x0)\n'
+                            if rd in [rs1, rd1, rs2, swreg]:
+                                new_rd = random.choice([
+                                    x for x in reg_file
+                                    if x not in [rd1, swreg, rs2, rs1]
+                                ])
+                                rd = new_rd
+
+                            # perform the required assembly operation
+                            asm_code += f'\ninst_{inst_count}:'
+                            asm_code += f'\n#operation: {inst}, rs1={rs1}' \
+                                        f', rs2={rs2}, rd={rd}\n' \
+                                        f'TEST_RR_OP({inst}, {rd}, {rs1}' \
+                                        f', {rs2}, 0, {rs1_val}, ' \
+                                        f'{rs2_val}, {swreg}, {offset}' \
+                                        f', x0)\n'
+
+                            if f'{inst}' == 'div':
+                                asm_code += f'TEST_RR_OP(rem, {rd1}, ' \
+                                            f'{rs1}, {rs2}, 0, {rs1_val}' \
+                                            f', {rs2_val}, {swreg}, ' \
+                                            f'{offset}, x0)\n'
+                            elif f'{inst}' == 'divu':
+                                asm_code += f'TEST_RR_OP(remu, {rd1}, ' \
+                                            f'{rs1}, {rs2}, 0, {rs1_val}' \
+                                            f', {rs2_val}, {swreg}, ' \
+                                            f'{offset}, x0)\n'
+                            elif f'{inst}' == 'divuw':
+                                asm_code += f'TEST_RR_OP(remuw, {rd1}, ' \
+                                            f'{rs1}, {rs2}, 0, {rs1_val}' \
+                                            f', {rs2_val}, {swreg}, ' \
+                                            f'{offset}, x0)\n'
+                            elif f'{inst}' == 'divw':
+                                asm_code += f'TEST_RR_OP(remw, {rd1}, ' \
+                                            f'{rs1}, {rs2}, 0, {rs1_val}' \
+                                            f', {rs2_val}, {swreg}, ' \
+                                            f'{offset}, x0)\n'
 
                             # adjust the offset. reset to 0 if it crosses 2048
                             # and increment the current signature pointer with

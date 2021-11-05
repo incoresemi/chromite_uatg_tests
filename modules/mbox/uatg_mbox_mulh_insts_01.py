@@ -92,19 +92,32 @@ class uatg_mbox_mulh_insts_01(IPlugin):
                                 asm_code += f'mv {newswreg}, {swreg}\n'
                                 swreg = newswreg
 
+                            if rd1 in [rd, swreg, rs1, rs2]:
+                                new_rd1 = random.choice([
+                                    x for x in reg_file
+                                    if x not in [rd, swreg, rs2, rs1]
+                                ])
+                                rd1 = new_rd1
+
+                            if rd in [rs1, rd1, rs2, swreg]:
+                                new_rd = random.choice([
+                                    x for x in reg_file
+                                    if x not in [rd1, swreg, rs2, rs1]
+                                ])
+                                rd = new_rd
+                            
                             # perform the  required assembly operation
-                            if rd != rd1 and rd != rs1 and rd != rs2:
-                                asm_code += f'\ninst_{inst_count}:'
-                                asm_code += f'\n#operation: {inst}, rs1={rs1}' \
-                                            f', rs2={rs2}, rd={rd}\n\n' \
-                                            f'#operation: mul, rs1={rs1}, rs2' \
-                                            f'={rs2}, rd={rd1}\nTEST_RR_OP(' \
-                                            f'{inst}, {rd}, {rs1}, {rs2}, 0, ' \
-                                            f'{rs1_val}, {rs2_val}, {swreg}, ' \
-                                            f'{offset}, x0)\nTEST_RR_OP(mul,' \
-                                            f' {rd1}, {rs1}, {rs2}, 0, ' \
-                                            f'{rs1_val}, {rs2_val}, {swreg},' \
-                                            f' {offset}, x0)\n'
+                            asm_code += f'\ninst_{inst_count}:'
+                            asm_code += f'\n#operation: {inst}, rs1={rs1}' \
+                                        f', rs2={rs2}, rd={rd}\n\n' \
+                                        f'#operation: mul, rs1={rs1}, rs2' \
+                                        f'={rs2}, rd={rd1}\nTEST_RR_OP(' \
+                                        f'{inst}, {rd}, {rs1}, {rs2}, 0, ' \
+                                        f'{rs1_val}, {rs2_val}, {swreg}, ' \
+                                        f'{offset}, x0)\nTEST_RR_OP(mul,' \
+                                        f' {rd1}, {rs1}, {rs2}, 0, ' \
+                                        f'{rs1_val}, {rs2_val}, {swreg},' \
+                                        f' {offset}, x0)\n'
 
                             # adjust the offset. reset to 0 if it crosses
                             # 2048 and increment the current signature
