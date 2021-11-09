@@ -1,8 +1,6 @@
 from yapsy.IPlugin import IPlugin
-from uatg.instruction_constants import base_reg_file, mext_instructions
-from uatg.utils import rvtest_data
-from typing import Dict, Any
-from random import randint
+from uatg.instruction_constants import base_reg_file
+from typing import Dict, List, Union
 import random
 
 
@@ -35,8 +33,7 @@ class uatg_mbox_signed_mul(IPlugin):
         else:
             return False
 
-
-    def generate_asm(self) -> Dict[str, str]:
+    def generate_asm(self) -> List[Dict[str, Union[str, list]]]:
         """
             It creates asm for signed multiplication using mulh instruction 
         """
@@ -52,7 +49,7 @@ class uatg_mbox_signed_mul(IPlugin):
         # registers that are used as rs1, rs2 and rd
         rs1 = 'x3'
         rs2 = 'x4'
-        rd  = 'x5'
+        rd = 'x5'
         rd1 = 'x6'
         # initialize swreg to point to signature_start label
         asm_code += f'RVTEST_SIGBASE({swreg}, signature_start)\n'
@@ -62,23 +59,24 @@ class uatg_mbox_signed_mul(IPlugin):
 
         # variable to hold the total number of signature bytes to be used.
         sig_bytes = 0
-   
+
+        rs1_val, rs2_val = None, None
         # data to populate rs1 and rs2 registers 
         if 'RV32' in self.isa:
-           rs1_val = '0xfffff63c' #negative
-           rs2_val = '0xffac1df3' #negative
-        ###rd=00000003 , rd1 = 332B86F4###
-        if 'RV64' in self.isa:
-           rs1_val = '0xfdb97531eca86420'
-           rs2_val = '0xfeca86420db97531'
-        ## rd=2C03A928D469ADAA6E2D176000000###
-         
+            rs1_val = '0xfffff63c'  # negative
+            rs2_val = '0xffac1df3'  # negative
+        # rd=00000003 , rd1 = 332B86F4###
+        elif 'RV64' in self.isa:
+            rs1_val = '0xfdb97531eca86420'
+            rs2_val = '0xfeca86420db97531'
+        # rd=2C03A928D469ADAA6E2D176000000###
+
         # if signature register needs to be used for operations
         # then first choose a new signature pointer and move the value to it.
-    
+
         if swreg in [rd, rs1, rs2]:
             newswreg = random.choice([
-               x for x in reg_file
+                x for x in reg_file
                 if x not in [rd, rs1, rs2, rd1, 'x0']
             ])
             asm_code += f'mv {newswreg}, {swreg}\n'
@@ -86,19 +84,21 @@ class uatg_mbox_signed_mul(IPlugin):
 
         # perform the  required assembly operation
         asm_code += f'\n#operation: mulh, rs1={rs1}, rs2={rs2}, rd={rd}\n'
-        asm_code += f'TEST_RR_OP(mulh, {rd}, {rs1}, {rs2}, 0, {rs1_val}, {rs2_val}, {swreg}, {offset}, x0)\n'
-        asm_code += f'TEST_RR_OP(mul, {rd1}, {rs1}, {rs2}, 0, {rs1_val}, {rs2_val}, {swreg}, {offset}, x0)\n'
+        asm_code += f'TEST_RR_OP(mulh, {rd}, {rs1}, {rs2}, 0, {rs1_val}, ' \
+                    f'{rs2_val}, {swreg}, {offset}, x0)\n'
+        asm_code += f'TEST_RR_OP(mul, {rd1}, {rs1}, {rs2}, 0, {rs1_val}, ' \
+                    f'{rs2_val}, {swreg}, {offset}, x0)\n'
 
         # adjust the offset. reset to 0 if it crosses 2048 and
         # increment the current signature pointer with the
         # current offset value
         if offset + self.offset_inc >= 2048:
             asm_code += f'addi {swreg}, {swreg}, {offset}\n'
-            offset = 0
+            # offset = 0 # Why unused?
 
         # increment offset by the amount of bytes updated in
         # signature by each test-macro.
-        offset = offset + self.offset_inc
+        # offset = offset + self.offset_inc
 
         # keep track of the total number of signature bytes used
         # so far.
@@ -113,11 +113,11 @@ class uatg_mbox_signed_mul(IPlugin):
 
         # return asm_code and sig_code
         test_dict.append({
-                'asm_code': asm_code,
-                'asm_data': '',
-                'asm_sig': sig_code,
-                'compile_macros': compile_macros
-             })
+            'asm_code': asm_code,
+            'asm_data': '',
+            'asm_sig': sig_code,
+            'compile_macros': compile_macros
+        })
         return test_dict
 
     def check_log(self, log_file_path, reports_dir) -> bool:
@@ -126,4 +126,3 @@ class uatg_mbox_signed_mul(IPlugin):
     def generate_covergroups(self, config_file) -> str:
         sv = ""
         return sv
-

@@ -1,6 +1,6 @@
 from yapsy.IPlugin import IPlugin
 from uatg.instruction_constants import base_reg_file, mext_instructions
-from typing import Dict
+from typing import Dict, List, Union, Any
 import random
 
 
@@ -33,7 +33,7 @@ class uatg_mbox_divu_insts_01(IPlugin):
         else:
             return False
 
-    def generate_asm(self) -> Dict[str, str]:
+    def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
         """x
             Generates the ASM instructions for divider and stores both quotient
             and remainder in rd and rd1 reg respectively.

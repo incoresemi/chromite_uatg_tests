@@ -45,7 +45,6 @@ class uatg_mbox_mulh_insts_01(IPlugin):
         test_dict = []
 
         reg_file = base_reg_file.copy()
-<<<<<<< HEAD
         reg_file.remove('x0')
 
         instructions = []
