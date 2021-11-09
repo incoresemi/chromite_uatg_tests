@@ -4,7 +4,7 @@ from ruamel.yaml import YAML
 import uatg.regex_formats as rf
 import re
 import os
-from typing import Dict, List
+from typing import Dict, Union, Any, List
 
 
 class uatg_gshare_fa_ghr_alternating_01(IPlugin):
@@ -37,7 +37,7 @@ class uatg_gshare_fa_ghr_alternating_01(IPlugin):
         else:
             return False  # return false if this test cannot.
 
-    def generate_asm(self) -> List[Dict[str, str]]:
+    def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
         """
         This method returns a string of the ASM file to be generated.
 

@@ -1,9 +1,7 @@
 from yapsy.IPlugin import IPlugin
 from uatg.instruction_constants import base_reg_file, arithmetic_instructions, \
     bit_walker
-from uatg.utils import rvtest_data
-from typing import Dict
-from random import randint
+from typing import Dict, List, Union, Any
 import random
 
 
@@ -33,7 +31,7 @@ class uatg_decoder_arithmetic_insts_3(IPlugin):
             self.offset_inc = 8
         return True
 
-    def generate_asm(self) -> Dict[str, str]:
+    def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
         """
             Generates the ASM instructions for R type arithmetic instructions.
             It creates asm for the following instructions (based upon input isa)
@@ -45,7 +43,8 @@ class uatg_decoder_arithmetic_insts_3(IPlugin):
 
         for inst in arithmetic_instructions[f'{self.isa_bit}-add-imm']:
 
-            asm_code = '\n\n' + '#' * 5 + ' inst reg, reg, imm_val ' + '#' * 5 + '\n'
+            asm_code = '\n\n' + '#' * 5 + ' inst reg, reg, imm_val ' + \
+                       '#' * 5 + '\n'
 
             # initial register to use as signature pointer
             swreg = 'x31'
@@ -84,8 +83,11 @@ class uatg_decoder_arithmetic_insts_3(IPlugin):
                             swreg = newswreg
 
                         # perform the  required assembly operation
-                        asm_code += f'\n#operation: {inst}, rs1={rs1}, rs1_val={rs1_val}, imm={imm_val}, rd={rd}\n'
-                        asm_code += f'TEST_IMM_OP({inst}, {rd}, {rs1}, 0, {rs1_val}, {imm_val}, {swreg}, {offset}, x0)\n'
+                        asm_code += f'\n#operation: {inst}, rs1={rs1}, rs1_' \
+                                    f'val={rs1_val}, imm={imm_val}, rd={rd}\n'
+                        asm_code += f'TEST_IMM_OP({inst}, {rd}, {rs1}, 0, ' \
+                                    f'{rs1_val}, {imm_val}, {swreg}, ' \
+                                    f'{offset}, x0)\n'
 
                         # adjust the offset. reset to 0 if it crosses 2048 and
                         # increment the current signature pointer with the

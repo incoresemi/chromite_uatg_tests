@@ -1,9 +1,7 @@
 from yapsy.IPlugin import IPlugin
 from uatg.instruction_constants import base_reg_file, branch_instructions
 from uatg.instruction_constants import bit_walker
-from uatg.utils import rvtest_data
-from typing import Dict
-from random import randint
+from typing import Dict, List, Union, Any
 import random
 
 
@@ -33,7 +31,8 @@ class uatg_decoder_branch_insts_1(IPlugin):
             self.offset_inc = 8
         return True
 
-    def generate_asm(self) -> Dict[str, str]:
+    def generate_asm(
+            self) -> List[Dict[str, Union[Union[str, List[str]], Any]]]:
         """
             Generates the ASM instructions for I type load instructions.
             It creates asm for the following instructions 
@@ -52,12 +51,13 @@ class uatg_decoder_branch_insts_1(IPlugin):
 
                 for rs1 in rs1_reg_file:
 
-                    asm_code = '\n\n' + '#' * 5 + f'{inst} rs1, rs2, label' + '#' * 5 + '\n'
+                    asm_code = '\n\n' + '#' * 5 + f'{inst} rs1, rs2, label' + \
+                               '#' * 5 + '\n'
 
                     # initial register to use as signature pointer
                     swreg = 'x31'
 
-                    #initial temp register
+                    # initial temp register
                     temp_reg = 'x1'
 
                     # initialize swreg to point to signature_start label
@@ -66,7 +66,8 @@ class uatg_decoder_branch_insts_1(IPlugin):
                     # initial offset to with respect to signature label
                     offset = 0
 
-                    # variable to hold the total number of signature bytes to be used.
+                    # variable to hold the total number of signature bytes
+                    # to be used.
                     sig_bytes = 0
 
                     # Bit walking through 11 bits for immediate field
@@ -84,9 +85,9 @@ class uatg_decoder_branch_insts_1(IPlugin):
                             rs1_val = hex(random.getrandbits(self.xlen))
                             rs2_val = hex(random.getrandbits(self.xlen))
 
-                            # if signature register needs to be used for operations
-                            # then first choose a new signature pointer and move the
-                            # value to it.
+                            # if signature register needs to be used for
+                            # operations then first choose a new signature
+                            # pointer and move the value to it.
                             if swreg in [rs2, rs1]:
                                 newswreg = random.choice([
                                     x for x in rs1_reg_file
@@ -105,41 +106,43 @@ class uatg_decoder_branch_insts_1(IPlugin):
                                 temp_reg = newtemp_reg
 
                             # perform the  required assembly operation
-                            # TEST_BRANCH_OP(inst, tempreg, reg1, reg2, val1, val2, imm, label, swreg, offset,adj)
+                            # TEST_BRANCH_OP(inst, tempreg, reg1, reg2, val1,
+                            # val2, imm, label, swreg, offset,adj)
                             asm_code += f'\ninst_{count}:'
-                            asm_code += f'\n#operation: {inst}, rs1: {rs1}, '\
-                                        f'rs2: {rs2}, imm: {imm_val}\n'\
-                                        f'# val1: {rs1_val}, val2:{rs2_val} '\
+                            asm_code += f'\n#operation: {inst}, rs1: {rs1}, ' \
+                                        f'rs2: {rs2}, imm: {imm_val}\n' \
+                                        f'# val1: {rs1_val}, val2:{rs2_val} ' \
                                         f'label: {label}, swreg: {swreg}\n'
-                            asm_code += f'TEST_BRANCH_OP({inst}, {temp_reg}, '\
-                                        f'{rs1}, {rs2}, {rs1_val}, {rs2_val}, '\
-                                        f'{imm_val}, {label}, {swreg}, {offset},0)\n'
+                            asm_code += f'TEST_BRANCH_OP({inst}, {temp_reg}, ' \
+                                        f'{rs1}, {rs2}, {rs1_val}, {rs2_val},' \
+                                        f' {imm_val}, {label}, {swreg}, ' \
+                                        f'{offset}, 0)\n'
 
-                            # adjust the offset. reset to 0 if it crosses 2048 and
-                            # increment the current signature pointer with the
-                            # current offset value
+                            # adjust the offset. reset to 0 if it crosses
+                            # 2048 and increment the current signature
+                            # pointer with the current offset value
                             if offset + self.offset_inc >= 2048:
                                 asm_code += f'addi {swreg}, {swreg},{offset}\n'
                                 offset = 0
 
                             # Signbytes allocation for trap handler
-                            trap_sigbytes = trap_sigbytes +\
-                                            (3 * self.offset_inc)
+                            trap_sigbytes = trap_sigbytes + (3 *
+                                                             self.offset_inc)
 
                             # increment offset by the amount of bytes updated in
                             # signature by each test-macro.
                             offset = offset + self.offset_inc
 
-                            # keep track of the total number of signature bytes used
-                            # so far.
+                            # keep track of the total number of signature bytes
+                            # used so far.
                             sig_bytes = sig_bytes + self.offset_inc
 
                             count = count + 1
 
                     # asm code to populate the signature region
                     sig_code = 'signature_start:\n'
-                    sig_code += ' .fill {0},4,0xdeadbeef\n'.format(int(sig_bytes / \
-                                                                                4))
+                    sig_code += ' .fill {0},4,0xdeadbeef\n'.format(
+                        int(sig_bytes / 4))
                     sig_code += 'mtrap_count:\n'
                     sig_code += ' .fill 1, 8, 0x0\n'
                     sig_code += 'mtrap_sigptr:\n'

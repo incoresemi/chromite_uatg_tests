@@ -1,7 +1,6 @@
 from yapsy.IPlugin import IPlugin
 from uatg.instruction_constants import base_reg_file, logic_instructions
-from uatg.utils import rvtest_data
-from typing import Dict
+from typing import Dict, List, Union, Any
 import random
 
 
@@ -31,17 +30,13 @@ class uatg_decoder_logical_insts_1(IPlugin):
             self.offset_inc = 8
         return True
 
-    def generate_asm(self):
+    def generate_asm(self) -> List[Dict[str,
+                                        Union[Union[str, List[Any]], Any]]]:
         """
             Generates the ASM instructions for logical register instructions.
             It creates asm for the following instructions based upon ISA
             and, or, slt, sltu, xor
         """
-        asm_data = rvtest_data(bit_width=int(self.isa_bit[2:]),
-                               random=True,
-                               num_vals=self.num_rand_var,
-                               signed=False,
-                               align=4)
         reg_file = base_reg_file.copy()
         reg_file.remove('x1')  # Removing X1 register to store Offset address
 
@@ -86,8 +81,11 @@ class uatg_decoder_logical_insts_1(IPlugin):
                             swreg = newswreg
 
                         # perform the  required assembly operation
-                        asm_code += f'\n#operation: {inst}, rs1={rs1}, rs2={rs2}, rd={rd}\n'
-                        asm_code += f'TEST_RR_OP({inst}, {rd}, {rs1}, {rs2}, 0, {rs1_val}, {rs2_val}, {swreg}, {offset}, x0)\n'
+                        asm_code += f'\n#operation: {inst}, rs1={rs1}, rs2=' \
+                                    f'{rs2}, rd={rd}\n'
+                        asm_code += f'TEST_RR_OP({inst}, {rd}, {rs1}, {rs2}, ' \
+                                    f'0, {rs1_val}, {rs2_val}, {swreg}, ' \
+                                    f'{offset}, x0)\n'
 
                         # adjust the offset. reset to 0 if it crosses 2048 and
                         # increment the current signature pointer with the

@@ -2,11 +2,12 @@
 # occur In addition to this, the GHR is also filled with ones (additional
 # test case) uses assembly macros
 
-# To-Do -> Create another function which prints the includes and other
+# TODO -> Format the file!
+#  Create another function which prints the includes and other
 # assembler directives complying to the test format spec
 
 from yapsy.IPlugin import IPlugin
-from typing import Dict, List
+from typing import Dict, List, Union, Any
 
 
 class uatg_decompressor_02(IPlugin):
@@ -24,7 +25,7 @@ class uatg_decompressor_02(IPlugin):
         else:
             return False
 
-    def generate_asm(self) -> List[Dict[str, str]]:
+    def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
         """This function will return all the compressed_RV32 instructions"""
 
         asm = f"LI x2, MSTATUS_FS;\n" \
@@ -36,11 +37,13 @@ class uatg_decompressor_02(IPlugin):
 
         if 'RV32' and 'F' in self.split_isa[0]:
             asm += f"###register based load and store###\n" \
-                   f"###stack pointer based load and store floating point instructions(RV32 only)###\n" \
+                   f"###stack pointer based load and store floating point " \
+                   f"instructions(RV32 only)###\n" \
                    f"LA(x2,sample_data)\n" \
                    f"c.fswsp f8,4(x2)\n" \
                    f"c.flwsp f9,4(x2)\n\n" \
-                   f"### register based load amd store floating point instructions (RV32 only) ###\n" \
+                   f"### register based load amd store floating point " \
+                   f"instructions (RV32 only) ###\n" \
                    f"LA(x10,sample_data)\n" \
                    f"c.fsw f11,4(x10)\n" \
                    f"LA(x9,sample_data)\n" \
@@ -63,11 +66,12 @@ class uatg_decompressor_02(IPlugin):
                f"c.srli x10,5      ## x10=x10<<5\n\n" \
 
         if 'F' in self.split_isa[0]:
-            asm += f"###stack pointer based load and store instructions(RV32/RV64)###\n" \
+            asm += f"###stack pointer based load and store instructions" \
+                   f"(RV32/RV64)###\n" \
                    f"LA (x2, sample_data)\n" \
                    f"c.fsdsp f8,8(x2)\n" \
-                   f"c.fldsp f12,8(x2)\n\n" \
-                   f"###register based load and store instructions(RV32/RV64)###" \
+                   f"c.fldsp f12,8(x2)\n\n###register based load and " \
+                   f"store instructions(RV32/RV64)###" \
                    f"LA (x10,sample_data)\n " \
                    f"c.fsd f11,8(x10)\n" \
                    f"LA (x12,sample_data)\n" \
@@ -105,13 +109,10 @@ class uatg_decompressor_02(IPlugin):
                f"c.add x9,x10\n" \
                f"c.nop\n\n" \
 
-        # compile macros for the test
-        compile_macros = []
-
         return [{
             'asm_code': asm,
             'asm_sig': '',
-            'compile_macros': compile_macros
+            'compile_macros': []
         }]
 
     def check_log(self):

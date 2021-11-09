@@ -2,10 +2,7 @@
 
 from yapsy.IPlugin import IPlugin
 from uatg.instruction_constants import base_reg_file, atomic_mem_ops
-from uatg.utils import rvtest_data
-from typing import Dict, List
-from random import randint
-import random
+from typing import Dict, List, Union, Any
 
 
 class uatg_decoder_atomic_memory_instructions(IPlugin):
@@ -37,7 +34,7 @@ class uatg_decoder_atomic_memory_instructions(IPlugin):
         else:
             return False
     
-    def generate_asm(self) -> List[Dict[str, str]]:
+    def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
         """
           Generates the assembly file for Atomic memory instructions
         """
@@ -52,7 +49,7 @@ class uatg_decoder_atomic_memory_instructions(IPlugin):
         instruction_list = atomic_mem_ops[f'{self.isa_bit}-mem-ops']
 
         for inst in instruction_list:
-            asm_code = '#'* 5 + ' amoX rd,rd,rd ' + '#' * 5 + '\n'
+            asm_code = '#' * 5 + ' amoX rd,rd,rd ' + '#' * 5 + '\n'
 
             inst_count = 0
 
@@ -60,12 +57,11 @@ class uatg_decoder_atomic_memory_instructions(IPlugin):
                 for rs2 in reg_file:
                     for rs1 in reg_file_nz:
 
-                        rs2_val = hex(random.getrandbits(self.xlen))
-                        
                         # perform the  required assembly operation
                         asm_code += f'\ninst_{inst_count}:'
                         asm_code += f'\n\tla {rs1}, rvtest_data'
-                        asm_code += f'\n#operation: {inst}, rs1={rs1}, rs2={rs2}, rd={rd}\n'
+                        asm_code += f'\n#operation: {inst}, rs1={rs1}, rs2=' \
+                                    f'{rs2}, rd={rd}\n'
                         asm_code += f'\t{inst} {rd}, {rs2}, ({rs1})\n'
 
                         inst_count += 1
@@ -81,11 +77,11 @@ class uatg_decoder_atomic_memory_instructions(IPlugin):
             asm_data += '.word 0xbabecafe\n'
 
             test_dict.append({'asm_code': asm_code,
-                'asm_data': asm_data,
-                'asm_sig': sig_code,
-                'compile_macros': compile_macros,
-                'name_postfix': inst
-            })
+                              'asm_data': asm_data,
+                              'asm_sig': sig_code,
+                              'compile_macros': compile_macros,
+                              'name_postfix': inst
+                              })
 
         return test_dict
 

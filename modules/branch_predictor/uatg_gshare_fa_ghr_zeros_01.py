@@ -4,7 +4,7 @@ from ruamel.yaml import YAML
 import uatg.regex_formats as rf
 import re
 import os
-from typing import Dict, List
+from typing import Dict, Union, Any, List
 
 
 class uatg_gshare_fa_ghr_zeros_01(IPlugin):
@@ -35,7 +35,7 @@ class uatg_gshare_fa_ghr_zeros_01(IPlugin):
         else:
             return False
 
-    def generate_asm(self) -> List[Dict[str, str]]:
+    def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
         """
           the for loop iterates ghr_width + 2 times printing an
           assembly program which contains ghr_width + 2 branches which

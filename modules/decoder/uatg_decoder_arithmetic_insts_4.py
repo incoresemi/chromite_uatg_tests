@@ -1,8 +1,7 @@
 from yapsy.IPlugin import IPlugin
 from uatg.instruction_constants import base_reg_file, arithmetic_instructions,\
     bit_walker
-from uatg.utils import rvtest_data
-from typing import Dict
+from typing import Dict, List, Union, Any
 import random
 
 
@@ -32,7 +31,7 @@ class uatg_decoder_arithmetic_insts_4(IPlugin):
             self.offset_inc = 8
         return True
 
-    def generate_asm(self) -> Dict[str, str]:
+    def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
         """
             Generates the ASM instructions for R type arithmetic instructions.
             It creates asm for the following instructions (based upon input isa)
@@ -51,7 +50,8 @@ class uatg_decoder_arithmetic_insts_4(IPlugin):
         test_dict = []
 
         for inst in arithmetic_instructions[f'{self.isa_bit}-shift-imm']:
-            asm_code = '\n\n' + '#' * 5 + ' shift_inst reg, reg, imm ' + '#' * 5 + '\n'
+            asm_code = '\n\n' + '#' * 5 + ' shift_inst reg, reg, imm ' + \
+                       '#' * 5 + '\n'
 
             # initial register to use as signature pointer
             swreg = 'x31'
@@ -94,8 +94,11 @@ class uatg_decoder_arithmetic_insts_4(IPlugin):
                         if 'w' in inst:
                             imm_val = int(imm_val % 32)
 
-                        asm_code += f'\n#operation: {inst}, rs1={rs1}, imm={imm_val}, rd={rd}\n '
-                        asm_code += f'TEST_IMM_OP({inst}, {rd}, {rs1}, 0, {rs1_val}, {imm_val}, {swreg}, {offset}, x0)\n'
+                        asm_code += f'\n#operation: {inst}, rs1={rs1}, imm=' \
+                                    f'{imm_val}, rd={rd}\n '
+                        asm_code += f'TEST_IMM_OP({inst}, {rd}, {rs1}, 0, ' \
+                                    f'{rs1_val}, {imm_val}, {swreg}, {offset}' \
+                                    f', x0)\n'
 
                         # adjust the offset. reset to 0 if it crosses 2048 and
                         # increment the current signature pointer with the

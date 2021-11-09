@@ -5,7 +5,7 @@
 # To-Do -> Create another function which prints the includes and other
 # assembler directives complying to the test format spec
 from yapsy.IPlugin import IPlugin
-from typing import Dict, List
+from typing import Dict, List, Union, Any
 
 
 class uatg_decompressor_floating_01(IPlugin):
@@ -27,7 +27,7 @@ class uatg_decompressor_floating_01(IPlugin):
         else:
             return False
 
-    def generate_asm(self) -> List[Dict[str, str]]:
+    def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
         """This function will return all the compressed instructions"""
         asm = """#define RVTEST_FP_ENABLE()
     LI x2, MSTATUS_FS;

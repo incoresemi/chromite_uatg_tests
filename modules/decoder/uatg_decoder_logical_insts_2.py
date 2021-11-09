@@ -1,9 +1,8 @@
 from yapsy.IPlugin import IPlugin
 from uatg.instruction_constants import base_reg_file, logic_instructions, \
     bit_walker
-from uatg.utils import rvtest_data
 import random
-from typing import Dict
+from typing import Dict, List, Union, Any
 
 
 class uatg_decoder_logical_insts_2(IPlugin):
@@ -32,7 +31,7 @@ class uatg_decoder_logical_insts_2(IPlugin):
             self.offset_inc = 8
         return True
 
-    def generate_asm(self) -> Dict[str, str]:
+    def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
         """
             Generates the ASM instructions for logical immediate instructions.
             It creates asm for the following instructions based upon ISA
@@ -45,7 +44,8 @@ class uatg_decoder_logical_insts_2(IPlugin):
 
         for inst in logic_instructions['logic-imm']:
 
-            asm_code = '\n\n' + '#' * 5 + ' shift_inst reg, reg, reg ' + '#' * 5 + '\n'
+            asm_code = '\n\n' + '#' * 5 + ' shift_inst reg, reg, reg ' + \
+                       '#' * 5 + '\n'
 
             # initial register to use as signature pointer
             swreg = 'x31'
@@ -83,8 +83,11 @@ class uatg_decoder_logical_insts_2(IPlugin):
                             swreg = newswreg
 
                         # perform the  required assembly operation
-                        asm_code += f'\n#operation: {inst}, rs1={rs1}, imm={imm_val}, rd={rd}\n'
-                        asm_code += f'TEST_IMM_OP({inst}, {rd}, {rs1}, 0, {rs1_val}, {imm_val}, {swreg}, {offset}, x0)\n'
+                        asm_code += f'\n#operation: {inst}, rs1={rs1}, imm=' \
+                                    f'{imm_val}, rd={rd}\n'
+                        asm_code += f'TEST_IMM_OP({inst}, {rd}, {rs1}, 0, ' \
+                                    f'{rs1_val}, {imm_val}, {swreg}, {offset}' \
+                                    f', x0)\n'
 
                         # adjust the offset. reset to 0 if it crosses 2048 and
                         # increment the current signature pointer with the
