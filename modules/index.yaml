@@ -35,3 +35,8 @@ mbox:
   uatg_mbox_divu_insts_01: True
   uatg_mbox_mul_div_insts_01: True
   uatg_mbox_mulh_insts_01: True
+  uatg_mbox_div_by_zero: True
+  uatg_mbox_div_overflow: True
+  uatg_mbox_signed_mul: True
+  uatg_mbox_signed_unsigned_mul: True
+  uatg_mbox_unsigned_mul: True
