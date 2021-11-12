@@ -49,7 +49,8 @@ class uatg_decoder_atomic_memory_instructions(IPlugin):
         instruction_list = atomic_mem_ops[f'{self.isa_bit}-mem-ops']
 
         for inst in instruction_list:
-            asm_code = '#' * 5 + ' amoX rd,rd,rd ' + '#' * 5 + '\n'
+
+            asm_code = '#'* 5 + f'{inst} rd,rs2,(rs1) ' + '#' * 5 + '\n'
 
             inst_count = 0
 
@@ -60,8 +61,9 @@ class uatg_decoder_atomic_memory_instructions(IPlugin):
                         # perform the  required assembly operation
                         asm_code += f'\ninst_{inst_count}:'
                         asm_code += f'\n\tla {rs1}, rvtest_data'
-                        asm_code += f'\n#operation: {inst}, rs1={rs1}, rs2=' \
-                                    f'{rs2}, rd={rd}\n'
+
+                        asm_code += f'\n\t#operation: {inst}, rs1={rs1}, rs2={rs2}, rd={rd}\n'
+
                         asm_code += f'\t{inst} {rd}, {rs2}, ({rs1})\n'
 
                         inst_count += 1

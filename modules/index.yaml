@@ -15,6 +15,7 @@ decoder:
   uatg_decoder_arithmetic_insts_4: True
   uatg_decoder_arithmetic_insts_ui: True
   uatg_decoder_atomic_memory_instructions: True
+  uatg_decoder_atomic_lr_sc_instructions: True
   uatg_decoder_branch_insts_1: True
   uatg_decoder_jump_jal: True
   uatg_decoder_jump_jalr: True
@@ -22,14 +23,15 @@ decoder:
   uatg_decoder_logical_insts_2: True
   uatg_decoder_memory_insts_1: True
   uatg_decoder_mext: True
+  uatg_decoder_illegal_instructions: True
 
 
 decompressor:
-  uatg_decompressor_01: False # buggy
+  uatg_decompressor_01: True # buggy
   uatg_decompressor_02: True
   uatg_decompressor_floating_01: True
 
 mbox:
-  uatg_mbox_divu_insts_01: False # buggy
+  uatg_mbox_divu_insts_01: True
   uatg_mbox_mul_div_insts_01: True
-  uatg_mbox_mulh_insts_01: False # buggy
+  uatg_mbox_mulh_insts_01: True
