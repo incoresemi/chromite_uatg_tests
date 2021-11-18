@@ -5,7 +5,7 @@ from typing import Dict, Any
 from random import randint
 import random
 
-class uatg_mbox_mul_dependencies2(IPlugin):
+class uatg_mbox_mul_dependencies(IPlugin):
     """
     This class contains methods to generate and validate the tests for
     mbox module
