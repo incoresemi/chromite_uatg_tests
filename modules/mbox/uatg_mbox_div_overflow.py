@@ -39,13 +39,10 @@ class uatg_mbox_div_overflow(IPlugin):
         """
         test_dict = []
 
-        reg_file = base_reg_file.copy()
-
         inst = ['div', 'rem']
 
         if 'RV64' in self.isa:
             inst += ['divw', 'remw']
-
                     
         asm_code = '#' * 5 + ' Overflow in Division ' + '#' * 5 + '\n'
 
@@ -68,23 +65,14 @@ class uatg_mbox_div_overflow(IPlugin):
         sig_bytes = 0
     
         # data to populate rs1 and rs2 registers
-        if 'RV32' in self.isa:
-            rs1_val = '0x00000004'  # dividend
-            rs2_val = '0xffffffff'  # divisor
-        # rd=>quotient=4 , rd1=>reminder=0 ###
-        if 'RV64' in self.isa:
-            rs1_val = '0x0000000000000008'  # dividend
-            rs2_val = '0xffffffffffffffff'  # divisor
-        # rd=>quotient=8 , rd1=>reminder=0  ###
-
+        rs1_val = '0x00000004' if 'RV32' in self.isa else '0x0000000000000008'
+        # dividend: rd=>quotient=4 , rd1=>reminder=0 ###
+        rs2_val = '0xffffffff' if 'RV32' in self.isa else '0xffffffffffffffff'
+        # divisor: rd=>quotient=8 , rd1=>reminder=0  ###
+        correct_val_div = rs2_val
         # assigning correct val
-        if 'RV32' in self.isa:
-            correct_val_div = '0xffffffff'
-            correct_val_rem = '0x0'
-        if 'RV64' in self.isa:
-            correct_val_div = '0xffffffffffffffff'
-            correct_val_rem = '0x0'
-        
+        correct_val_rem = '0x0'
+
         # perform the  required assembly operation
         asm_code += f'\n#operation: div, rs1={rs1}, rs2={rs2}, rd={rd}\n'
         
@@ -129,8 +117,7 @@ class uatg_mbox_div_overflow(IPlugin):
             asm_code += f'TEST_RR_OP({inst[3]}, {rd1}, {rs1}, {rs2}, '\
                         f'{correct_val_rem}, {rs1_val}, ' \
                         f'{rs2_val}, {swreg}, {offset}, x0)\n'
-            offset = offset + self.offset_inc
-            sig_bytes = sig_bytes + self.offset_inc               
+            sig_bytes = sig_bytes + self.offset_inc
         
         # asm code to populate the signature region
         sig_code = 'signature_start:\n'

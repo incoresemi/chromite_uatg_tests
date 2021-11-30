@@ -1,7 +1,6 @@
 from yapsy.IPlugin import IPlugin
-from uatg.instruction_constants import base_reg_file
 from typing import Dict, List, Union
-import random
+from random import randint
 
 
 class uatg_mbox_div_by_zero(IPlugin):
@@ -62,32 +61,21 @@ class uatg_mbox_div_by_zero(IPlugin):
 
             # variable to hold the total number of signature bytes to be used.
             sig_bytes = 0
-            
-            # data to populate rs1 and rs2 registers 
-            if 'RV32' in self.isa:
-                rs1_val = '0x6ffff63c'  # dividend
-                rs2_val = '0x00000000'  # divisor
-            # rd=>quotient= , rd1=>reminder=###
-            elif 'RV64' in self.isa:
-                rs1_val = '0xdb97531eca86420'  # dividend
-                rs2_val = '0x0000000000000000'  # divisor
-            # rd=>quotient= , rd1=>reminder=  ###
-            
-            # assigning correct val
-            if 'RV32' in self.isa:
-                correct_val_div = '0xffffffff'
-                correct_val_rem = rs1_val
-            if 'RV64' in self.isa:
-                correct_val_div = '0xffffffffffffffff'
-                correct_val_rem = rs1_val
+
+            rs1_val = hex(randint(2 ** 31, 2 ** 32)) if 'RV32' in self.isa \
+                else hex(randint(2 ** 63, 2 ** 64))
+            rs2_val = 0  # divisor
+            correct_val_div = '0xffffffff' if 'RV32' in self.isa \
+                else '0xffffffffffffffff'
+            correct_val_rem = rs1_val
 
             # perform the required assembly operation
             asm_code += f'\n#operation: div, rs1={rs1}, rs2={rs2}, rd={rd}\n'
-            
-            asm_code += f'TEST_RR_OP(div, {rd}, {rs1}, {rs2}, '\
+
+            asm_code += f'TEST_RR_OP(div, {rd}, {rs1}, {rs2}, ' \
                         f'{correct_val_div}, {rs1_val}, ' \
                         f'{rs2_val}, {swreg}, {offset}, x10)\n'
-            
+
             # increment offset by the amount of bytes updated in
             # signature by each test-macro.
             offset = offset + self.offset_inc
@@ -95,10 +83,10 @@ class uatg_mbox_div_by_zero(IPlugin):
             # keep track of the total number of signature bytes used
             # so far.
             sig_bytes = sig_bytes + self.offset_inc
-            
+
             asm_code += f'\n#operation: rem, rs1={rs1}, rs2={rs2}, rd={rd}\n'
-            
-            asm_code += f'TEST_RR_OP(rem, {rd1}, {rs1}, {rs2}, '\
+
+            asm_code += f'TEST_RR_OP(rem, {rd1}, {rs1}, {rs2}, ' \
                         f'{correct_val_rem}, {rs1_val}, ' \
                         f'{rs2_val}, {swreg}, {offset}, x10)\n'
 
@@ -106,8 +94,8 @@ class uatg_mbox_div_by_zero(IPlugin):
             sig_bytes = sig_bytes + self.offset_inc
 
             asm_code += f'\n#operation: divu, rs1={rs1}, rs2={rs2}, rd={rd}\n'
-            
-            asm_code += f'TEST_RR_OP(divu, {rd}, {rs1}, {rs2}, '\
+
+            asm_code += f'TEST_RR_OP(divu, {rd}, {rs1}, {rs2}, ' \
                         f'{correct_val_div}, {rs1_val}, ' \
                         f'{rs2_val}, {swreg}, {offset}, x10)\n'
 
@@ -115,54 +103,56 @@ class uatg_mbox_div_by_zero(IPlugin):
             sig_bytes = sig_bytes + self.offset_inc
 
             asm_code += f'\n#operation: remu, rs1={rs1}, rs2={rs2}, rd={rd}\n'
-            
-            asm_code += f'TEST_RR_OP(remu, {rd1}, {rs1}, {rs2}, '\
+
+            asm_code += f'TEST_RR_OP(remu, {rd1}, {rs1}, {rs2}, ' \
                         f'{correct_val_rem}, {rs1_val}, ' \
                         f'{rs2_val}, {swreg}, {offset}, x10)\n'
-                
+
             offset = offset + self.offset_inc
             sig_bytes = sig_bytes + self.offset_inc
-            
+
             if 'RV64' in self.isa:
-                # updating correct value to be the lower 32bits since the following
-                # instructions are word instructions
+                # updating correct value to be the lower 32bits since the
+                # following instructions are word instructions
                 new_correct_val_div = '0x' + correct_val_div[-8:]
                 new_correct_val_rem = '0x' + correct_val_rem[-8:]
 
-                asm_code += f'\n#operation: divuw, rs1={rs1}, rs2={rs2}, rd={rd}\n'
-                
-                asm_code += f'TEST_RR_OP(divuw, {rd}, {rs1}, {rs2}, '\
+                asm_code += f'\n#operation: divuw, rs1={rs1}, rs2={rs2}, ' \
+                            f'rd={rd}\n'
+
+                asm_code += f'TEST_RR_OP(divuw, {rd}, {rs1}, {rs2}, ' \
                             f'{new_correct_val_div}, {rs1_val}, ' \
                             f'{rs2_val}, {swreg}, {offset}, x10)\n'
-                
+
                 offset = offset + self.offset_inc
                 sig_bytes = sig_bytes + self.offset_inc
 
-                asm_code += f'\n#operation: remuw, rs1={rs1}, rs2={rs2}, rd={rd}\n'
-                
-                asm_code += f'TEST_RR_OP(remuw, {rd1}, {rs1}, {rs2}, '\
+                asm_code += f'\n#operation: remuw, rs1={rs1}, rs2={rs2}, ' \
+                            f'rd={rd}\n'
+
+                asm_code += f'TEST_RR_OP(remuw, {rd1}, {rs1}, {rs2}, ' \
                             f'{new_correct_val_rem}, {rs1_val}, ' \
                             f'{rs2_val}, {swreg}, {offset}, x10)\n'
-                
+
                 offset = offset + self.offset_inc
                 sig_bytes = sig_bytes + self.offset_inc
 
-                asm_code += f'\n#operation: divw, rs1={rs1}, rs2={rs2}, rd={rd}\n'
-                
-                asm_code += f'TEST_RR_OP(divw, {rd}, {rs1}, {rs2}, '\
+                asm_code += f'\n#operation: divw, rs1={rs1}, rs2={rs2}, ' \
+                            f'rd={rd}\n'
+
+                asm_code += f'TEST_RR_OP(divw, {rd}, {rs1}, {rs2}, ' \
                             f'{new_correct_val_div}, {rs1_val}, ' \
                             f'{rs2_val}, {swreg}, {offset}, x10)\n'
-                
+
                 offset = offset + self.offset_inc
                 sig_bytes = sig_bytes + self.offset_inc
 
-                asm_code += f'\n#operation: remw, rs1={rs1}, rs2={rs2}, rd={rd}\n'
-                
-                asm_code += f'TEST_RR_OP(remw, {rd1}, {rs1}, {rs2}, '\
+                asm_code += f'\n#operation: remw, rs1={rs1}, rs2={rs2}, ' \
+                            f'rd={rd}\n'
+
+                asm_code += f'TEST_RR_OP(remw, {rd1}, {rs1}, {rs2}, ' \
                             f'{new_correct_val_rem}, {rs1_val}, ' \
                             f'{rs2_val}, {swreg}, {offset}, x10)\n'
-                
-                offset = offset + self.offset_inc
                 sig_bytes = sig_bytes + self.offset_inc
 
             # asm code to populate the signature region
@@ -171,7 +161,6 @@ class uatg_mbox_div_by_zero(IPlugin):
 
             # compile macros for the test
             compile_macros = []
-            name = ''
             # name postfix
             if rs2 == 'x0':
                 name = 'reg-x0'

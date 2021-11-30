@@ -34,8 +34,8 @@ mbox:
   uatg_mbox_div_by_zero: False 
   uatg_mbox_div_overflow: False 
   uatg_mbox_divu_insts_01: False 
-  uatg_mbox_mul_depend_loads: True # Fails
-  uatg_mbox_mul_depend_shift_imm: False 
+  uatg_mbox_mul_depend_loads: False # Fails
+  uatg_mbox_mul_depend_shift_imm: True
   uatg_mbox_mul_depend_shift_reg: False 
   uatg_mbox_mul_depend_stores: False 
   uatg_mbox_mul_dependencies: False 
