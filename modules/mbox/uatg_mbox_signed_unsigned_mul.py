@@ -60,8 +60,9 @@ class uatg_mbox_signed_unsigned_mul(IPlugin):
 
         # variable to hold the total number of signature bytes to be used.
         sig_bytes = 0
+
         rs1_val, rs2_val = None, None
-        # data to populate rs1 and rs2 registers 
+        # data to populate rs1 and rs2 registers
         if 'RV32' in self.isa:
             rs1_val = '0xfffff63c'  # signed,negative
             rs2_val = '0x543fffff'  # unsigned,positive
@@ -70,39 +71,24 @@ class uatg_mbox_signed_unsigned_mul(IPlugin):
             rs1_val = '0xf000000010000000'
             rs2_val = '0x0000000000000030'
         # rd=2FFFFFFFCFFFFF470###
-         
-        # if signature register needs to be used for operations
-        # then first choose a new signature pointer and move the value to it.
-    
-        if swreg in [rd, rs1, rs2]:
-            newswreg = random.choice([
-                x for x in reg_file
-                if x not in [rd, rs1, rs2, 'x0']
-            ])
-            asm_code += f'mv {newswreg}, {swreg}\n'
-            swreg = newswreg
 
         # perform the  required assembly operation
         asm_code += f'\n#operation: mulhsu, rs1={rs1}, rs2={rs2}, rd={rd}\n'
         asm_code += f'TEST_RR_OP(mulhsu, {rd}, {rs1}, {rs2}, 0, {rs1_val}, ' \
                     f'{rs2_val}, {swreg}, {offset}, x0)\n'
-        asm_code += f'TEST_RR_OP(mul, {rd1}, {rs1}, {rs2}, 0, {rs1_val}, ' \
-                    f'{rs2_val}, {swreg}, {offset}, x0)\n'
-
-        # adjust the offset. reset to 0 if it crosses 2048 and
-        # increment the current signature pointer with the
-        # current offset value
-        if offset + self.offset_inc >= 2048:
-            asm_code += f'addi {swreg}, {swreg}, {offset}\n'
-            # offset = 0 # Unused why?
 
         # increment offset by the amount of bytes updated in
         # signature by each test-macro.
-        # offset = offset + self.offset_inc
+        offset = offset + self.offset_inc
 
         # keep track of the total number of signature bytes used
         # so far.
         sig_bytes = sig_bytes + self.offset_inc
+
+        asm_code += f'#operation: mul, rs1={rs1}, rs2={rs2}, rd={rd}\n'
+
+        asm_code += f'TEST_RR_OP(mul, {rd1}, {rs1}, {rs2}, 0, {rs1_val}, ' \
+                    f'{rs2_val}, {swreg}, {offset}, x0)\n'
 
         # asm code to populate the signature region
         sig_code = 'signature_start:\n'
@@ -113,11 +99,11 @@ class uatg_mbox_signed_unsigned_mul(IPlugin):
 
         # return asm_code and sig_code
         test_dict.append({
-                'asm_code': asm_code,
-                'asm_data': '',
-                'asm_sig': sig_code,
-                'compile_macros': compile_macros
-             })
+            'asm_code': asm_code,
+            'asm_data': '',
+            'asm_sig': sig_code,
+            'compile_macros': compile_macros
+        })
         return test_dict
 
     def check_log(self, log_file_path, reports_dir) -> bool:

@@ -98,36 +98,32 @@ class uatg_mbox_mul_depend_shift_reg(IPlugin):
                                 swreg = newswreg
                             if testreg in [rd, rs1, rs2, rs3, swreg]:
                                 new_testreg = random.choice([
-                                    x for x in reg_file
-                                    if x not in [rd, rs1, rs2, rs3, swreg, 'x0']
+                                    x for x in reg_file if x not in
+                                    [rd, rs1, rs2, rs3, swreg, 'x0']
                                 ])
                                 testreg = new_testreg
                             if rd in [swreg, testreg, rs1, rs2, rs3]:
                                 new_rd = random.choice([
-                                    x for x in reg_file
-                                    if x not in [swreg, testreg, rs1, rs2, rs3,
-                                                 'x0']
+                                    x for x in reg_file if x not in
+                                    [swreg, testreg, rs1, rs2, rs3, 'x0']
                                 ])
                                 rd = new_rd
                             if rs1 in [swreg, testreg, rd, rs2, rs3]:
                                 new_rs1 = random.choice([
-                                    x for x in reg_file
-                                    if x not in [swreg, testreg, rd, rs2, rs3,
-                                                 'x0']
+                                    x for x in reg_file if x not in
+                                    [swreg, testreg, rd, rs2, rs3, 'x0']
                                 ])
                                 rs1 = new_rs1
                             if rs2 in [swreg, testreg, rs1, rd, rs3]:
                                 new_rs2 = random.choice([
-                                    x for x in reg_file
-                                    if x not in [swreg, testreg, rs1, rd, rs3,
-                                                 'x0']
+                                    x for x in reg_file if x not in
+                                    [swreg, testreg, rs1, rd, rs3, 'x0']
                                 ])
                                 rs2 = new_rs2
                             if rs3 in [swreg, testreg, rs1, rs2, rd]:
                                 new_rs3 = random.choice([
-                                    x for x in reg_file
-                                    if x not in [swreg, testreg, rs1, rs2, rd,
-                                                 'x0']
+                                    x for x in reg_file if x not in
+                                    [swreg, testreg, rs1, rs2, rd, 'x0']
                                 ])
                                 rs3 = new_rs3
 

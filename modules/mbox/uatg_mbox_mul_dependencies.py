@@ -5,6 +5,7 @@ from typing import Dict, Any
 from random import randint
 import random
 
+
 class uatg_mbox_mul_dependencies(IPlugin):
     """
     This class contains methods to generate and validate the tests for
@@ -21,7 +22,7 @@ class uatg_mbox_mul_dependencies(IPlugin):
 
     def execute(self, core_yaml, isa_yaml) -> bool:
         self.isa = isa_yaml['hart0']['ISA']
-        self.mul_stages_in  = core_yaml['m_extension']['mul_stages_in']
+        self.mul_stages_in = core_yaml['m_extension']['mul_stages_in']
         self.mul_stages_out = core_yaml['m_extension']['mul_stages_out']
         if 'RV32' in self.isa:
             self.isa_bit = 'rv32'
@@ -47,7 +48,7 @@ class uatg_mbox_mul_dependencies(IPlugin):
 
         test_dict = []
 
-        reg_file = ['x' + str(reg_no) for reg_no in range(7)]  
+        reg_file = ['x' + str(reg_no) for reg_no in range(7)]
         reg_file.remove('x0')
 
         instruction_list = []
@@ -76,120 +77,120 @@ class uatg_mbox_mul_dependencies(IPlugin):
             for rd in reg_file:
                 for rs1 in reg_file:
                     for rs2 in reg_file:
-                     for rs3 in reg_file:
-                      #for i in range(self.mul_stages_in):
-                        rs1_val = hex(random.getrandbits(self.xlen))
-                        rs2_val = hex(random.getrandbits(self.xlen))
-                        rs3_val = hex(random.getrandbits(self.xlen))
-                        rand_inst = random.choice(random_list)
-                        #rd1 = random.choice(reg_file)
-                        
-                        # if signature register needs to be used for operations
-                        # then first choose a new signature pointer and move the
-                        # value to it.
-                        if swreg in [rd, rs1, rs2, rs3, testreg]:
-                            newswreg = random.choice([
-                                x for x in reg_file
-                                if x not in [rd, rs1, rs2, rs3, 'x0']
-                            ])
-                            asm_code += f'mv {newswreg}, {swreg}\n'
-                            swreg = newswreg
-                        if testreg in [rd, rs1, rs2, rs3, swreg]:
-                            new_testreg = random.choice([
-                                x for x in reg_file
-                                if x not in [rd, rs1, rs2, rs3, swreg, 'x0']
-                            ])
-                            testreg = new_testreg
-                        if rd in [swreg, testreg, rs1, rs2, rs3]:
-                            new_rd = random.choice([
-                                x for x in reg_file
-                                if x not in [swreg, testreg, rs1, rs2, rs3, 'x0']
-                            ])
-                            rd = new_rd
-                        if rs1 in [swreg, testreg, rd, rs2, rs3]:
-                            new_rs1 = random.choice([
-                                x for x in reg_file
-                                if x not in [swreg, testreg, rd, rs2, rs3, 'x0']
-                            ])
-                            rs1 = new_rs1
-                        if rs2 in [swreg, testreg, rs1, rd, rs3]:
-                            new_rs2 = random.choice([
-                                x for x in reg_file
-                                if x not in [swreg, testreg, rs1, rd, rs3, 'x0']
-                            ])
-                            rs2 = new_rs2
-                        if rs3 in [swreg, testreg, rs1, rs2, rd]:
-                            new_rs3 = random.choice([
-                                x for x in reg_file
-                                if x not in [swreg, testreg, rs1, rs2, rd, 'x0']
-                            ])
-                            rs3 = new_rs3
+                        for rs3 in reg_file:
+                            #for i in range(self.mul_stages_in):
+                            rs1_val = hex(random.getrandbits(self.xlen))
+                            rs2_val = hex(random.getrandbits(self.xlen))
+                            rs3_val = hex(random.getrandbits(self.xlen))
+                            rand_inst = random.choice(random_list)
+                            #rd1 = random.choice(reg_file)
 
-                        # perform the  required assembly operation
-                       
-                        asm_code += f'\ninst_{inst_count}:\n'
-                         #asm_code += f'\n#operation: {inst} rs1={rs1}, rs2={rs2}, rd={rd}\n'
-                         #asm_code += f'\n#operation: {rand_inst}, rs1={rs1}, rs2={rs2}, rd={rd1}\n'
-                         #asm_code += f'TEST_RR_OP({inst}, {rd}, {rs1}, {rs2}, 0, {rs1_val}, {rs2_val}, {swreg}, {offset}, x0)\n'
-                         #asm_code += f'li {rs1},{rs1_val}\n'
-                         #asm_code += f'li {rs2},{rs2_val}\n'
-                         #asm_code += f'{inst} {rd},{rs1},{rs2}\n'
-                         #for i in range(self.mul_stages_in):
-                          # rand_inst = random.choice(random_list)
-                           #rd1 = random.choice(reg_file)
-                        asm_code += f'MBOX_TEST_RR_OP({rand_inst}, {inst}, {rs1}, {rs2}, {rs3}, {rd}, 0, {rs1_val}, {rs2_val}, {rs3_val}, {swreg}, {offset}, {testreg})'
+                            # if signature register needs to be used for operations
+                            # then first choose a new signature pointer and move the
+                            # value to it.
+                            if swreg in [rd, rs1, rs2, rs3, testreg]:
+                                newswreg = random.choice([
+                                    x for x in reg_file
+                                    if x not in [rd, rs1, rs2, rs3, 'x0']
+                                ])
+                                asm_code += f'mv {newswreg}, {swreg}\n'
+                                swreg = newswreg
+                            if testreg in [rd, rs1, rs2, rs3, swreg]:
+                                new_testreg = random.choice([
+                                    x for x in reg_file if x not in
+                                    [rd, rs1, rs2, rs3, swreg, 'x0']
+                                ])
+                                testreg = new_testreg
+                            if rd in [swreg, testreg, rs1, rs2, rs3]:
+                                new_rd = random.choice([
+                                    x for x in reg_file if x not in
+                                    [swreg, testreg, rs1, rs2, rs3, 'x0']
+                                ])
+                                rd = new_rd
+                            if rs1 in [swreg, testreg, rd, rs2, rs3]:
+                                new_rs1 = random.choice([
+                                    x for x in reg_file if x not in
+                                    [swreg, testreg, rd, rs2, rs3, 'x0']
+                                ])
+                                rs1 = new_rs1
+                            if rs2 in [swreg, testreg, rs1, rd, rs3]:
+                                new_rs2 = random.choice([
+                                    x for x in reg_file if x not in
+                                    [swreg, testreg, rs1, rd, rs3, 'x0']
+                                ])
+                                rs2 = new_rs2
+                            if rs3 in [swreg, testreg, rs1, rs2, rd]:
+                                new_rs3 = random.choice([
+                                    x for x in reg_file if x not in
+                                    [swreg, testreg, rs1, rs2, rd, 'x0']
+                                ])
+                                rs3 = new_rs3
 
-                        #if f'{inst}' == 'mul':
+                            # perform the  required assembly operation
+
+                            asm_code += f'\ninst_{inst_count}:\n'
+                            #asm_code += f'\n#operation: {inst} rs1={rs1}, rs2={rs2}, rd={rd}\n'
+                            #asm_code += f'\n#operation: {rand_inst}, rs1={rs1}, rs2={rs2}, rd={rd1}\n'
+                            #asm_code += f'TEST_RR_OP({inst}, {rd}, {rs1}, {rs2}, 0, {rs1_val}, {rs2_val}, {swreg}, {offset}, x0)\n'
+                            #asm_code += f'li {rs1},{rs1_val}\n'
+                            #asm_code += f'li {rs2},{rs2_val}\n'
+                            #asm_code += f'{inst} {rd},{rs1},{rs2}\n'
+                            #for i in range(self.mul_stages_in):
+                            # rand_inst = random.choice(random_list)
+                            #rd1 = random.choice(reg_file)
+                            asm_code += f'MBOX_TEST_RR_OP({rand_inst}, {inst}, {rs1}, {rs2}, {rs3}, {rd}, 0, {rs1_val}, {rs2_val}, {rs3_val}, {swreg}, {offset}, {testreg})'
+
+                            #if f'{inst}' == 'mul':
                             #asm_code += f'MBOX_TEST_RR_OP(add, {inst}, ' \
-                                        #f'{rs1}, {rs2}, {rs3}, {rd}, 0, ' \
-                                        #f'{rs1_val}, {rs2_val}, {rs3_val}, ' \
-                                        #f'{swreg}, {offset}, {testreg})\n' 
-                        #elif f'{inst}' == 'mulh':
+                            #f'{rs1}, {rs2}, {rs3}, {rd}, 0, ' \
+                            #f'{rs1_val}, {rs2_val}, {rs3_val}, ' \
+                            #f'{swreg}, {offset}, {testreg})\n'
+                            #elif f'{inst}' == 'mulh':
                             #asm_code += f'MBOX_TEST_RR_OP(sub, {inst}, ' \
-                                        #f'{rs1}, {rs2}, {rs3}, {rd}, 0, ' \
-                                        #f'{rs1_val}, {rs2_val}, {rs3_val}, ' \
-                                        #f'{swreg}, {offset}, {testreg})\n'
-                        #elif f'{inst}' == 'mulhsu':
+                            #f'{rs1}, {rs2}, {rs3}, {rd}, 0, ' \
+                            #f'{rs1_val}, {rs2_val}, {rs3_val}, ' \
+                            #f'{swreg}, {offset}, {testreg})\n'
+                            #elif f'{inst}' == 'mulhsu':
                             #asm_code += f'MBOX_TEST_RR_OP(addw, {inst}, ' \
-                                        #f'{rs1}, {rs2}, {rs3}, {rd}, 0, ' \
-                                        #f'{rs1_val}, {rs2_val}, {rs3_val}, ' \
-                                        #f'{swreg}, {offset}, {testreg})\n'
-                        #elif f'{inst}' == 'mulw':
+                            #f'{rs1}, {rs2}, {rs3}, {rd}, 0, ' \
+                            #f'{rs1_val}, {rs2_val}, {rs3_val}, ' \
+                            #f'{swreg}, {offset}, {testreg})\n'
+                            #elif f'{inst}' == 'mulw':
                             #asm_code += f'MBOX_TEST_RR_OP(subw, {inst}, ' \
-                                        #f'{rs1}, {rs2}, {rs3}, {rd}, 0, ' \
-                                        #f'{rs1_val}, {rs2_val}, {rs3_val}, ' \
-                                        #f'{swreg}, {offset}, {testreg})\n'
+                            #f'{rs1}, {rs2}, {rs3}, {rd}, 0, ' \
+                            #f'{rs1_val}, {rs2_val}, {rs3_val}, ' \
+                            #f'{swreg}, {offset}, {testreg})\n'
 
-                        #elif f'{inst}' == 'mulhu':
+                            #elif f'{inst}' == 'mulhu':
                             #asm_code += f'MBOX_TEST_RR_OP(add, {inst}, ' \
-                                        #f'{rs1}, {rs2}, {rs3}, {rd}, 0, ' \
-                                        #f'{rs1_val}, {rs2_val}, {rs3_val}, ' \
-                                        #f'{swreg}, {offset}, {testreg})\n'
-                        
+                            #f'{rs1}, {rs2}, {rs3}, {rd}, 0, ' \
+                            #f'{rs1_val}, {rs2_val}, {rs3_val}, ' \
+                            #f'{swreg}, {offset}, {testreg})\n'
 
-                        #if rd!=rd1:
-                        #    asm_code += f'{rand_inst} {rd1},{rd},{rs2}\n'
+                            #if rd!=rd1:
+                            #    asm_code += f'{rand_inst} {rd1},{rd},{rs2}\n'
 
-                        # adjust the offset. reset to 0 if it crosses 2048 and
-                        # increment the current signature pointer with the
-                        # current offset value
-                        if offset + self.offset_inc >= 2048:
-                            asm_code += f'addi {swreg}, {swreg}, {offset}\n'
-                            offset = 0
+                            # adjust the offset. reset to 0 if it crosses 2048 and
+                            # increment the current signature pointer with the
+                            # current offset value
+                            if offset + self.offset_inc >= 2048:
+                                asm_code += f'addi {swreg}, {swreg}, {offset}\n'
+                                offset = 0
 
-                        # increment offset by the amount of bytes updated in
-                        # signature by each test-macro.
-                        offset = offset + self.offset_inc
+                            # increment offset by the amount of bytes updated in
+                            # signature by each test-macro.
+                            offset = offset + self.offset_inc
 
-                        # keep track of the total number of signature bytes used
-                        # so far.
-                        sig_bytes = sig_bytes + self.offset_inc
+                            # keep track of the total number of signature bytes used
+                            # so far.
+                            sig_bytes = sig_bytes + self.offset_inc
 
-                        inst_count += 1
+                            inst_count += 1
 
                 # asm code to populate the signature region
                 sig_code = 'signature_start:\n'
-                sig_code += ' .fill {0},4,0xdeadbeef\n'.format(int(sig_bytes / 4))
+                sig_code += ' .fill {0},4,0xdeadbeef\n'.format(
+                    int(sig_bytes / 4))
 
                 # compile macros for the test
                 compile_macros = []

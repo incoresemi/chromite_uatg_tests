@@ -75,7 +75,7 @@ class uatg_mbox_divu_insts_01(IPlugin):
                 inst_count = 0
 
                 for rd in reg_file:
-                    for rd1 in reg_file: 
+                    for rd1 in reg_file:
                         for rs2 in reg_file:
 
                             rs1_val = hex(random.getrandbits(self.xlen))

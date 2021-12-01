@@ -105,7 +105,7 @@ class uatg_mbox_mulh_insts_01(IPlugin):
                                     if x not in [rd1, swreg, rs2, rs1]
                                 ])
                                 rd = new_rd
-                            
+
                             # perform the  required assembly operation
                             asm_code += f'\ninst_{inst_count}:'
                             asm_code += f'\n#operation: {inst}, rs1={rs1}' \
