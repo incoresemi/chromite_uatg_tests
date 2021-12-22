@@ -6,10 +6,7 @@ import random
 
 
 class uatg_mbox_mul_depend_stores(IPlugin):
-    """
-    This class contains methods to generate and validate the tests for
-    mbox module
-    """
+    """    """
 
     def __init__(self) -> None:
         super().__init__()

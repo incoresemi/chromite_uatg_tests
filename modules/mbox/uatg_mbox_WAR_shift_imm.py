@@ -6,10 +6,7 @@ from random import randint
 import random
 
 class uatg_mbox_WAR_shift_imm(IPlugin):
-    """
-    This class contains methods to generate and validate the tests for
-    mbox module
-    """
+    """    """
 
     def __init__(self) -> None:
         super().__init__()
@@ -22,7 +19,7 @@ class uatg_mbox_WAR_shift_imm(IPlugin):
 
     def execute(self, core_yaml, isa_yaml) -> bool:
         self.isa = isa_yaml['hart0']['ISA']
-        #self.div_stages = 4
+        
         #self.div_stages  = core_yaml['m_extension']['div_stages']
         self.mul_stages_in = core_yaml['m_extension']['mul_stages_in']
         self.mul_stages_out = core_yaml['m_extension']['mul_stages_out']
@@ -40,13 +37,8 @@ class uatg_mbox_WAR_shift_imm(IPlugin):
             return False
 
     def generate_asm(self) -> Dict[str, str]:
-        """x
-            Generates the ASM instructions for multiplier dependencies and stores product in rd(upper 32 bits) and rd1(lower 32 bits) regs.
-            It creates asm for the following instructions based upon ISA
-               mul[w], mulh, mulhsu, mulhu. 
-        """
-        # rd, rs1, rs2 iterate through all the 32 register combinations for
-        # every instruction in m_extension_instructions and arithmetic instructions
+        """    """
+        
 
         test_dict = []
         
@@ -67,7 +59,7 @@ class uatg_mbox_WAR_shift_imm(IPlugin):
 
             # initial register to use as signature pointer
             swreg = 'x2'
-            #testreg = 'x1'
+            
             # initialize swreg to point to signature_start label
             asm_code += f'RVTEST_SIGBASE({swreg}, signature_start)\n'
 
@@ -83,9 +75,9 @@ class uatg_mbox_WAR_shift_imm(IPlugin):
             imm = range(1,10)
             imm_val = random.choice(imm)
             rand_inst = random.choice(random_list)
-            #self.mul_stages_in = 4
+            
             for i in range(self.mul_stages_in):
-                 #code += f'self.div_stages=={i}\n\n'
+                 
                  rs1 = 'x3'
                  rs2 = 'x4'
                  rd1 = 'x5'
@@ -154,8 +146,7 @@ class uatg_mbox_WAR_shift_imm(IPlugin):
                  code += f'{rand_inst} {rs1}, {rs2}, {imm_val};\n\n'
             rs1_val = '0x48'
             rs2_val = '0x6'
-            #rs1_val = '2'
-            #rs2_val = '4' 
+
                         # if signature register needs to be used for operations
                         # then first choose a new signature pointer and move the
                         # value to it.
@@ -170,7 +161,7 @@ class uatg_mbox_WAR_shift_imm(IPlugin):
                         # perform the  required assembly operation
                        
             asm_code += f'\ninst_{inst_count}:\n'
-                         #asm_code += f'\n#operation: {inst} rs1={rs1}, rs2={rs2}, rd={rd}\n'
+                         
                         
             asm_code += f'MBOX_DEPENDENCIES_WAR_RI_OP({rand_inst}, {inst}, {rs1}, {rs2}, {rd1}, 0, {rs1_val}, {rs2_val}, {swreg}, {offset}, {code})'
 

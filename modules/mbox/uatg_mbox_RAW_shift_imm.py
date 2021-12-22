@@ -6,10 +6,7 @@ from random import randint
 import random
 
 class uatg_mbox_RAW_shift_imm(IPlugin):
-    """
-    This class contains methods to generate and validate the tests for
-    mbox module
-    """
+    """    """
 
     def __init__(self) -> None:
         super().__init__()
@@ -38,13 +35,8 @@ class uatg_mbox_RAW_shift_imm(IPlugin):
             return False
 
     def generate_asm(self) -> Dict[str, str]:
-        """x
-            Generates the ASM instructions for multiplier dependencies and stores product in rd(upper 32 bits) and rd1(lower 32 bits) regs.
-            It creates asm for the following instructions based upon ISA
-               mul[w], mulh, mulhsu, mulhu. 
-        """
-        # rd, rs1, rs2 iterate through all the 32 register combinations for
-        # every instruction in m_extension_instructions and arithmetic instructions
+        """    """
+        
 
         test_dict = []
         
@@ -78,7 +70,7 @@ class uatg_mbox_RAW_shift_imm(IPlugin):
             code = ''
             rand_inst = random.choice(random_list)
             imm_val = random.choice(imm)
-            #self.mul_stages_in = 4
+            
             for i in range(self.mul_stages_in):
                  #code += f'mul_stages=={i}\n\n'
                  rs1 = 'x3'
@@ -146,8 +138,7 @@ class uatg_mbox_RAW_shift_imm(IPlugin):
                  code += f'{rand_inst} {rd2}, {rd1}, {imm_val};\n\n'
             rs1_val = '0x0000000000000001'
             rs2_val = '0x000000006abcd45f'
-            #rs1_val = '2'
-            #rs2_val = '4' 
+
                         # if signature register needs to be used for operations
                         # then first choose a new signature pointer and move the
                         # value to it.
@@ -162,7 +153,7 @@ class uatg_mbox_RAW_shift_imm(IPlugin):
                         # perform the  required assembly operation
                        
             asm_code += f'\ninst_{inst_count}:\n'
-                         #asm_code += f'\n#operation: {inst} rs1={rs1}, rs2={rs2}, rd={rd}\n'
+                         
                         
             asm_code += f'MBOX_DEPENDENCIES_RR_OP({rand_inst}, {inst}, {rs1}, {rs2}, {rd1}, {rd2}, 0, {rs1_val}, {rs2_val}, {swreg}, {offset}, {code})'
 

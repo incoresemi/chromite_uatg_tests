@@ -7,10 +7,7 @@ import random
 
 
 class uatg_mbox_mul_dependencies_imm(IPlugin):
-    """
-    This class contains methods to generate and validate the tests for
-    mbox module
-    """
+    """    """
 
     def __init__(self) -> None:
         super().__init__()
@@ -38,13 +35,8 @@ class uatg_mbox_mul_dependencies_imm(IPlugin):
             return False
 
     def generate_asm(self) -> Dict[str, str]:
-        """x
-            Generates the ASM instructions for multiplier dependencies and stores product in rd(upper 32 bits) and rd1(lower 32 bits) regs.
-            It creates asm for the following instructions based upon ISA
-               mul[w], mulh, mulhsu, mulhu. 
-        """
-        # rd, rs1, rs2 iterate through all the 32 register combinations for
-        # every instruction in m_extension_instructions and arithmetic instructions
+        """    """
+        
 
         test_dict = []
 
@@ -126,7 +118,7 @@ class uatg_mbox_mul_dependencies_imm(IPlugin):
                         # perform the  required assembly operation
 
                         asm_code += f'\ninst_{inst_count}:\n'
-                        #asm_code += f'\n#operation: {inst} rs1={rs1}, rs2={rs2}, rd={rd}\n'
+                        
                         #asm_code += f'\n#operation: {rand_inst}, rs1={rs1}, rs2={rs2}, rd={rd1}\n'
                         #asm_code += f'TEST_RR_OP({inst}, {rd}, {rs1}, {rs2}, 0, {rs1_val}, {rs2_val}, {swreg}, {offset}, x0)\n'
                         #asm_code += f'li {rs1},{rs1_val}\n'
