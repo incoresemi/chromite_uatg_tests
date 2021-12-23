@@ -1,5 +1,6 @@
 from yapsy.IPlugin import IPlugin
-import uatg.instruction_constants
+from uatg.instruction_constants import arithmetic_instructions, \
+    mext_instructions, base_reg_file
 from typing import Dict, List, Any, Union
 import random
 
@@ -35,19 +36,13 @@ class uatg_mbox_mul_depend_shift_imm(IPlugin):
             return False
 
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
-        """x
-            Generates the ASM instructions for multiplier dependencies and
-            stores product in rd(upper 32 bits) and rd1(lower 32 bits) regs.
-            It creates asm for the following instructions based upon ISA
-               mul[w], mulh, mulhsu, mulhu. 
-        """
-        # rd, rs1, rs2 iterate through all the 32 register combinations for all
-        # instruction in m_extension_instructions and arithmetic instructions
 
         test_dict = []
 
-        reg_file = ['x' + str(reg_no) for reg_no in range(15)]
-        reg_file.remove('x0')
+        reg_file = [
+            register for register in base_reg_file
+            if register != 'x0'
+        ]
 
         instruction_list = []
         random_list = []

@@ -1,8 +1,7 @@
 from yapsy.IPlugin import IPlugin
-from uatg.instruction_constants import base_reg_file, mext_instructions, load_store_instructions, bit_walker
-from uatg.utils import rvtest_data
-from typing import Dict, Any
-from random import randint
+from uatg.instruction_constants import base_reg_file, mext_instructions, \
+    load_store_instructions
+from typing import Dict, Any, List, Union
 import random
 
 
@@ -16,6 +15,8 @@ class uatg_mbox_mul_depend_loads(IPlugin):
         self.offset_inc = 4
         self.xlen = 32
         self.num_rand_var = 100
+        self.mul_stages_in = 1
+        self.mul_stages_out = 1
 
     def execute(self, core_yaml, isa_yaml) -> bool:
         self.isa = isa_yaml['hart0']['ISA']
@@ -34,14 +35,16 @@ class uatg_mbox_mul_depend_loads(IPlugin):
         else:
             return False
 
-    def generate_asm(self) -> Dict[str, str]:
+    def generate_asm(self) -> List[
+        Dict[str, Union[Union[str, List[Any]], Any]]]:
         """    """
-        
 
         test_dict = []
 
-        reg_file = ['x' + str(reg_no) for reg_no in range(15)]
-        reg_file.remove('x0')
+        reg_file = [
+            register for register in base_reg_file
+            if register != 'x0'
+        ]
 
         instruction_list = []
         random_list = []
@@ -72,11 +75,7 @@ class uatg_mbox_mul_depend_loads(IPlugin):
             for rd in reg_file:
                 for rs1 in reg_file:
                     for rs2 in reg_file:
-                        #for imm_val in imm:
-                        #for i in range(self.mul_stages_in):
-                        #rs1_val = hex(random.getrandbits(self.xlen))
                         rs2_val = hex(random.getrandbits(self.xlen))
-                        #rs3_val = hex(random.getrandbits(self.xlen))
                         rand_inst = random.choice(random_list)
                         imm_val = random.choice(imm)
 
@@ -120,17 +119,10 @@ class uatg_mbox_mul_depend_loads(IPlugin):
                         # perform the  required assembly operation
 
                         asm_code += f'\ninst_{inst_count}:\n'
-                        
 
-                        asm_code += f'MBOX_TEST_LD_OP({rand_inst},{inst},{rs1},{rs2},{rd},{testreg},0,{rs2_val},{imm_val},{swreg},0,{offset},0)'
-
-                        if offset + self.offset_inc >= 2048:
-                            asm_code += f'addi {swreg}, {swreg}, {offset}\n'
-                            offset = 0
-
-                        # increment offset by the amount of bytes updated in
-                        # signature by each test-macro.
-                        offset = offset + self.offset_inc
+                        asm_code += f'MBOX_TEST_LD_OP({rand_inst},{inst}' \
+                                    f',{rs1},{rs2},{rd},{testreg},0,' \
+                                    f'{rs2_val},{imm_val},{swreg},0,{offset},0)'
 
                         # keep track of the total number of signature bytes used
                         # so far.
