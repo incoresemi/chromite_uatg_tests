@@ -42,7 +42,7 @@ class uatg_mbox_WAW_div(IPlugin):
 
         reg_file = [
             register for register in base_reg_file
-            if register not in ('x0', 'x3', 'x4', 'x5', 'x6', 'x7')
+            if register not in ('x0', 'x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'x7')
         ]
 
         instruction_list = []
@@ -115,17 +115,6 @@ class uatg_mbox_WAW_div(IPlugin):
             rs2_val = '0x0000000004680000'
             rs3_val = '0x272'
             rs4_val = '0x2'
-
-            # if signature register needs to be used for operations
-            # then first choose a new signature pointer and move the
-            # value to it.
-            if swreg in [rd1, rs1, rs2, rs3, rs4]:
-                newswreg = random.choice(
-                    [x for x in reg_file if x not in [rd1, rs1, rs2, rs3, rs4]])
-                asm_code += f'mv {newswreg}, {swreg}\n'
-                swreg = newswreg
-
-                # perform the  required assembly operation
 
             asm_code += f'\ninst_{inst_count}:\n'
 
