@@ -50,10 +50,10 @@ class uatg_mbox_div_add_imm_RAW(IPlugin):
 
         test_dict = []
 
-        reg_file = [register
-                    for register in base_reg_file
-                    if register not in ('x0', 'x3', 'x4', 'x5', 'x6')
-                    ]
+        reg_file = [
+            register for register in base_reg_file
+            if register not in ('x0', 'x3', 'x4', 'x5', 'x6')
+        ]
 
         instruction_list = []
         random_list = []
