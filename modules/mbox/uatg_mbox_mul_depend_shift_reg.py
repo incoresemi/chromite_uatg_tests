@@ -47,8 +47,7 @@ class uatg_mbox_mul_depend_shift_reg(IPlugin):
 
         test_dict = []
 
-        reg_file = ['x' + str(reg_no) for reg_no in range(7)]
-        reg_file.remove('x0')
+        reg_file = [register for register in base_reg_file if register != 'x0']
 
         instruction_list = []
         random_list = []

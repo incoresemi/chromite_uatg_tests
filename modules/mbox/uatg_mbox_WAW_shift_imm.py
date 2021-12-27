@@ -1,6 +1,7 @@
 from yapsy.IPlugin import IPlugin
-from uatg.instruction_constants import base_reg_file, mext_instructions, arithmetic_instructions
-from typing import Dict, Any
+from uatg.instruction_constants import base_reg_file, mext_instructions, \
+    arithmetic_instructions
+from typing import Dict, Any, List, Union
 import random
 
 
@@ -93,11 +94,6 @@ class uatg_mbox_WAW_shift_imm(IPlugin):
                             x for x in reg_file if x not in [rand_rd, rand_rs2]
                         ])
                         rand_rs1 = new_rand_rs1
-                    if rand_rs2 in [rand_rs1, rand_rd]:
-                        new_rand_rs2 = random.choice([
-                            x for x in reg_file if x not in [rand_rs1, rand_rd]
-                        ])
-                        rand_rs2 = new_rand_rs2
                     if rand_inst in [rand_inst1, inst]:
                         new_rand_inst = random.choice([
                             x for x in random_list
@@ -120,8 +116,6 @@ class uatg_mbox_WAW_shift_imm(IPlugin):
             # perform the  required assembly operation
 
             asm_code += f'\ninst_{inst_count}:\n'
-
-
             asm_code += f'MBOX_DEPENDENCIES_WAW_RR_OP({rand_inst}, {inst}, '\
                         f'{rs1}, {rs2}, {rs3}, {rs4}, {rd1}, 0, {rs1_val}, '\
                         f'{rs2_val}, {rs3_val}, {rs4_val}, {swreg}, {offset}, '\

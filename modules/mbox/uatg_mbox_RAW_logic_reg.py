@@ -1,6 +1,7 @@
 from yapsy.IPlugin import IPlugin
-from uatg.instruction_constants import base_reg_file, mext_instructions, logic_instructions
-from typing import Dict, Any
+from uatg.instruction_constants import base_reg_file, mext_instructions, \
+    logic_instructions
+from typing import Dict, Any, List, Union
 import random
 
 
@@ -56,7 +57,6 @@ class uatg_mbox_RAW_logic_reg(IPlugin):
 
             # initial register to use as signature pointer
             swreg = 'x2'
-            testreg = 'x1'
             # initialize swreg to point to signature_start label
             asm_code += f'RVTEST_SIGBASE({swreg}, signature_start)\n'
 
@@ -117,7 +117,6 @@ class uatg_mbox_RAW_logic_reg(IPlugin):
             # perform the  required assembly operation
 
             asm_code += f'\ninst_{inst_count}:\n'
-
 
             asm_code += f'MBOX_DEPENDENCIES_RR_OP({rand_inst}, {inst}, {rs1}, '\
                         f'{rs2}, {rd1}, {rd2}, 0, {rs1_val}, {rs2_val}, '\

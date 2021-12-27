@@ -1,6 +1,7 @@
 from yapsy.IPlugin import IPlugin
-from uatg.instruction_constants import base_reg_file, mext_instructions, arithmetic_instructions, logic_instructions
-from typing import Dict, Any
+from uatg.instruction_constants import base_reg_file, mext_instructions, \
+    logic_instructions
+from typing import Dict, Any, List, Union
 import random
 
 
@@ -111,7 +112,6 @@ class uatg_mbox_WAR_logic_imm(IPlugin):
             # perform the  required assembly operation
 
             asm_code += f'\ninst_{inst_count}:\n'
-
 
             asm_code += f'MBOX_DEPENDENCIES_WAR_RI_OP({rand_inst}, {inst}, '\
                         f'{rs1}, {rs2}, {rd1}, 0, {rs1_val}, {rs2_val}, '\

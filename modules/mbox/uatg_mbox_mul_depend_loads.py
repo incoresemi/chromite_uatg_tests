@@ -35,16 +35,13 @@ class uatg_mbox_mul_depend_loads(IPlugin):
         else:
             return False
 
-    def generate_asm(self) -> List[
-        Dict[str, Union[Union[str, List[Any]], Any]]]:
+    def generate_asm(
+            self) -> List[Dict[str, Union[Union[str, List[Any]], Any]]]:
         """    """
 
         test_dict = []
 
-        reg_file = [
-            register for register in base_reg_file
-            if register != 'x0'
-        ]
+        reg_file = [register for register in base_reg_file if register != 'x0']
 
         instruction_list = []
         random_list = []

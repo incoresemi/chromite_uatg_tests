@@ -1,8 +1,7 @@
 from yapsy.IPlugin import IPlugin
-from uatg.instruction_constants import base_reg_file, mext_instructions, arithmetic_instructions
-from uatg.utils import rvtest_data
-from typing import Dict, Any
-from random import randint
+from uatg.instruction_constants import base_reg_file, mext_instructions, \
+    arithmetic_instructions
+from typing import Dict, Any, List, Union
 import random
 
 
@@ -16,6 +15,8 @@ class uatg_mbox_mul_dependencies(IPlugin):
         self.offset_inc = 4
         self.xlen = 32
         self.num_rand_var = 100
+        self.mul_stages_in = 1
+        self.mul_stages_out = 1
 
     def execute(self, core_yaml, isa_yaml) -> bool:
         self.isa = isa_yaml['hart0']['ISA']
@@ -34,14 +35,13 @@ class uatg_mbox_mul_dependencies(IPlugin):
         else:
             return False
 
-    def generate_asm(self) -> Dict[str, str]:
+    def generate_asm(
+            self) -> List[Dict[str, Union[Union[str, List[Any]], Any]]]:
         """    """
-        
 
         test_dict = []
 
-        reg_file = ['x' + str(reg_no) for reg_no in range(7)]
-        reg_file.remove('x0')
+        reg_file = [register for register in base_reg_file if register != 'x0']
 
         instruction_list = []
         random_list = []
@@ -70,16 +70,13 @@ class uatg_mbox_mul_dependencies(IPlugin):
                 for rs1 in reg_file:
                     for rs2 in reg_file:
                         for rs3 in reg_file:
-                            #for i in range(self.mul_stages_in):
                             rs1_val = hex(random.getrandbits(self.xlen))
                             rs2_val = hex(random.getrandbits(self.xlen))
                             rs3_val = hex(random.getrandbits(self.xlen))
                             rand_inst = random.choice(random_list)
-                            #rd1 = random.choice(reg_file)
-
-                            # if signature register needs to be used for operations
-                            # then first choose a new signature pointer and move the
-                            # value to it.
+                            # if signature register needs to be used for
+                            # operations then first choose a new signature
+                            # pointer and move the value to it.
                             if swreg in [rd, rs1, rs2, rs3, testreg]:
                                 newswreg = random.choice([
                                     x for x in reg_file
@@ -121,49 +118,10 @@ class uatg_mbox_mul_dependencies(IPlugin):
                             # perform the  required assembly operation
 
                             asm_code += f'\ninst_{inst_count}:\n'
-                            
-                            #asm_code += f'\n#operation: {rand_inst}, rs1={rs1}, rs2={rs2}, rd={rd1}\n'
-                            #asm_code += f'TEST_RR_OP({inst}, {rd}, {rs1}, {rs2}, 0, {rs1_val}, {rs2_val}, {swreg}, {offset}, x0)\n'
-                            #asm_code += f'li {rs1},{rs1_val}\n'
-                            #asm_code += f'li {rs2},{rs2_val}\n'
-                            #asm_code += f'{inst} {rd},{rs1},{rs2}\n'
-                            #for i in range(self.mul_stages_in):
-                            # rand_inst = random.choice(random_list)
-                            #rd1 = random.choice(reg_file)
-                            asm_code += f'MBOX_TEST_RR_OP({rand_inst}, {inst}, {rs1}, {rs2}, {rs3}, {rd}, 0, {rs1_val}, {rs2_val}, {rs3_val}, {swreg}, {offset}, {testreg})'
-
-                            #if f'{inst}' == 'mul':
-                            #asm_code += f'MBOX_TEST_RR_OP(add, {inst}, ' \
-                            #f'{rs1}, {rs2}, {rs3}, {rd}, 0, ' \
-                            #f'{rs1_val}, {rs2_val}, {rs3_val}, ' \
-                            #f'{swreg}, {offset}, {testreg})\n'
-                            #elif f'{inst}' == 'mulh':
-                            #asm_code += f'MBOX_TEST_RR_OP(sub, {inst}, ' \
-                            #f'{rs1}, {rs2}, {rs3}, {rd}, 0, ' \
-                            #f'{rs1_val}, {rs2_val}, {rs3_val}, ' \
-                            #f'{swreg}, {offset}, {testreg})\n'
-                            #elif f'{inst}' == 'mulhsu':
-                            #asm_code += f'MBOX_TEST_RR_OP(addw, {inst}, ' \
-                            #f'{rs1}, {rs2}, {rs3}, {rd}, 0, ' \
-                            #f'{rs1_val}, {rs2_val}, {rs3_val}, ' \
-                            #f'{swreg}, {offset}, {testreg})\n'
-                            #elif f'{inst}' == 'mulw':
-                            #asm_code += f'MBOX_TEST_RR_OP(subw, {inst}, ' \
-                            #f'{rs1}, {rs2}, {rs3}, {rd}, 0, ' \
-                            #f'{rs1_val}, {rs2_val}, {rs3_val}, ' \
-                            #f'{swreg}, {offset}, {testreg})\n'
-
-                            #elif f'{inst}' == 'mulhu':
-                            #asm_code += f'MBOX_TEST_RR_OP(add, {inst}, ' \
-                            #f'{rs1}, {rs2}, {rs3}, {rd}, 0, ' \
-                            #f'{rs1_val}, {rs2_val}, {rs3_val}, ' \
-                            #f'{swreg}, {offset}, {testreg})\n'
-
-                            #if rd!=rd1:
-                            #    asm_code += f'{rand_inst} {rd1},{rd},{rs2}\n'
-
-                            # adjust the offset. reset to 0 if it crosses 2048 and
-                            # increment the current signature pointer with the
+                            asm_code += f'MBOX_TEST_RR_OP({rand_inst}, {inst}' \
+                                        f', {rs1}, {rs2}, {rs3}, {rd}, 0, ' \
+                                        f'{rs1_val}, {rs2_val}, {rs3_val}, ' \
+                                        f'{swreg}, {offset}, {testreg})'
                             # current offset value
                             if offset + self.offset_inc >= 2048:
                                 asm_code += f'addi {swreg}, {swreg}, {offset}\n'
@@ -173,8 +131,8 @@ class uatg_mbox_mul_dependencies(IPlugin):
                             # signature by each test-macro.
                             offset = offset + self.offset_inc
 
-                            # keep track of the total number of signature bytes used
-                            # so far.
+                            # keep track of the total number of signature bytes
+                            # used so far.
                             sig_bytes = sig_bytes + self.offset_inc
 
                             inst_count += 1

@@ -1,6 +1,7 @@
 from yapsy.IPlugin import IPlugin
-from uatg.instruction_constants import base_reg_file, mext_instructions, arithmetic_instructions
-from typing import Dict, Any
+from uatg.instruction_constants import base_reg_file, mext_instructions, \
+    arithmetic_instructions
+from typing import Dict, Any, List, Union
 import random
 
 
@@ -119,8 +120,6 @@ class uatg_mbox_WAW_shift_reg(IPlugin):
             # perform the  required assembly operation
 
             asm_code += f'\ninst_{inst_count}:\n'
-
-
             asm_code += f'MBOX_DEPENDENCIES_WAW_RR_OP({rand_inst}, {inst}, '\
                         f'{rs1}, {rs2}, {rs3}, {rs4}, {rd1}, 0, {rs1_val}, '\
                         f'{rs2_val}, {rs3_val}, {rs4_val}, {swreg}, {offset}, '\

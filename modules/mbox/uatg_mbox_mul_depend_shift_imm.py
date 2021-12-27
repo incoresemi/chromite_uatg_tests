@@ -15,8 +15,8 @@ class uatg_mbox_mul_depend_shift_imm(IPlugin):
         self.offset_inc = 4
         self.xlen = 32
         self.num_rand_var = 100
-        self.mul_stages_in = 0
-        self.mul_stages_out = 0
+        self.mul_stages_in = 1
+        self.mul_stages_out = 1
 
     def execute(self, core_yaml, isa_yaml) -> bool:
         self.isa = isa_yaml['hart0']['ISA']
@@ -39,10 +39,7 @@ class uatg_mbox_mul_depend_shift_imm(IPlugin):
 
         test_dict = []
 
-        reg_file = [
-            register for register in base_reg_file
-            if register != 'x0'
-        ]
+        reg_file = [register for register in base_reg_file if register != 'x0']
 
         instruction_list = []
         random_list = []

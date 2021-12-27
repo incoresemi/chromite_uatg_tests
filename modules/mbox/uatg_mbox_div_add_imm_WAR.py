@@ -49,10 +49,10 @@ class uatg_mbox_div_add_imm_WAR(IPlugin):
 
         test_dict = []
 
-        reg_file = [register
-                    for register in base_reg_file
-                    if register not in ('x0', 'x3', 'x4', 'x5', 'x6')
-                    ]
+        reg_file = [
+            register for register in base_reg_file
+            if register not in ('x0', 'x3', 'x4', 'x5', 'x6')
+        ]
 
         instruction_list = []
         random_list = []
@@ -88,7 +88,6 @@ class uatg_mbox_div_add_imm_WAR(IPlugin):
                 code += f'{inst} {rd1},{rs1},{rs2};\n'
                 for j in range(i):
                     rand_rs1 = random.choice(reg_file)
-                    # rand_rs2 = random.choice(reg_file)
                     rand_rd = random.choice(reg_file)
                     rand_inst1 = random.choice(random_list)
                     if rand_rd in [rs1, rs2, rd1, rand_rs1, swreg]:

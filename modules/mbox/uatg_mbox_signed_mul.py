@@ -1,7 +1,5 @@
 from yapsy.IPlugin import IPlugin
-from uatg.instruction_constants import base_reg_file
 from typing import Dict, List, Union
-import random
 
 
 class uatg_mbox_signed_mul(IPlugin):
@@ -39,8 +37,6 @@ class uatg_mbox_signed_mul(IPlugin):
         """
         test_dict = []
 
-        reg_file = base_reg_file.copy()
-
         asm_code = '#' * 5 + ' mulh/mul reg, reg, reg ' + '#' * 5 + '\n'
 
         # initial register to use as signature pointer
@@ -65,12 +61,10 @@ class uatg_mbox_signed_mul(IPlugin):
         if 'RV32' in self.isa:
             rs1_val = '0xfffff63c'  # negative
             rs2_val = '0xffac1df3'  # negative
-        # rd=00000003 , rd1 = 332B86F4###
         elif 'RV64' in self.isa:
             rs1_val = '0xfdb97531eca86420'
             rs2_val = '0xfeca86420db97531'
-        # rd=2C03A928D469ADAA6E2D176000000###
-
+ 
         # perform the  required assembly operation
         asm_code += f'\n#operation: mulh, rs1={rs1}, rs2={rs2}, rd={rd}\n'
 

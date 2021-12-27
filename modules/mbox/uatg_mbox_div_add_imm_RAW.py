@@ -66,7 +66,7 @@ class uatg_mbox_div_add_imm_RAW(IPlugin):
 
             # initial register to use as signature pointer
             swreg = 'x2'
-            # testreg = 'x1'
+            
             # initialize swreg to point to signature_start label
             asm_code += f'RVTEST_SIGBASE({swreg}, signature_start)\n'
 
@@ -82,7 +82,6 @@ class uatg_mbox_div_add_imm_RAW(IPlugin):
             imm = range(1, 100)
             imm_val = random.choice(imm)
             rand_inst = random.choice(random_list)
-            # self.mul_stages_in = 4
 
             rs1, rs2, rd1, rd2 = 'x3', 'x4', 'x5', 'x6'
             rand_rs1, rand_rd = 'x0', 'x0'
@@ -91,7 +90,6 @@ class uatg_mbox_div_add_imm_RAW(IPlugin):
                 code += f'{inst} {rd1},{rs1},{rs2};\n'
                 for j in range(i):
                     rand_rs1 = random.choice(reg_file)
-                    # rand_rs2 = random.choice(reg_file)
                     rand_rd = random.choice(reg_file)
                     rand_inst1 = random.choice(random_list)
                     if rand_rd in [rs1, rs2, rd1, rand_rs1, rd2, swreg]:
@@ -106,12 +104,6 @@ class uatg_mbox_div_add_imm_RAW(IPlugin):
                             if x not in [rd1, rs2, rd2, rand_rd, rs1, swreg]
                         ])
                         rand_rs1 = new_rand_rs1
-                    '''
-                    if rand_rs2 in [rs1, rd1, rd2, rand_rs1, rand_rd,rs2,swreg]:
-                        new_rand_rs2 = random.choice([x for x in reg_file
-                          if x not in [rs1, rd1, rd2, rand_rs1, rand_rd, rs2,
-                           swreg]])
-                        rand_rs2 = new_rand_rs2'''
                     if rand_inst in [rand_inst1, inst]:
                         new_rand_inst = random.choice([
                             x for x in random_list
@@ -128,8 +120,6 @@ class uatg_mbox_div_add_imm_RAW(IPlugin):
                 code += f'{rand_inst} {rd2}, {rd1}, {imm_val};\n\n'
             rs1_val = '0x48'
             rs2_val = '0x6'
-            # rs1_val = '2'
-            # rs2_val = '4'
             # if signature register needs to be used for operations
             # then first choose a new signature pointer and move the
             # value to it.

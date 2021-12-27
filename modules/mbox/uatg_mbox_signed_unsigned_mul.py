@@ -1,7 +1,5 @@
 from yapsy.IPlugin import IPlugin
-from uatg.instruction_constants import base_reg_file
 from typing import Dict, List, Union
-import random
 
 
 class uatg_mbox_signed_unsigned_mul(IPlugin):
@@ -39,8 +37,6 @@ class uatg_mbox_signed_unsigned_mul(IPlugin):
             multiplication using mulhsu instruction
         """
         test_dict = []
-
-        reg_file = base_reg_file.copy()
 
         asm_code = '#' * 5 + ' mulhsu/mul reg, reg, reg ' + '#' * 5 + '\n'
 

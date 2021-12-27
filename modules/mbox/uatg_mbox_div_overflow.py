@@ -1,7 +1,5 @@
 from yapsy.IPlugin import IPlugin
-from uatg.instruction_constants import base_reg_file
 from typing import Dict, List, Union
-import random
 
 
 class uatg_mbox_div_overflow(IPlugin):

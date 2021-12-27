@@ -1,6 +1,7 @@
 from yapsy.IPlugin import IPlugin
-from uatg.instruction_constants import base_reg_file, mext_instructions, arithmetic_instructions
-from typing import Dict, Any
+from uatg.instruction_constants import base_reg_file, mext_instructions, \
+    arithmetic_instructions
+from typing import Dict, Any, List, Union
 import random
 
 
@@ -60,9 +61,6 @@ class uatg_mbox_WAR_add_reg(IPlugin):
             # initialize swreg to point to signature_start label
             asm_code += f'RVTEST_SIGBASE({swreg}, signature_start)\n'
 
-            # initial offset to with respect to signature label
-            offset = 0
-
             # variable to hold the total number of signature bytes to be used.
             sig_bytes = 0
 
@@ -119,7 +117,6 @@ class uatg_mbox_WAR_add_reg(IPlugin):
             # perform the  required assembly operation
 
             asm_code += f'\ninst_{inst_count}:\n'
-
 
             asm_code += f'MBOX_DEPENDENCIES_WAW_RR_OP({rand_inst}, {inst}, '\
                         f'{rs1}, {rs2}, {rs3}, {rs4}, {rd1}, 0, {rs1_val}, '\
