@@ -28,25 +28,23 @@ decoder:
 decompressor:
   uatg_decompressor_01: False # buggy
   uatg_decompressor_02: True
-  uatg_decompressor_floating_01: True
+  uatg_decompressor_floating_01: False
 
 mbox:
-  uatg_mbox_divu_insts_01: False 
-  uatg_mbox_mul_div_insts_01: False
-  uatg_mbox_mulh_insts_01: False 
-  uatg_mbox_mul_dependencies2: False #test passed
+  uatg_mbox_divu_insts_01: False #test passed
+  uatg_mbox_mul_div_insts_01: False #test passed
+  uatg_mbox_mulh_insts_01: False #test passed
   uatg_mbox_mul_dependencies_imm: False #test passed
   uatg_mbox_mul_depend_shift_imm: False #test passed
   uatg_mbox_mul_depend_shift_reg: False #test passed
   uatg_mbox_mul_depend_loads: False #test passed
   uatg_mbox_mul_depend_stores: False #test passed
-  uatg_mbox_div_by_0: False 
-  uatg_mbox_div_by_x0: False 
-  uatg_mbox_div_by_zero: False 
-  uatg_mbox_div_overflow: False 
-  uatg_mbox_signed_mul: False 
-  uatg_mbox_signed_unsigned_mul: False
-  uatg_mbox_unsigned_mul: False
+  uatg_mbox_div_by_0: False  #test passed
+  uatg_mbox_div_by_zero: False #test passed
+  uatg_mbox_div_overflow: False #test passed
+  uatg_mbox_signed_mul: False #test passed
+  uatg_mbox_signed_unsigned_mul: False #test passed
+  uatg_mbox_unsigned_mul: False #test passed
   uatg_mbox_RAW_add_reg: False #test passed
   uatg_mbox_RAW_shift_reg: False #test passed
   uatg_mbox_RAW_add_imm: False #test passed
@@ -60,7 +58,7 @@ mbox:
   uatg_mbox_WAR_shift_reg: False #test passed
   uatg_mbox_WAR_shift_imm: False #test passed
   uatg_mbox_WAR_logic_reg: False #test passed
-  uatg_mbox_WAR_logic_imm: True #test passed
+  uatg_mbox_WAR_logic_imm: False #test passed
   uatg_mbox_WAW_add_reg: False #test passed
   uatg_mbox_WAW_shift_reg: False #test passed 
   uatg_mbox_WAW_add_imm: False #test passed
@@ -89,4 +87,20 @@ mbox:
   uatg_mbox_div_WAW_logic_reg: False #test passed
   uatg_mbox_div_WAW_logic_imm: False #test passed
   uatg_mbox_load_dependencies: False # not correctly
+  uatg_mbox_comp_WAR_regCA: False #test passed
+  uatg_mbox_comp_WAR_rv64: False #test passed
+  uatg_mbox_comp_WAR_reg_imm: False #test passed
+  uatg_mbox_comp_WAR_reg_reg: False #test passed
+  uatg_mbox_comp_WAR_const: False #test passed
+  uatg_mbox_comp_mul_regCA_WAR: False #test passed
+  uatg_mbox_comp_mul_reg_WAR: False #test passed
+  uatg_mbox_comp_mul_reg_regCA_WAR: False #test passed
+  uatg_mbox_comp_mul_reg_const_WAR: False #test passed
+  uatg_mbox_comp_mul_reg_imm_WAR: False #test passed
+  uatg_mbox_comp_mul_rv64_imm_WAR: False #test passed
+  uatg_mbox_comp_comp_regCA_WAR: False #test passed
+  uatg_mbox_comp_comp_reg_WAR: False #test passed
+  uatg_mbox_comp_comp_rv64_WAR: False #test passed
+  uatg_mbox_comp_comp_imm_WAR: False #test passed
+  uatg_mbox_comp_comp_rv64_imm_WAR: True #test passed
  
