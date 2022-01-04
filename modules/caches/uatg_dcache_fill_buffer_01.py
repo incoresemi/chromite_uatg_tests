@@ -19,10 +19,6 @@ class uatg_dcache_fill_buffer_01(IPlugin):
         self._fb_size = 9
     
     def execute(self, core_yaml, isa_yaml) -> bool:
-        """This function gives us access to the core and isa configurations as a dictionary,
-        and is used to parameterize inputs to efficiently generate asm for all configurations
-        of the chromite core."""
-
         _dcache_dict = core_yaml['dcache_configuration']
         _dcache_en = _dcache_dict['instantiate']
         self._sets = _dcache_dict['sets']
@@ -33,30 +29,33 @@ class uatg_dcache_fill_buffer_01(IPlugin):
         return _dcache_en
 
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
-        """This function leverages string processing capabilities to efficiently generate
-        ASM for this test. This function returns a List that consists of the asm code,
-        rvtest_data and any signature dump."""
-
-        # asm_data is the test data that is loaded into memory. We use this to perform load operations.
+        # asm_data is the test data that is loaded into memory.
+        # We use this to perform load operations.
         asm_data = '\nrvtest_data:\n'
 
         # We load the memory with data twice the size of our dcache.
-        for i in range(self._word_size * self._block_size * self._sets * self._ways * 2):
+        for i in range(self._word_size * self._block_size *
+        self._sets * self._ways * 2):
             # We generate random 4 byte numbers.
             asm_data += "\t.word 0x{0:08x}\n".format(random.randrange(16**8))
 
-        asm_main = "\tfence\n\tli t0, 69\n\tli t3, {0}\n\tla t2, rvtest_data\n".format(self._sets * self._ways)
-        asm_lab1 = "lab1:\n\tsw t0, 0(t2)\n\taddi t2, t2, {0}\n\tbeq t4, t3, asm_nop\n\taddi t4, t4, 1\n\tj lab1\n".format(self._word_size * self._block_size)
+        asm_main = "\tfence\n\tli t0, 69\n\tli t3, {0}\n\tla t2, rvtest_data\
+\n".format(self._sets * self._ways)
+        asm_lab1 = "lab1:\n\tsw t0, 0(t2)\n\taddi t2, t2, {0}\n\t\
+beq t4, t3, asm_nop\n\taddi t4, t4, 1\n\tj lab1\n".format(
+                self._word_size * self._block_size)
         asm_nop = "asm_nop:\n"
 
         # Perform a series of NOPs to empty the fill buffer.
         for i in range(self._fb_size * 2):
             asm_nop += "\tnop\n"
         
-        # Perform a serious of continuous store operations with no window for an opportunistic release.
+        # Perform a serious of continuous store operations with
+        # no window for an opportunistic release.
         asm_sw = "asm_sw:\n"
         for i in range(self._fb_size * 2):
-            asm_sw += "\tsw t0, {0}(t2)\n".format(self._block_size * self._word_size * (i + 1))
+            asm_sw += "\tsw t0, {0}(t2)\n".format(self._block_size *
+            self._word_size * (i + 1))
         asm_end = "end:\n\tnop\n\tfence.i\n"
     	
         # Concatenate all pieces of ASM.
