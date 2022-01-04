@@ -1,35 +1,35 @@
 branch_predictor:
-  uatg_gshare_fa_btb_fill_01: True
-  uatg_gshare_fa_btb_selfmodifying_01: True
-  uatg_gshare_fa_fence_01: True
-  uatg_gshare_fa_ghr_alternating_01: True
-  uatg_gshare_fa_ghr_ones_01: True
-  uatg_gshare_fa_ghr_zeros_01: True
-  uatg_gshare_fa_mispredict_loop_01: True
-  uatg_gshare_fa_ras_push_pop_01: True
+  uatg_gshare_fa_btb_fill_01: False
+  uatg_gshare_fa_btb_selfmodifying_01: False
+  uatg_gshare_fa_fence_01: False
+  uatg_gshare_fa_ghr_alternating_01: False
+  uatg_gshare_fa_ghr_ones_01: False
+  uatg_gshare_fa_ghr_zeros_01: False
+  uatg_gshare_fa_mispredict_loop_01: False
+  uatg_gshare_fa_ras_push_pop_01: False
 
 decoder:
-  uatg_decoder_arithmetic_insts_1: True
-  uatg_decoder_arithmetic_insts_2: True
-  uatg_decoder_arithmetic_insts_3: True
-  uatg_decoder_arithmetic_insts_4: True
-  uatg_decoder_arithmetic_insts_ui: True
-  uatg_decoder_branch_insts_1: True
-  uatg_decoder_jump_jal: True
-  uatg_decoder_jump_jalr: True
-  uatg_decoder_logical_insts_1: True
-  uatg_decoder_logical_insts_2: True
-  uatg_decoder_memory_insts_1: True
-  uatg_decoder_mext: True
+  uatg_decoder_arithmetic_insts_1: False
+  uatg_decoder_arithmetic_insts_2: False
+  uatg_decoder_arithmetic_insts_3: False
+  uatg_decoder_arithmetic_insts_4: False
+  uatg_decoder_arithmetic_insts_ui: False
+  uatg_decoder_branch_insts_1: False
+  uatg_decoder_jump_jal: False
+  uatg_decoder_jump_jalr: False
+  uatg_decoder_logical_insts_1: False
+  uatg_decoder_logical_insts_2: False
+  uatg_decoder_memory_insts_1: False
+  uatg_decoder_mext: False
 
 decompressor:
   uatg_decompressor_01: False # buggy
-  uatg_decompressor_02: True
-  uatg_decompressor_floating_01: True
+  uatg_decompressor_02: False
+  uatg_decompressor_floating_01: False
 
 mbox:
   uatg_mbox_divu_insts_01: False # buggy
-  uatg_mbox_mul_div_insts_01: True
+  uatg_mbox_mul_div_insts_01: False
   uatg_mbox_mulh_insts_01: False # buggy
 
 caches:
@@ -44,3 +44,4 @@ caches:
   uatg_dcache_set_thrashing: True
   uatg_dcache_fb_hit_01: True
   uatg_cache_replacement_all: True
+  uatg_cache_ram_hit_01: True
