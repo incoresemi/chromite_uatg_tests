@@ -42,3 +42,5 @@ caches:
   uatg_dcache_line_thrashing: True
   uatg_dcache_load_store_types: True
   uatg_dcache_set_thrashing: True
+  uatg_dcache_fb_hit_01: True
+  uatg_cache_replacement_all: True
