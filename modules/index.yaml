@@ -31,3 +31,14 @@ mbox:
   uatg_mbox_divu_insts_01: False # buggy
   uatg_mbox_mul_div_insts_01: True
   uatg_mbox_mulh_insts_01: False # buggy
+
+caches:
+  uatg_dcache_fill_01: True
+  uatg_dcache_fill_02: True
+  uatg_dcache_fill_03: True
+  uatg_dcache_fill_04: True
+  uatg_dcache_fill_buffer_01: True
+  uatg_dcache_fill_buffer_02: True
+  uatg_dcache_line_thrashing: True
+  uatg_dcache_load_store_types: True
+  uatg_dcache_set_thrashing: True
