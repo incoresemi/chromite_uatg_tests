@@ -37,6 +37,7 @@ caches:
   uatg_dcache_fill_02: True
   uatg_dcache_fill_03: True
   uatg_dcache_fill_04: True
+  uatg_dcache_fill_05: True
   uatg_dcache_fill_buffer_01: True
   uatg_dcache_fill_buffer_02: True
   uatg_dcache_line_thrashing: True
