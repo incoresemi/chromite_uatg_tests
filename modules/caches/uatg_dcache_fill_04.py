@@ -23,6 +23,17 @@ class uatg_dcache_fill_04(IPlugin):
         return _dcache_en
 
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
+        """
+        - Perform a `fence` operation to clear out the data cache subsystem
+        and the fill buffer.
+        - Load some data into a temporary register and perform `numerous
+        load operations` to fill up the cache.
+        - Each loop in ASM has an unconditional `jump` back to that label,
+        a branch takes us out of the loop.
+        - Each iteration, we visit the next `set`.
+        - The total number of iterations is parameterized based on YAML input.
+        """
+
         # asm_data is the test data that is loaded into memory.
         # We use this to perform load operations.
         asm_data = '\nrvtest_data:\n'
@@ -33,12 +44,12 @@ class uatg_dcache_fill_04(IPlugin):
             # We generate random 4 byte numbers.
             asm_data += "\t.word 0x{0:08x}\n".format(random.randrange(16 ** 8))
             
-        asm_main = "\tfence\n\tli t0, 69\n\tli t1, 1\n\tli t3, {0}\n\t\
-la t2, rvtest_data\n".format(self._sets * self._ways)
-        asm_lab1 = "lab1:\n\tlw t0, 0(t2)\n\taddi t2, t2, {0}\n\t\
-beq t4, t3, end\n\taddi t4, t4, 1\n\tj lab1\n".format(
-                self._word_size * self._block_size)
-        asm_end = "end:\n\tnop\n\tfence.i\n"
+        asm_main = f"\tfence\n\tli t0, 69\n\tli t1, 1\n" + \
+            f"\tli t3, {self._sets * self._ways}\n\tla t2, rvtest_data"
+        asm_lab1 = f"\nlab1:\n\tlw t0, 0(t2)\n" + \
+            f"\taddi t2, t2, {self._word_size * self._block_size}\n" + \
+                f"\tbeq t4, t3, end\n\taddi t4, t4, 1\n\tj lab1\n"
+        asm_end = "end:\n\tnop\n\tfence.i"
         
         #Concatenate all pieces of asm.
         asm = asm_main + asm_lab1 + asm_end
