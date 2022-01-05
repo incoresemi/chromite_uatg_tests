@@ -24,8 +24,11 @@ class uatg_dcache_fill_01_all(IPlugin):
         return _dcache_en
 
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
-        # asm_data is the test data that is loaded into memory.
-        # We use this to perform load operations.
+        """
+        filling up cache with diffent load/store variations
+        lb, lbu, lh, lhu, lw, lwu, ld, sb, sh, sw, sd
+        sequentially in the exact same order
+        """
         asm_data = '\nrvtest_data:\n'
         
         # We load the memory with data twice the size of our dcache.
