@@ -27,6 +27,18 @@ class uatg_dcache_set_thrashing(IPlugin):
         return _dcache_en
 
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
+        """
+        - Perform a  `fence`  operation to clear out the data cache
+        subsystem and the fill buffer.
+    - First the cache is filled up using the following logic. All the
+    ways of a set should either be  *dirty or clean*.
+    - This is followed by a large series of back to back `store operations`
+    with an address that maps to a single set in the cache. This ensures that
+    the fillbuffer gets filled and the set thrashing process begins.
+    - Now after the fill buffer is full, with each store operation a cache
+    miss is encountered.
+    - This process is iterated to test each cache set.
+        """
 
         '''This test aims to perform a series of store operations to perform
         line thrashing. The sw instruction only takes a 12 bit signed offset
@@ -46,26 +58,28 @@ class uatg_dcache_set_thrashing(IPlugin):
             # We generate random 4 byte numbers.
             asm_data += "\t.word 0x{0:08x}\n".format(random.randrange(16**8))
 
-        asm_main = "\n\tfence\n\tli t0, 69\n\tli t1, 1\n\tli t3, {0}\n\t\
-la t2, rvtest_data".format(self._sets * self._ways)
+        asm_main = f"\n\tfence\n\tli t0, 69\n\tli t1, 1\n" + \
+            f"\tli t3, {self._sets * self._ways}\n\tla t2, rvtest_data"
         
         # We use the high number determined by YAML imputs to pass
         # legal operands to load/store.
-        for i in range(int(math.ceil((self._ways * self._sets * 2 * (
+        for i in range(int(math.ceil((
+            self._ways * self._sets * 2 * (
             self._word_size * self._block_size))/high))):
-            asm_main += "\n\tli x{0}, {1}".format(27 - i, ((high + (
-                self._word_size * self._block_size)) * (i+1)))
+            asm_main += f"\n\tli x{27 - i}, " + \
+                f"{((high + (self._word_size * self._block_size)) * (i+1))}"
         
         # Initialize base address registers.
-        for i in range(int(math.ceil((self._ways * self._sets * 2 * (
+        for i in range(int(math.ceil((
+            self._ways * self._sets * 2 * (
             self._word_size * self._block_size))/high))):
-            asm_main += "\n\tadd x{0}, x{0}, t2 ".format(27 - i)
+            asm_main += f"\n\tadd x{27 - i}, x{27 - i}, t2 "
         
         asm_main += "\n"
         
-        asm_lab1 = "\nlab1:\n\tsw t0, 0(t2)\n\taddi t2, t2, {0}\n\t\
-beq t4, t3, asm_nop\n\taddi t4, t4, 1\n\tj lab1".format(
-                self._block_size * self._word_size)
+        asm_lab1 = f"\nlab1:\n\tsw t0, 0(t2)\n\taddi t2, t2," + \
+            f"{self._block_size * self._word_size}\n" + \
+            f"\tbeq t4, t3, asm_nop\n\taddi t4, t4, 1\n\tj lab1"
         asm_nop = "\nasm_nop:\n\tmv t4, x0\n"
         
         # Empty the fill buffer by performing a series of NOPs
@@ -74,13 +88,14 @@ beq t4, t3, asm_nop\n\taddi t4, t4, 1\n\tj lab1".format(
 
         # Perform set thrashing
         asm_st = "asm_st:\n"
-        for j in range(int(math.ceil((self._ways * self._sets * 2 * ( 
+        for j in range(int(math.ceil((
+            self._ways * self._sets * 2 * ( 
             self._word_size * self._block_size))/high))):
-            for i in range(int(1 + self._ways * self._sets * 2 / math.ceil(
-                (self._ways * self._sets * 2 * (self._word_size *
-                self._block_size))/high))):
-                asm_st += "\tlw t0, {0}(x{1})\n".format(self._block_size
-                * self._word_size * (i + 1),27 - j)
+            for i in range(int(1 + self._ways * self._sets * 2 / math.ceil((
+                    self._ways * self._sets * 2 * (
+                        self._word_size * self._block_size)/high)))):
+                asm_st += f"\tlw t0, " + \
+                    f"{self._block_size * self._word_size * (i + 1)}(x{27 - j})\n"
         asm_end = "\nend:\n\tnop\n\tfence.i\n"
         
         # Concatenate all pieces of asm.
