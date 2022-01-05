@@ -34,6 +34,7 @@ mbox:
 
 caches:
   uatg_dcache_fill_01: True
+  uatg_dcache_fill_01_all: True
   uatg_dcache_fill_02: True
   uatg_dcache_fill_03: True
   uatg_dcache_fill_04: True
