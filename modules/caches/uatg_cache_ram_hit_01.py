@@ -25,8 +25,9 @@ class uatg_dcache_ram_hit_01(IPlugin):
         return _dcache_en
 
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
-        # asm_data is the test data that is loaded into memory. We use this to
-        # perform load operations.
+        """
+        Checking if ram hit occurs
+        """
         asm_data = '\nrvtest_data:\n'
         
         data = random.randrange(1,100)
@@ -37,8 +38,7 @@ class uatg_dcache_ram_hit_01(IPlugin):
             # We generate random 4 byte numbers.
             asm_data += "\t.word 0x{0:08x}\n".format(random.randrange(16 ** 8))
         
-        asm_main = "\tfence\n\tli t0, {0}\n\tla t2, rvtest_data\n".format(
-            data)
+        asm_main = "\tfence\n\tli t0, {0}\n\tla t2, rvtest_data\n".format(data)
         asm_main += "\tla a2, rvtest_data\n\tli t3, {0}\n".format(
             self._sets * self._ways)
         

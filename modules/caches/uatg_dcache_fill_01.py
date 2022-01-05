@@ -34,11 +34,13 @@ class uatg_dcache_fill_01(IPlugin):
             # We generate random 4 byte numbers.
             asm_data += "\t.word 0x{0:08x}\n".format(random.randrange(16 ** 8))
 
-        asm_main = "\tfence\n\tli t0, 69\n\tli t1, 1\n\tli t3, {0}\n\t\
-la t2, rvtest_data\n".format(self._sets * self._ways)
-        asm_lab1 = "lab1:\n\tsw t0, 0(t2)\n\taddi t2, t2, {0}\n\t\
-beq t4, t3, end\n\taddi t4, t4, 1\n\tj lab1\n".format(
-                self._word_size * self._block_size)
+        asm_main = "\tfence\n\tli t0, 69\n\tli t1, 1"
+        asm_main += "\n\tli t3, {0}".format(self._sets * self._ways)
+        asm_main += "\n\tla t2, rvtest_data\n"
+        asm_lab1 = "lab1:\n\tsw t0, 0(t2)\n\t"
+        asm_lab1 += "addi t2, t2, {0}\n\t".format(
+        	self._word_size * self._block_size)
+        asm_lab1 += "beq t4, t3, end\n\taddi t4, t4, 1\n\tj lab1\n"
         asm_end = "end:\n\tnop\n\tfence.i\n"
         
         # Concatenate all pieces of ASM.

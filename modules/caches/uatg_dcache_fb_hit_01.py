@@ -38,13 +38,15 @@ class uatg_dcache_fb_hit_01(IPlugin):
             asm_data += "\t.word 0x{0:08x}\n".format(random.randrange(
                 16 ** 8))
         
-        asm_main = "\tfence\n\tli t0, {0}\n\tla t2, rvtest_data\n\tli t3, {1} \
-            \n".format(data, self._sets * self._ways)
+        asm_main = "\tfence\n\tli t0, {0}\n\t".format(data)
+        asm_main += "la t2, rvtest_data\n\tli t3, {0} \n".format(
+        	self._sets * self._ways)
         
         # vary the base address t2, with a fixed offset 0
-        asm_lab1 = "lab1:\n\tsw t0, 0(t2)\n\taddi t2, t2, {0}\n\t\
-beq t4, t3, asm_nop\n\taddi t4, t4, 1\n\tj lab1\n".format(self._word_size *
-                self._block_size)
+        asm_lab1 = "lab1:\n\tsw t0, 0(t2)\n\t"
+        asm_lab1 += "addi t2, t2, {0}\n\t".format(
+        	self._word_size * self._block_size)
+        asm_lab1 += "beq t4, t3, asm_nop\n\taddi t4, t4, 1\n\tj lab1\n"
 
         asm_nop = "asm_nop:\n"
         # Perform a series of NOPs to empty the fill buffer.
