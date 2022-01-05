@@ -29,6 +29,23 @@ class uatg_dcache_fill_buffer_01(IPlugin):
         return _dcache_en
 
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
+        """
+        - Perform a `fence` operation to clear out the data cache subsystem
+        and the fill buffer.
+        - Load some data into a temporary register and perform `numerous store
+        operations` to fill up the cache.
+        - Each loop in ASM has an unconditional `jump` back to that label,
+        a branch takes us out of the loop.
+        - Each iteration, we visit the next `set`.
+        - The total number of iterations is parameterized based on YAML input.
+        - Once the cache is full, we perform numerous
+        `consecutive store operations`.
+        - The number of iterations is parameterized based on the YAML input
+        such that the fill_buffer is completely full.
+        - Post filling the caches, we perform a series of `nop` instructions
+        to ensure that the fill buffer is empty.
+        """
+
         # asm_data is the test data that is loaded into memory.
         # We use this to perform load operations.
         asm_data = '\nrvtest_data:\n'
@@ -39,11 +56,12 @@ class uatg_dcache_fill_buffer_01(IPlugin):
             # We generate random 4 byte numbers.
             asm_data += "\t.word 0x{0:08x}\n".format(random.randrange(16**8))
 
-        asm_main = "\tfence\n\tli t0, 69\n\tli t3, {0}\n\tla t2, rvtest_data\
-\n".format(self._sets * self._ways)
-        asm_lab1 = "lab1:\n\tsw t0, 0(t2)\n\taddi t2, t2, {0}\n\t\
-beq t4, t3, asm_nop\n\taddi t4, t4, 1\n\tj lab1\n".format(
-                self._word_size * self._block_size)
+        asm_main = f"\tfence\n\tli t0, 69\n" + \
+            f"\tli t3, {self._sets * self._ways}\n" + \
+                "\tla t2, rvtest_data\n"
+        asm_lab1 = f"lab1:\n\tsw t0, 0(t2)\n"+ \
+            f"\taddi t2, t2, {self._word_size * self._block_size}\n" + \
+                "\tbeq t4, t3, asm_nop\n\taddi t4, t4, 1\n\tj lab1\n"
         asm_nop = "asm_nop:\n"
 
         # Perform a series of NOPs to empty the fill buffer.
@@ -54,8 +72,8 @@ beq t4, t3, asm_nop\n\taddi t4, t4, 1\n\tj lab1\n".format(
         # no window for an opportunistic release.
         asm_sw = "asm_sw:\n"
         for i in range(self._fb_size * 2):
-            asm_sw += "\tsw t0, {0}(t2)\n".format(self._block_size *
-            self._word_size * (i + 1))
+            asm_sw += "\t" + \
+                f"sw t0, {self._block_size * self._word_size * (i + 1)}(t2)\n"
         asm_end = "end:\n\tnop\n\tfence.i\n"
     	
         # Concatenate all pieces of ASM.
