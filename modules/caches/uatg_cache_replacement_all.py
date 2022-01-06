@@ -54,10 +54,10 @@ class uatg_cache_replacement_all(IPlugin):
 
         asm_main = "\tfence\n\tli t0, 69\n\tli t1, 1\n\tli t3, "+str(self._sets * 
         self._ways) + "\n\tli x10, 3\n\tli x8, "+x2+"\n\tla t2, rvtest_data\n"
-        asm_lab1 = "lab1:\n\tlw t0, 0(t2)\n\tadd t2, t2, x8\n\t \
-        	beq t4, t3, lab2\n\taddi t4, t4, 1\n\tj lab1\n"
-        asm_lab2 = "lab2:\n\taddi x4, x0, 0\n\taddi x9, x9, 1\n\t \
-        	beq x9, x10, end\n\tj lab1\n"
+        asm_lab1 = "lab1:\n\tlw t0, 0(t2)\n\tadd t2, t2, x8\n\t"
+        asm_lab1 += "beq t4, t3, lab2\n\taddi t4, t4, 1\n\tj lab1\n"
+        asm_lab2 = "lab2:\n\taddi x4, x0, 0\n\taddi x9, x9, 1\n\t"
+        asm_lab2 += "beq x9, x10, end\n\tj lab1\n"
         asm_end = "end:\n\tnop\n\tfence.i\n"
         
         # Concatenate all pieces of ASM.
