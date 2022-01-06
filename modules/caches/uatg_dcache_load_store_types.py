@@ -4,6 +4,7 @@ from yapsy.IPlugin import IPlugin
 from ruamel.yaml import YAML
 import uatg.regex_formats as rf
 from typing import Dict, Union, Any, List
+import random
 
 class uatg_dcache_load_store_types(IPlugin):
     def _init_(self):
@@ -45,8 +46,23 @@ class uatg_dcache_load_store_types(IPlugin):
         Then immediately `load` the entire `double word` and check if the
         modification has updated the value from the store buffer.
 
+        to test critical word first is correctly done,
+        - perform load/store to the higest byte of a line followed by the the lowest byte.
+        - the middle of the line and then the highest byte.
+        - the middle of the line followed by the lowest byte
+        - highest byte followed by the second highest byte
+        - lowest byte followed by the highest byte (and so on)
+        - Do the above for loads and stoers separately after fencing the cache
         """
 
+        asm_data = '\nrvtest_data:\n'
+
+        # We load the memory with data twice the size of our dcache.
+        for i in range(self._word_size * self._block_size *
+        self._sets * self._ways * 2):
+            # We generate random 4 byte numbers.
+            asm_data += "\t.word 0x{0:08x}\n".format(random.randrange(16**8))
+        
         asm_main = "\tfence\n\tli t1, 8000\n\tli t2, 0x9999999999999999\n" + \
                 "\tli t4, 0x1111\n"
         asm_pass1 = f"pass1:\n\tli a2, 0x99\n" + \
@@ -105,16 +121,28 @@ class uatg_dcache_load_store_types(IPlugin):
                 f"{self._word_size * self._block_size + (8 * 4)}(t1)\n\tld t3, " + \
                 f"{self._word_size * self._block_size}(t1)\n\tbne t3, a2, end\n"
         asm_valid = "valid:\n\taddi x31, x0, 1\n"
+        asm_fence = "\tfence\n"
+        asm_critical = "critical:\n\tla s1, rvtest_data\n" + \
+                "\tlb s2, 7(s1)\n\tfence\n\tlb s2, 0(s1)\n\tfence\n" + \
+                "\tlb s2, 3(s1)\n\tfence\n\tlb s2, 7(s1)\n\tfence\n" + \
+                "\tlb s2, 3(s1)\n\tfence\n\tlb s2, 0(s1)\n\tfence\n" + \
+                "\tlb s2, 3(s1)\n\tfence\n\tlb s2, 6(s1)\n\tfence\n" + \
+                "\tlb s2, 3(s1)\n\tfence\n\tlb s2, 1(s1)\n\tfence\n" + \
+                "\tlb s2, 3(s1)\n\tfence\n\tlb s2, 5(s1)\n\tfence\n" + \
+                "\tlb s2, 3(s1)\n\tfence\n\tlb s2, 2(s1)\n\tfence\n" + \
+                "\tlb s2, 0(s1)\n\tfence\n\tlb s2, 7(s1)\n\tfence\n" + \
+                "\tnop\n"
         asm_end = "end:\n\tnop\n\tfence.i\n"
         
         # Concatenate all pieces of asm.
         asm = asm_main + asm_pass1 + asm_pass2 + asm_pass3 + asm_pass4 + \
             asm_pass5 + asm_pass6 + asm_pass7 + asm_pass8 + asm_pass9 + \
-                asm_pass10 + asm_pass11 + asm_pass12 + asm_valid + asm_end
+                asm_pass10 + asm_pass11 + asm_pass12 + asm_valid + asm_fence + asm_critical + asm_end
         compile_macros = []    	
     	
         return [{
             'asm_code': asm,
+            'asm_data': asm_data,
             'asm_sig': '',
             'compile_macros': compile_macros
         }]
