@@ -55,8 +55,8 @@ class uatg_dcache_set_thrashing(IPlugin):
 
         for i in range(self._word_size * self._block_size * self._sets
         * self._ways * 2):
-            # We generate random 4 byte numbers.
-            asm_data += "\t.word 0x{0:08x}\n".format(random.randrange(16**8))
+            # We generate random 8 byte numbers.
+            asm_data += "\t.dword 0x{0:8x}\n".format(random.randrange(16**16))
 
         asm_main = f"\n\tfence\n\tli t0, 69\n\tli t1, 1\n" + \
             f"\tli t3, {self._sets * self._ways}\n\tla t2, rvtest_data"

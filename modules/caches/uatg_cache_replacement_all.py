@@ -43,12 +43,12 @@ class uatg_cache_replacement_all(IPlugin):
         # asm_data is the test data that is loaded into memory.
         # We use this to perform load operations.
         asm_data = '\nrvtest_data:\n'
-        
+
         # We load the memory with data twice the size of our dcache.
         for i in range(self._word_size * self._block_size * self._sets * 
         	self._ways * 2):
-            # We generate random 4 byte numbers.
-            asm_data += "\t.word 0x{0:08x}\n".format(random.randrange(16 ** 8))
+            # We generate random 8 byte numbers.
+            asm_data += "\t.dword 0x{0:8x}\n".format(random.randrange(16**16))
         
         x2 = str(self._word_size * self._block_size)
 

@@ -32,7 +32,7 @@ class uatg_cache_dcache_fill_random(IPlugin):
         asm_data = '\nrvtest_data:\n'
 
         for i in range (self._block_size * self._sets * self._ways*2):
-                asm_data += "\t.word 0x{0:08x}\n".format(random.randrange(16**8))
+                asm_data += "\t.dword 0x{0:8x}\n".format(random.randrange(16**16))
         
         tests = ['lb','lbu','lh','lhu','lw','lwu','ld','sb','sh','sw','sd']
 

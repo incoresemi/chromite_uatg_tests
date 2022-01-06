@@ -34,9 +34,8 @@ class uatg_dcache_fb_hit_01(IPlugin):
         # We load the memory with data twice the size of our dcache.
         for i in range(self._word_size * self._block_size * self._sets *
             self._ways * 2):
-            # We generate random 4 byte numbers.
-            asm_data += "\t.word 0x{0:08x}\n".format(random.randrange(
-                16 ** 8))
+            # We generate random 8 byte numbers.
+            asm_data += "\t.dword 0x{0:8x}\n".format(random.randrange(16**16))
         
         asm_main = "\tfence\n\tli t0, {0}\n\t".format(data)
         asm_main += "la t2, rvtest_data\n\tli t3, {0} \n".format(

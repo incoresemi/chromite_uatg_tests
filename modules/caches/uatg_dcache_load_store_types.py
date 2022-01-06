@@ -60,8 +60,8 @@ class uatg_dcache_load_store_types(IPlugin):
         # We load the memory with data twice the size of our dcache.
         for i in range(self._word_size * self._block_size *
         self._sets * self._ways * 2):
-            # We generate random 4 byte numbers.
-            asm_data += "\t.word 0x{0:08x}\n".format(random.randrange(16**8))
+            # We generate random 8 byte numbers.
+            asm_data += "\t.dword 0x{0:8x}\n".format(random.randrange(16**16))
         
         asm_main = "\tfence\n\tli t1, 8000\n\tli t2, 0x9999999999999999\n" + \
                 "\tli t4, 0x1111\n"
