@@ -122,7 +122,7 @@ class uatg_dcache_load_store_types(IPlugin):
                 f"{self._word_size * self._block_size}(t1)\n\tbne t3, a2, end\n"
         asm_valid = "valid:\n\taddi x31, x0, 1\n"
         asm_fence = "\tfence\n"
-        asm_critical = "critical:\n\tla s1, rvtest_data\n" + \
+        asm_critical1 = "critical1:\n\tla s1, rvtest_data\n" + \
                 "\tlb s2, 7(s1)\n\tfence\n\tlb s2, 0(s1)\n\tfence\n" + \
                 "\tlb s2, 3(s1)\n\tfence\n\tlb s2, 7(s1)\n\tfence\n" + \
                 "\tlb s2, 3(s1)\n\tfence\n\tlb s2, 0(s1)\n\tfence\n" + \
@@ -132,12 +132,20 @@ class uatg_dcache_load_store_types(IPlugin):
                 "\tlb s2, 3(s1)\n\tfence\n\tlb s2, 2(s1)\n\tfence\n" + \
                 "\tlb s2, 0(s1)\n\tfence\n\tlb s2, 7(s1)\n\tfence\n" + \
                 "\tnop\n"
+        asm_critical2 = "critical2:\n\tla s1, rvtest_data\n" + \
+                "\tlh s2, 6(s1)\n\tfence\n\tlh s2, 0(s1)\n\tfence\n" + \
+                "\tlh s2, 4(s1)\n\tfence\n\tlh s2, 2(s1)\n\tfence\n" + \
+                "\tnop\n"
+        asm_critical3 = "critical3:\n\tla s1, rvtest_data\n" + \
+                "\tlw s2, 4(s1)\n\tfence\n\tlw s2, 0(s1)\n\tfence\n" + \
+                "\tnop\n"
         asm_end = "end:\n\tnop\n\tfence.i\n"
         
         # Concatenate all pieces of asm.
         asm = asm_main + asm_pass1 + asm_pass2 + asm_pass3 + asm_pass4 + \
             asm_pass5 + asm_pass6 + asm_pass7 + asm_pass8 + asm_pass9 + \
-                asm_pass10 + asm_pass11 + asm_pass12 + asm_valid + asm_fence + asm_critical + asm_end
+                asm_pass10 + asm_pass11 + asm_pass12 + asm_valid + asm_fence + \
+                asm_critical1 + asm_critical2 + asm_critical3 + asm_end
         compile_macros = []    	
     	
         return [{
