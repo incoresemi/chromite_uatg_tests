@@ -54,10 +54,18 @@ class uatg_gshare_fa_ghr_ones_01(IPlugin):
         # compile macros for the test
         compile_macros = []
 
+        supervisor_dict = {
+                'enable': True,
+                'page_size': 4096,
+                'paging_mode': 'sv57',
+                'll_pages': 64,
+                'u_bit': False}
+
         return [{
             'asm_code': asm,
             'asm_sig': '',
-            'compile_macros': compile_macros
+            'compile_macros': compile_macros,
+            'supervisor_mode': supervisor_dict
         }]
 
     def check_log(self, log_file_path, reports_dir):
