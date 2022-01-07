@@ -7,7 +7,7 @@ import os
 import random
 import numpy as np
 
-class uatg_cache_dcache_fill_random(IPlugin):
+class uatg_dcache_fill_random(IPlugin):
     def __init__(self):
         super().__init__()
         self._sets = 64

@@ -61,7 +61,7 @@ class uatg_dcache_read_replacement(IPlugin):
             asm_repl += \
                 f"\tli t5, " \
                 f"{self._sets * self._word_size * self._block_size * i}\n" \
-                f"\tadd s{i}, t0, t5\n"
+                f"\tadd s{i}, t0, t5\n\tfence\n"
         
         if self._replacement == "RR":
             # the caches follow a round robin replacement policy
@@ -90,7 +90,7 @@ class uatg_dcache_read_replacement(IPlugin):
                 asm_repl_next_set = f"next_set_{i}:\n"
                 asm_repl_ch_order = f"ch_order_{i}:\n"
                 asm_repl_mk_evict = \
-                    f"evice_{i}:\n\tsw t1, 0(s{self._ways+1})\n" #cause an eviction
+                    f"evict_{i}:\n\tsw t1, 0(s{self._ways+1})\n" #cause an eviction
                 repl_ch_order = list(range(self._ways))
                 random.shuffle(repl_ch_order) 
                 # change the lru order by performing loads

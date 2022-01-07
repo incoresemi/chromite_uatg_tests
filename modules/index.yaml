@@ -33,20 +33,20 @@ mbox:
   uatg_mbox_mulh_insts_01: False # buggy
 
 caches:
+  uatg_dcache_atomic_random: True
+  uatg_dcache_fb_hit_01: True
   uatg_dcache_fill_01: True
-  uatg_dcache_fill_01_all: True
   uatg_dcache_fill_02: True
   uatg_dcache_fill_03: True
   uatg_dcache_fill_04: True
   uatg_dcache_fill_05: True
+  uatg_dcache_fill_06: True
   uatg_dcache_fill_buffer_01: True
   uatg_dcache_fill_buffer_02: True
+  uatg_dcache_fill_random: True
   uatg_dcache_line_thrashing: True
   uatg_dcache_load_store_types: True
-  uatg_dcache_set_thrashing: True
-  uatg_dcache_fb_hit_01: True
-  uatg_cache_replacement_all: True
-  uatg_cache_ram_hit_01: True
-  uatg_cache_dcache_fill_random: True
-  uatg_dcache_atomic_random: True
+  uatg_dcache_ram_hit_01: True
   uatg_dcache_read_replacement: True
+  uatg_dcache_replacement_all: True
+  uatg_dcache_set_thrashing: True

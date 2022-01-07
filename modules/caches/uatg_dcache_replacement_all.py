@@ -6,7 +6,7 @@ import uatg.regex_formats as rf
 from typing import Dict, Union, Any, List
 import random
 
-class uatg_cache_replacement_all(IPlugin):
+class uatg_dcache_replacement_all(IPlugin):
     def __init__(self):
         """This function defines the default values for all the parameters 
         being taken as an input from the core and isa yaml files."""

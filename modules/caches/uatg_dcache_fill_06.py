@@ -6,7 +6,7 @@ import uatg.regex_formats as rf
 from typing import Dict, Union, Any, List
 import random
 
-class uatg_dcache_fill_01_all(IPlugin):
+class uatg_dcache_fill_06(IPlugin):
     def __init__(self):
         super().__init__()
         self._sets = 64
