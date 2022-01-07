@@ -63,17 +63,18 @@ class uatg_dcache_read_replacement(IPlugin):
                 f"{self._sets * self._word_size * self._block_size * i}\n" \
                 f"\tadd s{i}, t0, t5\n"
         
-        if self._replacement == 'RR':
+        if self._replacement == "BLEH":
             # the caches follow a round robin replacement policy
             for i in range(self._sets):
-                asm_repl_mk_thrash = ""
-                asm_repl_mk_dirty = ""
-                asm_repl_next_set = ""
+                asm_repl_mk_thrash = f"thrash_{i}:\n"
+                asm_repl_mk_dirty = f"mkdirty_{i}:\n"
+                asm_repl_next_set = f"next_set_{i}:\n"
                 # increment the 12th bit, keeping all lower bits the same
                 for j in range(self._ways):
                     asm_repl_mk_dirty += f"\tsw t1, 0(s{j})\n"
                     asm_repl_mk_thrash += f"\tlw t5, 0(s{j})\n"
-                asm_repl_mk_dirty += f"\tsw t1, 0(s{j+1})\n" #cause an eviction
+                #cause an eviction
+                asm_repl_mk_dirty += f"evict_{i}:\n\tsw t1, 0(s{j+1})\n"
                 for j in range(self._ways+1): 
                     # load the lines that are being evicted
                     # while theyre being evicted
@@ -81,19 +82,20 @@ class uatg_dcache_read_replacement(IPlugin):
                     f"\taddi s{j}, s{j}, {self._word_size * self._block_size}\n"
                 asm_repl += asm_repl_mk_dirty + asm_repl_mk_thrash + \
                     asm_repl_next_set   
-        if self._replacement == "PLRU":
+        if self._replacement == "RR":
             # the caches are following a pseudo random replacement algorithm
             for i in range(self._sets):
                 asm_repl_mk_thrash = f"thrash_{i}:\n"
                 asm_repl_mk_dirty = f"mkdirty_{i}:\n"
                 asm_repl_next_set = f"next_set_{i}:\n"
                 asm_repl_ch_order = f"ch_order_{i}:\n"
+                asm_repl_mk_evict = \
+                    f"evice_{i}:\n\tsw t1, 0(s{self._ways+1})\n" #cause an eviction
                 repl_ch_order = list(range(self._ways))
                 random.shuffle(repl_ch_order) 
                 # change the lru order by performing loads
                 for j in range(self._ways):
                     asm_repl_mk_dirty += f"\tsw t1, 0(s{j})\n"
-                asm_repl_mk_dirty += f"\tsw t1, 0(s{j+1})\n" #cause an eviction
                 for k in repl_ch_order:
                     asm_repl_ch_order += f"\tlw t5, 0(s{k})\n"
                 for k in repl_ch_order:
@@ -104,7 +106,7 @@ class uatg_dcache_read_replacement(IPlugin):
                     asm_repl_next_set += \
                     f"\taddi s{j}, s{j}, {self._word_size * self._block_size}\n"
                 asm_repl += asm_repl_mk_dirty + asm_repl_ch_order + \
-                    asm_repl_mk_thrash + asm_repl_next_set 
+                    asm_repl_mk_evict + asm_repl_mk_thrash + asm_repl_next_set 
         asm_end = "end:\n\tnop\n\tfence.i\n"
     	
         # Concatenate all pieces of ASM.
