@@ -55,7 +55,7 @@ class uatg_dcache_load_store_types(IPlugin):
         - Do the above for loads and stoers separately after fencing the cache
         """
 
-        asm_data = '\nrvtest_data:\n'
+        asm_data = f"\nrvtest_data:\n\t.align {self._word_size}\n"
 
         # We load the memory with data twice the size of our dcache.
         for i in range(self._word_size * self._block_size *

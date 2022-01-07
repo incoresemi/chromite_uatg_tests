@@ -27,7 +27,7 @@ class uatg_dcache_fb_hit_01(IPlugin):
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
         # asm_data is the test data that is loaded into memory. We use this to
         # perform load operations.
-        asm_data = '\nrvtest_data:\n'
+        asm_data = f"\nrvtest_data:\n\t.align {self._word_size}\n"
         
         data = random.randrange(1,100)
 

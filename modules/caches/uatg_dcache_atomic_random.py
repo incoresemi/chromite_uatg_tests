@@ -29,13 +29,13 @@ class uatg_dcache_atomic_random(IPlugin):
         Used to generate asm files with random atomic operations
         Boundaries are random but compliant to instruction
         """
-        asm_data = '\nrvtest_data:\n'
+        asm_data = f"\nrvtest_data:\n\t.align {self._word_size}\n"
 
         for i in range (self._block_size * self._sets * self._ways*2):
                 asm_data += "\t.word 0x{0:08x}\n".format(random.randrange(16**8))
         
         tests = ['amoswap','amoadd','amoand','amoor','amoxor','amomax']
-        tests.extend([,'amomaxu','amomin','amominu'])
+        tests.extend(['amomaxu','amomin','amominu'])
         ext = ['.w','.d']
 
         asm_main = "\tfence\n\tli t0, 69\n\tli t1, 1"

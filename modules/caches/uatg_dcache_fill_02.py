@@ -31,7 +31,7 @@ class uatg_dcache_fill_02(IPlugin):
 	the ways in a set are touched, we visit the next set.
 	The total number of iterations is parameterized based on YAML input.
         """
-        asm_data = '\nrvtest_data:\n'
+        asm_data = f"\nrvtest_data:\n\t.align {self._word_size}\n"
 
         # We load the memory with data twice the size of our dcache.
         for i in range(self._word_size * self._block_size *

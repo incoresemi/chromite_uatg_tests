@@ -28,7 +28,7 @@ class uatg_dcache_ram_hit_01(IPlugin):
         """
         Checking if ram hit occurs
         """
-        asm_data = '\nrvtest_data:\n'
+        asm_data = f"\nrvtest_data:\n\t.align {self._word_size}\n"
         
         data = random.randrange(1,100)
 

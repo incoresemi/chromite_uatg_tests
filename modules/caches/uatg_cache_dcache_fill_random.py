@@ -29,7 +29,7 @@ class uatg_cache_dcache_fill_random(IPlugin):
         Used to generate asm files with random stores/loads
         Boundaries are random but compliant to instruction
         """
-        asm_data = '\nrvtest_data:\n'
+        asm_data = f"\nrvtest_data:\n\t.align {self._word_size}\n"
 
         for i in range (self._block_size * self._sets * self._ways*2):
                 asm_data += "\t.dword 0x{0:8x}\n".format(random.randrange(16**16))

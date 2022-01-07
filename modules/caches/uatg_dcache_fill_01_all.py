@@ -29,7 +29,7 @@ class uatg_dcache_fill_01_all(IPlugin):
         lb, lbu, lh, lhu, lw, lwu, ld, sb, sh, sw, sd
         sequentially in the exact same order
         """
-        asm_data = '\nrvtest_data:\n'
+        asm_data = f"\nrvtest_data:\n\t.align {self._word_size}\n"
         
         # We load the memory with data twice the size of our dcache.
         for i in range(self._word_size * self._block_size *
