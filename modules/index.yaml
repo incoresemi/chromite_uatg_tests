@@ -48,3 +48,5 @@ caches:
   uatg_cache_replacement_all: True
   uatg_cache_ram_hit_01: True
   uatg_cache_dcache_fill_random: True
+  uatg_dcache_atomic_random: True
+  uatg_dcache_read_replacement: True
