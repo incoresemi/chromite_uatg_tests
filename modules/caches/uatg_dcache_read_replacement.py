@@ -63,7 +63,7 @@ class uatg_dcache_read_replacement(IPlugin):
                 f"{self._sets * self._word_size * self._block_size * i}\n" \
                 f"\tadd s{i}, t0, t5\n"
         
-        if self._replacement == "BLEH":
+        if self._replacement == "RR":
             # the caches follow a round robin replacement policy
             for i in range(self._sets):
                 asm_repl_mk_thrash = f"thrash_{i}:\n"
@@ -82,7 +82,7 @@ class uatg_dcache_read_replacement(IPlugin):
                     f"\taddi s{j}, s{j}, {self._word_size * self._block_size}\n"
                 asm_repl += asm_repl_mk_dirty + asm_repl_mk_thrash + \
                     asm_repl_next_set   
-        if self._replacement == "RR":
+        if self._replacement == "PLRU":
             # the caches are following a pseudo random replacement algorithm
             for i in range(self._sets):
                 asm_repl_mk_thrash = f"thrash_{i}:\n"
