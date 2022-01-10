@@ -24,8 +24,9 @@ class uatg_icache_fill(IPlugin):
         return _dcache_en
 
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
-        # asm_data is the test data that is loaded into memory.
-        # We use this to perform load operations.
+        """
+        Filling icache by using only jump from one line to another
+        """
         asm_data = f"\nrvtest_data:\n\t.align {self._word_size}\n"
         
         # We load the memory with data twice the size of our dcache.
