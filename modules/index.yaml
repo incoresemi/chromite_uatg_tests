@@ -50,3 +50,4 @@ caches:
   uatg_dcache_read_replacement: True
   uatg_dcache_replacement_all: True
   uatg_dcache_set_thrashing: True
+  uatg_icache_fill: True
