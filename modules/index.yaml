@@ -1,5 +1,5 @@
 branch_predictor:
-  uatg_gshare_fa_btb_fill_01: True
+  uatg_gshare_fa_btb_fill_01: False
   uatg_gshare_fa_btb_selfmodifying_01: False
   uatg_gshare_fa_fence_01: False
   uatg_gshare_fa_ghr_alternating_01: False
@@ -22,13 +22,14 @@ decoder:
   uatg_decoder_jump_jalr: False
   uatg_decoder_logical_insts_1: False
   uatg_decoder_logical_insts_2: False
-  uatg_decoder_memory_insts_1: True
+  uatg_decoder_memory_insts_1: False
   uatg_decoder_mext: False
 
 decompressor:
   uatg_decompressor_01: False # buggy
-  uatg_decompressor_02: True
+  uatg_decompressor_02: False
   uatg_decompressor_floating_01: False
+  uatg_decompressor_reserved_insts: False
 
 mbox:
   uatg_mbox_divu_insts_01: False #test passed
@@ -102,5 +103,5 @@ mbox:
   uatg_mbox_comp_comp_reg_WAR: False #test passed
   uatg_mbox_comp_comp_rv64_WAR: False #test passed
   uatg_mbox_comp_comp_imm_WAR: False #test passed
-  uatg_mbox_comp_comp_rv64_imm_WAR: True #test passed
+  uatg_mbox_comp_comp_rv64_imm_WAR: False #test passed
  
