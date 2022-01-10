@@ -38,7 +38,7 @@ class uatg_icache_fill(IPlugin):
         nop = "\taddi x0, x0, 0\n"
 
         asm_1 = "\tj"
-        asm = "label0:"
+        asm = ".option norvc\nlabel0:\n"
         word = self._word_size
         for i in range(self._sets):
             asm += asm_1+" label"+str(i+1)+"\n"
