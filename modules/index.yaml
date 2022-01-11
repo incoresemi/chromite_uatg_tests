@@ -55,3 +55,4 @@ caches:
   uatg_icache_fill_buffer_01: True
   uatg_icache_set_thrashing: True
   uatg_icache_read_replacement: False
+  uatg_icache_fence_race: True
