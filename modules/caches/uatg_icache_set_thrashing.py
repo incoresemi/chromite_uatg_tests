@@ -32,8 +32,8 @@ class uatg_icache_set_thrashing(IPlugin):
         after filling the cache entirely with NOPs."""
 
         ins_list = [f"ins{i}:\n\tj ins{self._instructions + i}\n" 
-        for i in range(self._instructions * self._ways)]
-        ins_back = [f"ins{self._instructions * self._ways + i}:\n\tj ins{i+1}\n"
+        for i in range(self._instructions * (self._ways * 2))]
+        ins_back = [f"ins{self._instructions * (self._ways * 2) + i}:\n\tj ins{i+1}\n"
         for i in range(self._instructions)]
         ins_list.extend(ins_back)
         ins_list[-1] = ((ins_list[-1].split(":"))[0] + ":\n\tnop")
