@@ -15,13 +15,13 @@ class uatg_icache_fill(IPlugin):
         self._ways = 4
     
     def execute(self, core_yaml, isa_yaml) -> bool:
-        _dcache_dict = core_yaml['icache_configuration']
-        _dcache_en = _dcache_dict['instantiate']
-        self._sets = _dcache_dict['sets']
-        self._word_size = _dcache_dict['word_size']
-        self._block_size = _dcache_dict['block_size']
-        self._ways = _dcache_dict['ways']
-        return _dcache_en
+        _icache_dict = core_yaml['icache_configuration']
+        _icache_en = _icache_dict['instantiate']
+        self._sets = _icache_dict['sets']
+        self._word_size = _icache_dict['word_size']
+        self._block_size = _icache_dict['block_size']
+        self._ways = _icache_dict['ways']
+        return _icache_en
 
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
         """
@@ -29,7 +29,7 @@ class uatg_icache_fill(IPlugin):
         """
         asm_data = f"\nrvtest_data:\n\t.align {self._word_size}\n"
         
-        # We load the memory with data twice the size of our dcache.
+        # We load the memory with data twice the size of our icache.
         for i in range(self._word_size * self._block_size *
         self._sets * self._ways * 2):
             # We generate random 8 byte numbers.
