@@ -30,14 +30,42 @@ class uatg_icache_self_modifying(IPlugin):
         loading data into t0 to fence.i This causes the branch which missed
         the first time to happen and branch to first instruction which failed
         the last time."""
+        
+        #t0 = starting address
+        #t1 = exit address
+        #t2 = exit - starting address
+        #t3 = jump opcode to be written in t0
+        #t4 = temporary values
 
         asm = ".option norvc\n"
         asm += "begin:\n"
         asm += "\tli t0, 0x80000000\n"
         asm += "\tbeqz t0, begin\n"
-        asm += "\tli t1, 0x0000100f\n"
-        asm += "\tsw t1, 0(t0)\n"
-        asm += "\taddi t0, x0, 0\n"
+        asm += "\tla t1, exit\n"
+        asm += "\tsub t2, t1, t0\n"
+        asm += "\tli t3, 0x06f\n"
+        #20th bit of t2 to 32nd bit of t3
+        asm += "\tli t4, 0x100000\n"
+        asm += "\tand t4, t4, t2\n"
+        asm += "\tslli t4, t4, 11\n"
+        asm += "\tor t3, t3, t4\n"
+        #10-1 bit of t2 to 31-22 bit of t3
+        asm += "\tli t4, 0x7fe\n"
+        asm += "\tand t4, t4, t2\n"
+        asm += "\tslli t4, t4, 20\n"
+        asm += "\tor t3, t3, t4\n"
+        #11th bit of t2 to 21th bit of t3
+        asm += "\tli t4, 0x800\n"
+        asm += "\tand t4, t4, t2\n"
+        asm += "\tslli t4, t4, 9\n"
+        asm += "\tor t3, t3, t4\n"
+        #19-12 bit of t2 to 20-13 bit of t2
+        asm += "\tli t4, 0xff000\n"
+        asm += "\tand t4, t4, t2\n"
+        asm += "\tslli t4, t4, 0\n"
+        asm += "\tor t3, t3, t4\n"
+        #writing t3 at location t0
+        asm += "\tsw t3, 0(t0)\n"
         asm += "\tfence.i\n"
         asm += "\tnop\n\tnop\n\tnop\n\tnop\n\tnop\n"
         asm += "\tj begin\n"

@@ -50,9 +50,10 @@ caches:
   uatg_dcache_read_replacement: False
   uatg_dcache_replacement_all: False
   uatg_dcache_set_thrashing: False
-  uatg_icache_fill_01: True
-  uatg_icache_fill_02: True
-  uatg_icache_fill_buffer_01: True
-  uatg_icache_set_thrashing: True
+  uatg_icache_fill_01: False
+  uatg_icache_fill_02: False
+  uatg_icache_fill_buffer_01: False
+  uatg_icache_set_thrashing: False
   uatg_icache_read_replacement: False
-  uatg_icache_fence_race: True
+  uatg_icache_fence_race: False
+  uatg_icache_self_modifying: True
