@@ -26,10 +26,13 @@ class uatg_icache_critical_word_first(IPlugin):
         return _icache_en
 
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
-        """All instructions are jumps. The first instruction jumps to a label
-        that is atleast 12bits atmost 18bits apart in terms of the address,
-        causing the instruction to map to the same set. This is being done
-        after filling the cache entirely with NOPs."""
+        """
+        Critical word first test
+        Jumps in between lines to check if critical word is brought in first
+        first to middle and vice versa
+        first to last and vice versa
+        middle to last and vice versa
+        """
         
         #0-f-10-1a-2a-20-3a-3f-4f-40-5f-5a
         #0-f-10-1a-20-2a-3a-3f-40-4f-5a-5f
