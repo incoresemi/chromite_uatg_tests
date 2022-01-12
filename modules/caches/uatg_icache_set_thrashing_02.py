@@ -29,11 +29,15 @@ class uatg_icache_set_thrashing_02(IPlugin):
         """Generate asm as a list of strings that have different
         alignments based on which set they're looking to thrash."""
         iter = self._word_size * self._block_size
-        ins_list = [f"\tli t1, {iter}\n\t.align {self._sets}\nins_j:\n" + \
+        ins_list = [f"\tli t1, {iter}\n" + \
+            f"".join(
+                [f"\t.align {self._word_size}\n"
+                for j in range(self._block_size)]
+            ) + "ins_j:\n" + \
             f"".join(
                 [str(elem) for elem in [
-                    f"\t.align {self._word_size * self._block_size}\n"
-                    for k in range(i)]
+                    f"\t.align {self._word_size}\n"
+                    for k in range(self._block_size)]
                 ]) + \
             f"\taddi t1, t1, -1\n\tbeqz t1, end\n\tj ins_j\nend:\n\tnop"
             for i in range(self._sets)]
