@@ -58,3 +58,4 @@ caches:
   uatg_icache_read_replacement: True
   uatg_icache_fence_race: False
   uatg_icache_self_modifying: False
+  uatg_icache_critical_word_first: True
