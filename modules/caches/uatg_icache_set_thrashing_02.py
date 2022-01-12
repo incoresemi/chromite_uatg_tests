@@ -7,7 +7,7 @@ import uatg.regex_formats as rf
 from typing import Dict, Union, Any, List
 import random
 
-class uatg_icache_set_thrashing(IPlugin):
+class uatg_icache_set_thrashing_02(IPlugin):
     def __init__(self):
         super().__init__()
         self._sets = 64
@@ -26,21 +26,20 @@ class uatg_icache_set_thrashing(IPlugin):
         return _icache_en
 
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
-        """All instructions are jumps. The first instruction jumps to a label
-        that is atleast 12bits atmost 18bits apart in terms of the address,
-        causing the instruction to map to the same set. This is being done
-        after filling the cache entirely with NOPs."""
-
-        ins_list = [f"ins{i}:\n\tj ins{self._instructions + i}\n" 
-        for i in range(self._instructions * (self._ways * 2))]
-        ins_back = [f"ins{self._instructions * (self._ways * 2) + i}:\n\tj ins{i+1}\n"
-        for i in range(self._instructions)]
-        ins_list.extend(ins_back)
-        ins_list[-1] = ((ins_list[-1].split(":"))[0] + ":\n\tnop")
-        asm = "".join(ins_list)
+        """Generate asm as a list of strings that have different
+        alignments based on which set they're looking to thrash."""
+        iter = self._word_size * self._block_size
+        ins_list = [f"\tli t1, {iter}\n\t.align {self._sets}\nins_j:\n" + \
+            f"".join(
+                [str(elem) for elem in [
+                    f"\t.align {self._word_size * self._block_size}\n"
+                    for k in range(i)]
+                ]) + \
+            f"\taddi t1, t1, -1\n\tbeqz t1, end\n\tj ins_j\nend:\n\tnop"
+            for i in range(self._sets)]
         compile_macros = []
         return [{
-            'asm_code': f"\t.align {self._word_size}\n" + asm,
+            'asm_code': "\t.option norvc\n" + i,
             'asm_sig': '',
             'compile_macros': compile_macros
-        }]
+        } for i in ins_list]
