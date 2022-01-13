@@ -33,7 +33,7 @@ class uatg_bypass_trap(IPlugin):
         asm +=f"\taddi {reg_file[3]},{reg_file[0]} ,7\n"	#initializing register x3
         asm +=f"\tandi {reg_file[31]} ,{reg_file[0]} ,0\n"	#clearing the bits in register x31
         asm += f"\t mul {reg_file[8]} ,{reg_file[3]} ,{reg_file[2]}\n"	#x8<-- 7*5=35
-        asm += f"\t lw {reg_file[5]} ,{reg_file[0]} ,1 \n"			#expected address misalign --> jumps to trap handler --> expected pipeline flush
+        asm += f"\t lw {reg_file[5]} ,1({reg_file[0]})\n"			#expected address misalign --> jumps to trap handler --> expected pipeline flush
         asm += f"\t sra {reg_file[31]} ,{reg_file[8]} ,{reg_file[2]}\n"	#Signature register should store arithmetic right shifted '35' by 5 bits if the trap wasn't taken.
         #if the misaligned trap is taken,then it'll have the reset  values (expected) 
         asm += f"\t bnez {reg_file[31]}, flag\n"
