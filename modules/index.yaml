@@ -33,29 +33,29 @@ mbox:
   uatg_mbox_mulh_insts_01: False # buggy
 
 caches:
-  uatg_dcache_atomic_random: False
-  uatg_dcache_fb_hit_01: False
-  uatg_dcache_fill_01: False
-  uatg_dcache_fill_02: False
-  uatg_dcache_fill_03: False
-  uatg_dcache_fill_04: False
-  uatg_dcache_fill_05: False
-  uatg_dcache_fill_06: False
-  uatg_dcache_fill_buffer_01: False
-  uatg_dcache_fill_buffer_02: False
-  uatg_dcache_fill_random: False
-  uatg_dcache_line_thrashing: False
-  uatg_dcache_load_store_types: False
-  uatg_dcache_ram_hit_01: False
-  uatg_dcache_read_replacement: False
-  uatg_dcache_replacement_all: False
-  uatg_dcache_set_thrashing: False
-  uatg_icache_fill_01: False
-  uatg_icache_fill_02: False
-  uatg_icache_fill_buffer_01: False
-  uatg_icache_set_thrashing_01: False
-  uatg_icache_set_thrashing_02: False
-  uatg_icache_read_replacement: True
-  uatg_icache_fence_race: False
-  uatg_icache_self_modifying: False
+  uatg_dcache_atomic_random: True
+  uatg_dcache_fb_hit_01: True
+  uatg_dcache_fill_01: True
+  uatg_dcache_fill_02: True
+  uatg_dcache_fill_03: True
+  uatg_dcache_fill_04: True
+  uatg_dcache_fill_05: True
+  uatg_dcache_fill_06: True
+  uatg_dcache_fill_buffer_01: True
+  uatg_dcache_fill_buffer_02: True
+  uatg_dcache_fill_random: True
+  uatg_dcache_line_thrashing: True
+  uatg_dcache_load_store_types: True
+  uatg_dcache_ram_hit_01: True
+  uatg_dcache_read_replacement: True
+  uatg_dcache_replacement_all: True
+  uatg_dcache_set_thrashing: True
+  uatg_icache_fill_01: True
+  uatg_icache_fill_02: True
+  uatg_icache_fill_buffer_01: True
+  uatg_icache_set_thrashing_01: True
+  uatg_icache_set_thrashing_02: True # Generates 'sets' number of ASM Files
+  uatg_icache_read_replacement: True # Generates 'sets' number of ASM files
+  uatg_icache_fence_race: True
+  uatg_icache_self_modifying: True
   uatg_icache_critical_word_first: True

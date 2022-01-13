@@ -33,8 +33,6 @@ class uatg_icache_read_replacement(IPlugin):
         in the icache. A random replacement policy would result in a single
         NOP being put in the ASM."""
 
-        self._replacement = 'RR'
-
         if self._replacement == 'RANDOM':
             ""
 
@@ -65,7 +63,32 @@ class uatg_icache_read_replacement(IPlugin):
             } for i in ins_list]
 
         if self._replacement == 'PLRU':
-            ""
+            iter = self._ways + 1
+            order = [z for z in range(2, iter)]
+            random.shuffle(order)
+            ins_list = [[
+                    f"\tli t0, {iter}\n" \
+                    f"\t.align " \
+                    f"{int(math.log2(i * self._word_size))}\n" \
+                    f"ins1:\n\taddi t0, t0, -1\n\tbeqz t0, end\n" \
+                    f"\tj ins{order[0]}\n" + \
+                    f"".join([
+                        f"\t.align " \
+                        f"{int(math.log2(self._sets * self._word_size * self._block_size))}\n" \
+                        f"ins{k}:\n\tj ins{k+1}\n"
+                        for k in order
+                        ]) + \
+                    f"\t.align " \
+                    f"{int(math.log2(i * self._word_size))}\n" \
+                    f"ins{iter}:\n\tj ins1\n" \
+                    f"end:\n\tnop\n"
+                ] for i in range(1, self._sets + 1)]
+            compile_macros = []
+            return [{
+                'asm_code': "\t.option norvc\n" + "".join(i),
+                'asm_sig': '',
+                'compile_macros': compile_macros
+            } for i in ins_list]
 
         compile_macros = []
         return [{
