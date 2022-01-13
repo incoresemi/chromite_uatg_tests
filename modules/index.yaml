@@ -51,8 +51,6 @@ caches:
   uatg_dcache_replacement_all: True
   uatg_dcache_set_thrashing: True
   uatg_icache_fill_01: True
-  uatg_icache_fill_02: True
-  uatg_icache_fill_buffer_01: True
   uatg_icache_set_thrashing_01: True
   uatg_icache_set_thrashing_02: True # Generates 'sets' number of ASM Files
   uatg_icache_read_replacement: True # Generates 'sets' number of ASM files
