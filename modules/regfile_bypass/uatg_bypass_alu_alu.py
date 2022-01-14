@@ -43,7 +43,7 @@ class uatg_bypass_alu_alu(IPlugin):
         asm += f"\taddi {reg_file[5]} ,{reg_file[0]} ,14\n"
 
         asm += f"\tbne {reg_file[5]} ,{reg_file[4]} ,flag\n"
-        asm += f"\tflag:\n\t addi {reg_file[7]} ,{reg_file[0]} ,10\n" # if this branch is taken then it implies that 
+        asm += f"flag:\n\t addi {reg_file[7]} ,{reg_file[0]} ,10\n" # if this branch is taken then it implies that 
         #                                                           bypassing hasn't happened properly
     
 
