@@ -49,7 +49,7 @@ class uatg_bypass_mul_load_store(IPlugin):
         # store the product(5*7) to verify in the next step
 
         asm += f"\tbne {reg_file[5]} ,{reg_file[6]} ,flag\n"
-        asm += f"\tflag:\n\t addi {reg_file[7]} ,{reg_file[0]} ,10\n" 
+        asm += f"flag:\n\taddi {reg_file[7]} ,{reg_file[0]} ,10\n" 
         # if this branch is taken then it implies that 
         # bypassing hasn't happened properly
     

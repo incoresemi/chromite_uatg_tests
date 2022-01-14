@@ -42,15 +42,15 @@ class uatg_regfiles_r1(IPlugin):
         #initializing a temporary register (to end for loop)
         
         
-        asm += f"for:\n\t beq x4,x5, end_for"
+        asm += f"for:\n\tbeq x4,x5, end_for"
         asm += f"\n\tadd {reg_file[0]},{reg_file[0]},{reg_file[4]}"
         asm += f"\n\taddi {reg_file[4]},{reg_file[4]},2\n"
-        asm += f"\t j for\n"
-        asm += f"end_for:\n\t bne {reg_file[0]},{reg_file[1]},flag\n"
+        asm += f"\tj for\n"
+        asm += f"end_for:\n\tbne {reg_file[0]},{reg_file[1]},flag\n"
         #if the register zero takes a nonzero value then ,
         #register7 takes the value of 10
         #thus giving us the indication of bug!!
-        asm += f"flag:\n\t addi {reg_file[7]},{reg_file[1]},10\n"
+        asm += f"flag:\n\taddi {reg_file[7]},{reg_file[1]},10\n"
 
         # compile macros for the test
         compile_macros = []

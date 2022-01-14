@@ -81,16 +81,16 @@ class uatg_bypass_regfiles(IPlugin):
             
         # asm code to populate the signature region
         sig_code = "signature_start:\n"
-        sig_code += " .fill {0},4,0xdeadbeef\n".format(int(sig_bytes / 4))
+        sig_code += ".fill {0},4,0xdeadbeef\n".format(int(sig_bytes / 4))
 
 
         # return asm_code and sig_code
         test_dict.append({
            'asm_code': asm,
-            'asm_data': '',
+           'asm_data': '',
            'asm_sig': sig_code,
            'compile_macros': compile_macros,
-            #'name_postfix': inst
+           #'name_postfix': inst
             })
         return test_dict
     #after all the manual calculations, signature file should have value of 57

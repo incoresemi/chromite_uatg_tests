@@ -50,7 +50,7 @@ class uatg_bypass_mul_mul(IPlugin):
         #storing the final op to compare with value in reg4
 
         asm += f"\tbne {reg_file[5]} ,{reg_file[4]} ,flag\n"
-        asm += f"flag:\n\t addi {reg_file[7]} ,{reg_file[0]} ,10\n" 
+        asm += f"flag:\n\taddi {reg_file[7]} ,{reg_file[0]} ,10\n" 
         # if this branch is taken then it implies that 
         # bypassing HASN'T happened properly
     
