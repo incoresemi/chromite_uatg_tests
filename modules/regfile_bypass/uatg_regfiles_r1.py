@@ -1,3 +1,8 @@
+# See LICENSE.incore for details
+
+# Co-authored-by: Sushanth Mullangi B <sushanthmullangi123@gmail.com>
+# Co-authored-by: Nivedita Nadiger <nanivedita@gmail.com>
+
 from yapsy.IPlugin import IPlugin
 from uatg.instruction_constants import base_reg_file, arithmetic_instructions
 from typing import Dict, List, Union, Any
