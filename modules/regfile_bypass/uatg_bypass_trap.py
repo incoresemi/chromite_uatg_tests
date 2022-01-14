@@ -31,7 +31,10 @@ class uatg_bypass_trap(IPlugin):
         return True
 
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
-
+        """
+        Checking pipeline flushes and invoking 
+        trap handler by creating misaligned loads
+        """
         test_dict = []
         reg_file = base_reg_file.copy()
         asm =f"\taddi {reg_file[2]},{reg_file[0]} ,5\n"	

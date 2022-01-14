@@ -31,7 +31,9 @@ class uatg_bypass_regfiles(IPlugin):
         return True
 
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
-
+        """
+        Checking bypass operation using signature region
+        """
         test_dict = []
         reg_file = base_reg_file.copy()
         asm=f"\tandi {reg_file[3]},{reg_file[0]} ,0\n"	

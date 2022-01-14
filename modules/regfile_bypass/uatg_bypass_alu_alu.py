@@ -31,7 +31,10 @@ class uatg_bypass_alu_alu(IPlugin):
         return True
 
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
-        #bypass of alu and alu operation
+        """
+        Branch operation happens if bypass doesn't happen correctly
+        Bypassing checked for base ISA alu operation
+        """
         test_dict = []
         reg_file = base_reg_file.copy()
         asm = f"\taddi {reg_file[1]} ,{reg_file[0]} ,4\n"
@@ -42,8 +45,10 @@ class uatg_bypass_alu_alu(IPlugin):
 
         asm += f"\taddi {reg_file[5]} ,{reg_file[0]} ,14\n"
 
-        asm += f"\tbne {reg_file[5]} ,{reg_file[4]} ,flag\n"
+        asm += f"\tbeq {reg_file[5]} ,{reg_file[4]} ,flag\n"
+        asm += "\tj end\n"
         asm += f"flag:\n\taddi {reg_file[7]} ,{reg_file[0]} ,10\n"
+        asm += "end:\n\tfence.i\n"
         # if this branch is taken then it implies that 
         # bypassing hasn't happened properly
     

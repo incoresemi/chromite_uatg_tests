@@ -31,7 +31,11 @@ class uatg_regfiles_r1(IPlugin):
         return True
 
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
-
+        """
+        Checking hardwired value of x0
+        branch taken if value of x0 not 0
+        x7 = 10 if x0 not equal to 0
+        """
         test_dict = []
         reg_file = base_reg_file.copy()
         asm= f"\taddi {reg_file[1]},{reg_file[0]} ,0\n"
@@ -50,7 +54,9 @@ class uatg_regfiles_r1(IPlugin):
         #if the register zero takes a nonzero value then ,
         #register7 takes the value of 10
         #thus giving us the indication of bug!!
+        asm += "\tj end\n"
         asm += f"flag:\n\taddi {reg_file[7]},{reg_file[1]},10\n"
+        asm += "end:\n\tfence.i\n"
 
         # compile macros for the test
         compile_macros = []

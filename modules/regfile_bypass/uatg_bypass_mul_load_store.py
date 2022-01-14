@@ -31,7 +31,11 @@ class uatg_bypass_mul_load_store(IPlugin):
         return True
 
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
-        #bypass of mul and load/store operation
+        """
+        Branch operation happens if bypass doesn't happen correctly
+        Bypassing checked for muldiv ISA alu operation
+        Bypassing checked for load/store instructions as well
+        """
         test_dict = []
         reg_file = base_reg_file.copy()
         asm = f"\taddi {reg_file[2]} ,{reg_file[0]} ,5\n"
@@ -48,8 +52,10 @@ class uatg_bypass_mul_load_store(IPlugin):
         asm += f"\taddi {reg_file[6]} ,{reg_file[0]} ,35\n" 
         # store the product(5*7) to verify in the next step
 
-        asm += f"\tbne {reg_file[5]} ,{reg_file[6]} ,flag\n"
-        asm += f"flag:\n\taddi {reg_file[7]} ,{reg_file[0]} ,10\n" 
+        asm += f"\tbeq {reg_file[5]} ,{reg_file[6]} ,flag\n"
+        asm += "\tj end\n"
+        asm += f"flag:\n\taddi {reg_file[7]} ,{reg_file[0]} ,10\n"
+        asm += "end:\n\tfence.i\n"
         # if this branch is taken then it implies that 
         # bypassing hasn't happened properly
     

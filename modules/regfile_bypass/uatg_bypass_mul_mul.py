@@ -31,7 +31,10 @@ class uatg_bypass_mul_mul(IPlugin):
         return True
 
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
-        #bypass of mul and mul operation
+        """
+        Branch operation happens if bypass doesn't happen correctly
+        Bypassing checked for muldiv ISA alu operation
+        """
         test_dict = []
         reg_file = base_reg_file.copy()
         asm = f"\taddi {reg_file[1]} ,{reg_file[0]} ,3\n"
@@ -49,10 +52,12 @@ class uatg_bypass_mul_mul(IPlugin):
         asm += f"\taddi {reg_file[5]} ,{reg_file[0]} ,36\n"         
         #storing the final op to compare with value in reg4
 
-        asm += f"\tbne {reg_file[5]} ,{reg_file[4]} ,flag\n"
+        asm += f"\tbeq {reg_file[5]} ,{reg_file[4]} ,flag\n"
+        asm += "\tj end\n"
         asm += f"flag:\n\taddi {reg_file[7]} ,{reg_file[0]} ,10\n" 
+        asm += "end:\n\tfence.i\n"
         # if this branch is taken then it implies that 
-        # bypassing HASN'T happened properly
+        # bypassing HASN' happened properly
     
 
     
