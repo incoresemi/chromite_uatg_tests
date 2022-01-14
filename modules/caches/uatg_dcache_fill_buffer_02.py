@@ -1,4 +1,5 @@
 # See LICENSE.incore for details
+# Co-authored-by: Vishweswaran K <vishwa.kans07@gmail.com>
 
 from yapsy.IPlugin import IPlugin
 from ruamel.yaml import YAML

@@ -1,3 +1,5 @@
+# See LICENSE.incore for details
+
 from yapsy.IPlugin import IPlugin
 from ruamel.yaml import YAML
 import uatg.regex_formats as rf
@@ -31,8 +33,10 @@ class uatg_dcache_atomic_random(IPlugin):
         """
         asm_data = f"\nrvtest_data:\n\t.align {self._word_size}\n"
 
-        for i in range (self._block_size * self._sets * self._ways*2):
-                asm_data += "\t.word 0x{0:08x}\n".format(random.randrange(16**8))
+        for i in range(self._word_size * self._block_size * self._sets
+        * self._ways * 2):
+            # We generate random 8 byte numbers.
+            asm_data += "\t.dword 0x{0:8x}\n".format(random.randrange(16**16))
         
         tests = ['amoswap','amoadd','amoand','amoor','amoxor','amomax']
         tests.extend(['amomaxu','amomin','amominu'])

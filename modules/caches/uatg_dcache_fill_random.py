@@ -1,3 +1,5 @@
+# See LICENSE.incore for details
+
 from yapsy.IPlugin import IPlugin
 from ruamel.yaml import YAML
 import uatg.regex_formats as rf

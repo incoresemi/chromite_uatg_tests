@@ -1,4 +1,5 @@
 # See LICENSE.incore for details
+# Co-authored-by: Vishweswaran K <vishwa.kans07@gmail.com>
 
 from yapsy.IPlugin import IPlugin
 from ruamel.yaml import YAML
@@ -33,17 +34,17 @@ class uatg_dcache_line_thrashing(IPlugin):
         """
         - Perform a  `fence`  operation to clear out the data cache subsystem
         and the fill buffer.
-    - First the cache is filled up using the following logic. For an *n-way*
-    cache system, in each set there is *only 1 non dirty way* and the remaining
-    *n-1 ways are dirty*.
-    - Now a series of `nop` operations are done inorder the ensure that the
-    fillbuffer is empty and the cache is completely full.
-    - This is followed by a large series of back to back `store operations`
-    with an address that maps to a single set in the cache. This ensures that
-    the fillbuffer gets filled and the line thrashing process begins.
-    - Now after the fill buffer is full, with each store operation a cache
-    miss is encountered and the non-dirty line in the set will be replaced.
-    - This process is iterated to test each cache line.
+        - First the cache is filled up using the following logic. For an *n-way*
+        cache system, in each set there is *only 1 non dirty way* and the remaining
+        *n-1 ways are dirty*.
+        - Now a series of `nop` operations are done inorder the ensure that the
+        fillbuffer is empty and the cache is completely full.
+        - This is followed by a large series of back to back `store operations`
+        with an address that maps to a single set in the cache. This ensures that
+        the fillbuffer gets filled and the line thrashing process begins.
+        - Now after the fill buffer is full, with each store operation a cache
+        miss is encountered and the non-dirty line in the set will be replaced.
+        - This process is iterated to test each cache line.
         """
 
         '''This test aims to perform a series of store operations to
