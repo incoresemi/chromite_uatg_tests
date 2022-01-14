@@ -36,19 +36,23 @@ class uatg_bypass_mul_mul(IPlugin):
         reg_file = base_reg_file.copy()
         asm = f"\taddi {reg_file[1]} ,{reg_file[0]} ,3\n"
         asm += f"\taddi {reg_file[2]} ,{reg_file[0]} ,4\n"
-        asm += f"\tmul {reg_file[3]} ,{reg_file[1]} ,{reg_file[2]}\n" #1st mul instruction
-        #                                                       reg3 should have 12
+        asm += f"\tmul {reg_file[3]} ,{reg_file[1]} ,{reg_file[2]}\n" 
+        #1st mul instruction
+        #reg3 should have 12
 
-        asm += f"\tmul {reg_file[4]} ,{reg_file[1]} ,{reg_file[3]}\n" #2nd mul instruction involving a reg which is involved 
-        #                                                       in previous instruction
-        #                                                       reg4 should have 36 IF THE VALUE OF REG3 IS BYPASSED
+        asm += f"\tmul {reg_file[4]} ,{reg_file[1]} ,{reg_file[3]}\n" 
+        #2nd mul instruction involving a reg which is involved 
+        #in previous instruction
+        #reg4 should have 36 IF THE VALUE OF REG3 IS BYPASSED
        
 
-        asm += f"\taddi {reg_file[5]} ,{reg_file[0]} ,36\n"         #storing the final op to compare with value in reg4
+        asm += f"\taddi {reg_file[5]} ,{reg_file[0]} ,36\n"         
+        #storing the final op to compare with value in reg4
 
         asm += f"\tbne {reg_file[5]} ,{reg_file[4]} ,flag\n"
-        asm += f"\tflag:\n\t addi {reg_file[7]} ,{reg_file[0]} ,10\n" # if this branch is taken then it implies that 
-        #                                                           bypassing HASN'T happened properly
+        asm += f"flag:\n\t addi {reg_file[7]} ,{reg_file[0]} ,10\n" 
+        # if this branch is taken then it implies that 
+        # bypassing HASN'T happened properly
     
 
     

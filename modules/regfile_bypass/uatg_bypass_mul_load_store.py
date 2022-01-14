@@ -38,15 +38,20 @@ class uatg_bypass_mul_load_store(IPlugin):
         asm += f"\taddi {reg_file[3]} ,{reg_file[0]} ,7\n"
         asm += f"\taddi {reg_file[4]} ,{reg_file[0]} ,1\n" 
 
-        asm += f"\tmul {reg_file[4]} ,{reg_file[2]} ,{reg_file[3]}\n" # a multi-cycle instruction
-        asm += f"\tsw {reg_file[4]} ,4({reg_file[0]})\n"    #store the product into memory
+        asm += f"\tmul {reg_file[4]} ,{reg_file[2]} ,{reg_file[3]}\n"
+        # a multi-cycle instruction
+        asm += f"\tsw {reg_file[4]} ,4({reg_file[0]})\n"   
+        #store the product into memory
 
-        asm += f"\tlw {reg_file[5]} ,4({reg_file[0]})\n"    # load the stored product from the memory
-        asm += f"\taddi {reg_file[6]} ,{reg_file[0]} ,35\n" # store the product(5*7) to verify in the next step
+        asm += f"\tlw {reg_file[5]} ,4({reg_file[0]})\n"    
+        # load the stored product from the memory
+        asm += f"\taddi {reg_file[6]} ,{reg_file[0]} ,35\n" 
+        # store the product(5*7) to verify in the next step
 
         asm += f"\tbne {reg_file[5]} ,{reg_file[6]} ,flag\n"
-        asm += f"\tflag:\n\t addi {reg_file[7]} ,{reg_file[0]} ,10\n" # if this branch is taken then it implies that 
-        #                                                           bypassing hasn't happened properly
+        asm += f"\tflag:\n\t addi {reg_file[7]} ,{reg_file[0]} ,10\n" 
+        # if this branch is taken then it implies that 
+        # bypassing hasn't happened properly
     
 
     

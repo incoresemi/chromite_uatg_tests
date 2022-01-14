@@ -34,9 +34,12 @@ class uatg_bypass_regfiles(IPlugin):
 
         test_dict = []
         reg_file = base_reg_file.copy()
-        asm=f"\tandi {reg_file[3]},{reg_file[0]} ,0\n"	#clearing the bits in register x3
-        asm +=f"\tandi {reg_file[4]},{reg_file[0]} ,0\n"	#clearing the bits in register x4
-        asm+=f"\tandi {reg_file[31]} ,{reg_file[0]} ,0\n"	#clearing the bits in register x31
+        asm=f"\tandi {reg_file[3]},{reg_file[0]} ,0\n"	
+        #clearing the bits in register x3
+        asm +=f"\tandi {reg_file[4]},{reg_file[0]} ,0\n"	
+        #clearing the bits in register x4
+        asm+=f"\tandi {reg_file[31]} ,{reg_file[0]} ,0\n"	
+        #clearing the bits in register x31
         
         # initial register to use as signature pointer
         swreg = 'x31'
