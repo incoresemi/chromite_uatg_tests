@@ -1,10 +1,6 @@
 from yapsy.IPlugin import IPlugin
-from uatg.instruction_constants import base_reg_file, load_store_instructions
-from uatg.instruction_constants import illegal_generator, bit_walker
-from uatg.utils import rvtest_data, find_instances
+from uatg.instruction_constants import illegal_generator
 from typing import Dict, List
-from random import randint
-import random
 
 
 class uatg_decoder_illegal_instructions(IPlugin):
@@ -44,31 +40,31 @@ class uatg_decoder_illegal_instructions(IPlugin):
         # remove the unsupported extensions.
         # right now we remove C,S,U and Z extensions
 
-        ########### FIX-ME ################
+        # FIX-ME #
         # characters to be deleted
         del_chars = 'NCSU_ZifenceiZicsr'
         # translation table
-        table = self.isa.maketrans('','',del_chars)
+        table = self.isa.maketrans('', '', del_chars)
         # translation
         new_isa_string = self.isa.translate(table)
-        
+
         illegal_list = illegal_generator(new_isa_string)
-        
+
         # define test_list
         test_dict = []
 
-        #split the illegal instruction list using a lambda function
-        f = lambda lst, n: [lst[i:i+n] for i in range(0, len(lst),n)]
-        
+        # split the illegal instruction list using a lambda function
+        f = lambda lst, n: [lst[i:i + n] for i in range(0, len(lst), n)]
+
         no_rvc = ''
 
         if 'c' not in new_isa_string.lower():
             no_rvc = '.option norvc\n\n'
-        
+
         for sub_list in f(illegal_list, 100):
-            asm_code = '\n\n' + '#'*5 + \
-                    f'illegal instructions for {new_isa_string}' + '#'*5 + \
-                    '\n\n'
+            asm_code = '\n\n' + '#' * 5 + \
+                       f'illegal instructions for {new_isa_string}' + '#' \
+                       * 5 + '\n\n'
             asm_code += f'.align 4\n\n{no_rvc}'
             asm_code += f'la x5, rvtest_data\n'
 
@@ -83,9 +79,9 @@ class uatg_decoder_illegal_instructions(IPlugin):
                 asm_code += "\n\t.word {0}".format(hex(inst))
 
                 # increment trap count and tarp signature address
-                trap_sigbytes = trap_sigbytes + 3*(self.offset_inc)
+                trap_sigbytes = trap_sigbytes + 3 * self.offset_inc
                 trap_count = trap_count + 1
-                
+
                 # increment the overrall illegal instruction count
                 count = count + 1
 
@@ -94,13 +90,13 @@ class uatg_decoder_illegal_instructions(IPlugin):
             sig_code += ' .fill 1, 8, 0x0\n'
             sig_code += 'mtrap_sigptr:\n'
             sig_code += ' .fill {0},4,0xdeadbeef\n'.format(
-                    int(trap_sigbytes / 4))
+                int(trap_sigbytes / 4))
 
-            #compile macros for the test
+            # compile macros for the test
             compile_macros = ['rvtest_mtrap_routine']
 
             asm_code = f'## inst_count: {count}, trap_count: {trap_count}' + \
-                        asm_code
+                       asm_code
 
             asm_data = '\nrvtest_data:\n'
             asm_data += '.word 0xbabecafe\n'
@@ -119,6 +115,6 @@ class uatg_decoder_illegal_instructions(IPlugin):
 
     def generate_covergroups(self, config_file) -> str:
         return ''
-    
+
     def check_log(self, log_file_path, reports_dir) -> bool:
         return False

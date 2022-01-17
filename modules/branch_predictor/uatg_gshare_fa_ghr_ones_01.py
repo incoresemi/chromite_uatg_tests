@@ -65,7 +65,8 @@ class uatg_gshare_fa_ghr_ones_01(IPlugin):
             'asm_code': asm,
             'asm_sig': '',
             'compile_macros': compile_macros,
-            'supervisor_mode': supervisor_dict
+            'supervisor_mode': supervisor_dict,
+            'docstring': 'This test fills ghr register with ones'
         }]
 
     def check_log(self, log_file_path, reports_dir):
