@@ -24,12 +24,17 @@ decoder:
   uatg_decoder_logical_insts_2: False
   uatg_decoder_memory_insts_1: False
   uatg_decoder_mext: False
+  uatg_decoder_reserved_arithmetic: False
+  uatg_decoder_reserved_auipc: False
+  uatg_decoder_reserved_fence: False
+  uatg_decoder_reserved_insts: False
+  uatg_decoder_reserved_lui: False
 
 decompressor:
   uatg_decompressor_01: False # buggy
   uatg_decompressor_02: False
   uatg_decompressor_floating_01: False
-  uatg_decompressor_reserved_insts: False
+  uatg_decompressor_reserved_insts: True
 
 mbox:
   uatg_mbox_divu_insts_01: False #test passed
