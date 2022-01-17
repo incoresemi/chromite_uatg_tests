@@ -4,9 +4,8 @@
 # Co-authored-by: Nivedita Nadiger <nanivedita@gmail.com>
 
 from yapsy.IPlugin import IPlugin
-from uatg.instruction_constants import base_reg_file, arithmetic_instructions
+from uatg.instruction_constants import base_reg_file
 from typing import Dict, List, Union, Any
-import random
 
 
 class uatg_bypass_mul_mul(IPlugin):
@@ -15,7 +14,6 @@ class uatg_bypass_mul_mul(IPlugin):
         super().__init__()
         self.isa = 'RV32I'
         self.isa_bit = 'rv32'
-    
         self.xlen = 32
 
     def execute(self, core_yaml, isa_yaml) -> bool:
@@ -39,28 +37,25 @@ class uatg_bypass_mul_mul(IPlugin):
         reg_file = base_reg_file.copy()
         asm = f"\taddi {reg_file[1]} ,{reg_file[0]} ,3\n"
         asm += f"\taddi {reg_file[2]} ,{reg_file[0]} ,4\n"
-        asm += f"\tmul {reg_file[3]} ,{reg_file[1]} ,{reg_file[2]}\n" 
+        asm += f"\tmul {reg_file[3]} ,{reg_file[1]} ,{reg_file[2]}\n"
         #1st mul instruction
         #reg3 should have 12
 
-        asm += f"\tmul {reg_file[4]} ,{reg_file[1]} ,{reg_file[3]}\n" 
-        #2nd mul instruction involving a reg which is involved 
+        asm += f"\tmul {reg_file[4]} ,{reg_file[1]} ,{reg_file[3]}\n"
+        #2nd mul instruction involving a reg which is involved
         #in previous instruction
         #reg4 should have 36 IF THE VALUE OF REG3 IS BYPASSED
-       
 
-        asm += f"\taddi {reg_file[5]} ,{reg_file[0]} ,36\n"         
+        asm += f"\taddi {reg_file[5]} ,{reg_file[0]} ,36\n"
         #storing the final op to compare with value in reg4
 
         asm += f"\tbeq {reg_file[5]} ,{reg_file[4]} ,flag\n"
         asm += "\tj end\n"
-        asm += f"flag:\n\taddi {reg_file[7]} ,{reg_file[0]} ,10\n" 
+        asm += f"flag:\n\taddi {reg_file[7]} ,{reg_file[0]} ,10\n"
         asm += "end:\n\tfence.i\n"
-        # if this branch is taken then it implies that 
+        # if this branch is taken then it implies that
         # bypassing HASN' happened properly
-    
 
-    
         # compile macros for the test
         compile_macros = []
 
@@ -73,7 +68,7 @@ class uatg_bypass_mul_mul(IPlugin):
             #'name_postfix': inst
         })
         return test_dict
-        
+
     def check_log(self, log_file_path, reports_dir) -> bool:
         return False
 

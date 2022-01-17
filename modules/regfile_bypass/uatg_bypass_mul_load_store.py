@@ -4,9 +4,8 @@
 # Co-authored-by: Nivedita Nadiger <nanivedita@gmail.com>
 
 from yapsy.IPlugin import IPlugin
-from uatg.instruction_constants import base_reg_file, arithmetic_instructions
+from uatg.instruction_constants import base_reg_file
 from typing import Dict, List, Union, Any
-import random
 
 
 class uatg_bypass_mul_load_store(IPlugin):
@@ -15,7 +14,6 @@ class uatg_bypass_mul_load_store(IPlugin):
         super().__init__()
         self.isa = 'RV32I'
         self.isa_bit = 'rv32'
-    
         self.xlen = 32
 
     def execute(self, core_yaml, isa_yaml) -> bool:
@@ -40,27 +38,25 @@ class uatg_bypass_mul_load_store(IPlugin):
         reg_file = base_reg_file.copy()
         asm = f"\taddi {reg_file[2]} ,{reg_file[0]} ,5\n"
         asm += f"\taddi {reg_file[3]} ,{reg_file[0]} ,7\n"
-        asm += f"\taddi {reg_file[4]} ,{reg_file[0]} ,1\n" 
+        asm += f"\taddi {reg_file[4]} ,{reg_file[0]} ,1\n"
 
         asm += f"\tmul {reg_file[4]} ,{reg_file[2]} ,{reg_file[3]}\n"
         # a multi-cycle instruction
-        asm += f"\tsw {reg_file[4]} ,4({reg_file[0]})\n"   
+        asm += f"\tsw {reg_file[4]} ,4({reg_file[0]})\n"
         #store the product into memory
 
-        asm += f"\tlw {reg_file[5]} ,4({reg_file[0]})\n"    
+        asm += f"\tlw {reg_file[5]} ,4({reg_file[0]})\n"
         # load the stored product from the memory
-        asm += f"\taddi {reg_file[6]} ,{reg_file[0]} ,35\n" 
+        asm += f"\taddi {reg_file[6]} ,{reg_file[0]} ,35\n"
         # store the product(5*7) to verify in the next step
 
         asm += f"\tbeq {reg_file[5]} ,{reg_file[6]} ,flag\n"
         asm += "\tj end\n"
         asm += f"flag:\n\taddi {reg_file[7]} ,{reg_file[0]} ,10\n"
         asm += "end:\n\tfence.i\n"
-        # if this branch is taken then it implies that 
+        # if this branch is taken then it implies that
         # bypassing hasn't happened properly
-    
 
-    
         # compile macros for the test
         compile_macros = []
 
@@ -73,7 +69,7 @@ class uatg_bypass_mul_load_store(IPlugin):
             #'name_postfix': inst
         })
         return test_dict
-        
+
     def check_log(self, log_file_path, reports_dir) -> bool:
         return False
 

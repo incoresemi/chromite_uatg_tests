@@ -4,9 +4,8 @@
 # Co-authored-by: Nivedita Nadiger <nanivedita@gmail.com>
 
 from yapsy.IPlugin import IPlugin
-from uatg.instruction_constants import base_reg_file, arithmetic_instructions
+from uatg.instruction_constants import base_reg_file
 from typing import Dict, List, Union, Any
-import random
 
 
 class uatg_bypass_alu_alu(IPlugin):
@@ -15,7 +14,6 @@ class uatg_bypass_alu_alu(IPlugin):
         super().__init__()
         self.isa = 'RV32I'
         self.isa_bit = 'rv32'
-    
         self.xlen = 32
 
     def execute(self, core_yaml, isa_yaml) -> bool:
@@ -40,8 +38,8 @@ class uatg_bypass_alu_alu(IPlugin):
         asm = f"\taddi {reg_file[1]} ,{reg_file[0]} ,4\n"
         asm += f"\taddi {reg_file[2]} ,{reg_file[0]} ,5\n"
         asm += f"\taddi {reg_file[3]} ,{reg_file[0]} ,2\n"
-        asm += f"\tadd {reg_file[3]} ,{reg_file[1]} ,{reg_file[2]}\n" 
-        asm += f"\tadd {reg_file[4]} ,{reg_file[3]} ,{reg_file[2]}\n" 
+        asm += f"\tadd {reg_file[3]} ,{reg_file[1]} ,{reg_file[2]}\n"
+        asm += f"\tadd {reg_file[4]} ,{reg_file[3]} ,{reg_file[2]}\n"
 
         asm += f"\taddi {reg_file[5]} ,{reg_file[0]} ,14\n"
 
@@ -49,11 +47,9 @@ class uatg_bypass_alu_alu(IPlugin):
         asm += "\tj end\n"
         asm += f"flag:\n\taddi {reg_file[7]} ,{reg_file[0]} ,10\n"
         asm += "end:\n\tfence.i\n"
-        # if this branch is taken then it implies that 
+        # if this branch is taken then it implies that
         # bypassing hasn't happened properly
-    
 
-    
         # compile macros for the test
         compile_macros = []
 
@@ -66,7 +62,7 @@ class uatg_bypass_alu_alu(IPlugin):
             #'name_postfix': inst
         })
         return test_dict
-        
+
     def check_log(self, log_file_path, reports_dir) -> bool:
         return False
 
