@@ -103,7 +103,7 @@ class uatg_dcache_load_store_types(IPlugin):
                          f"(t1)\n\tadd s6, s6, s1\n\tslli s6, s6, 8\n\t"
         asm_pass9 += f"lb s1, " \
                      f"{self._word_size * self._block_size * 4 + (8 * 7)}" \
-                     f"x(t1)\n\tadd s6, s6, s1\n\tbne s6, a2, end\n"
+                     f"(t1)\n\tadd s6, s6, s1\n\tbne s6, a2, end\n"
 
         asm_pass10 = "pass10:\n\tli a2, 0x9999999999999999\n\t"
         for i in range(3):
