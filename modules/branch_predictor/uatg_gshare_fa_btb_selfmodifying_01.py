@@ -57,7 +57,7 @@ class uatg_gshare_fa_btb_selfmodifying_01(IPlugin):
         asm += "j_address:\n\tjal x0,first\n"
         asm += "\n\tjal x0,fin\n\n"
         asm += "end:\n\taddi x0,x0,0\n\taddi t0,x0,1\n"
-        asm += "\tla t0, b_address\n\tla t2, j_address\n" 
+        asm += "\tla t0, b_address\n\tla t2, j_address\n"
         asm += "\tla t5, add_instruction\n\tlw t1, 0(t5)\n"
         asm += "\taddi t3,x0,5\n\tsw t1, 0(t2)\n\tsw t1, 0(t0)\n"
         asm += "\tfence.i\n\tjal x0,first\n\n"

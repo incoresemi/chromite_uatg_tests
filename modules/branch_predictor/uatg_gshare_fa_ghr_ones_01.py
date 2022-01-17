@@ -54,22 +54,22 @@ class uatg_gshare_fa_ghr_ones_01(IPlugin):
         # trap signature bytes
         trap_sigbytes = 24
         trap_count = 0
-        
+
         # initialize the signature region
         sig_code = 'mtrap_count:\n'
         sig_code += ' .fill 1, 8, 0x0\n'
         sig_code += 'mtrap_sigptr:\n'
-        sig_code += ' .fill {0},4,0xdeadbeef\n'.format(
-                    int(trap_sigbytes / 4))
+        sig_code += ' .fill {0},4,0xdeadbeef\n'.format(int(trap_sigbytes / 4))
         # compile macros for the test
         compile_macros = ['rvtest_mtrap_routine']
 
         supervisor_dict = {
-                'enable': True,
-                'page_size': 4096,
-                'paging_mode': 'sv39',
-                'll_pages': 64,
-                'u_bit': False}
+            'enable': True,
+            'page_size': 4096,
+            'paging_mode': 'sv39',
+            'll_pages': 64,
+            'u_bit': False
+        }
 
         return [{
             'asm_code': asm,
