@@ -36,11 +36,11 @@ class uatg_bypass_regfiles(IPlugin):
         test_dict = []
         reg_file = base_reg_file.copy()
         asm = f"\tandi {reg_file[3]},{reg_file[0]} ,0\n"
-        #clearing the bits in register x3
+        # clearing the bits in register x3
         asm += f"\tandi {reg_file[4]},{reg_file[0]} ,0\n"
-        #clearing the bits in register x4
+        # clearing the bits in register x4
         asm += f"\tandi {reg_file[31]} ,{reg_file[0]} ,0\n"
-        #clearing the bits in register x31
+        # clearing the bits in register x31
 
         # initial register to use as signature pointer
         swreg = 'x31'
@@ -75,8 +75,8 @@ class uatg_bypass_regfiles(IPlugin):
             # so far.
             sig_bytes = sig_bytes + self.offset_inc
 
-            # compile macros for the test
-            compile_macros = []
+        # compile macros for the test
+        compile_macros = []
 
         # asm code to populate the signature region
         sig_code = "signature_start:\n"
@@ -88,11 +88,11 @@ class uatg_bypass_regfiles(IPlugin):
             'asm_data': '',
             'asm_sig': sig_code,
             'compile_macros': compile_macros,
-            #'name_postfix': inst
+            # 'name_postfix': inst
         })
         return test_dict
 
-    #after all the manual calculations, signature file should have value of 57
+    # after all the manual calculations, signature file should have value of 57
 
     def check_log(self, log_file_path, reports_dir) -> bool:
         return False

@@ -12,6 +12,7 @@ class uatg_regfiles_r1(IPlugin):
 
     def __init__(self) -> None:
         super().__init__()
+        self.offset_inc = None
         self.isa = 'RV32I'
         self.isa_bit = 'rv32'
         self.xlen = 32
@@ -37,20 +38,20 @@ class uatg_regfiles_r1(IPlugin):
         test_dict = []
         reg_file = base_reg_file.copy()
         asm = f"\taddi {reg_file[1]},{reg_file[0]} ,0\n"
-        #to store zero in another register used later for comparision
+        # to store zero in another register used later for comparision
         asm += f"\taddi {reg_file[4]},{reg_file[0]} ,2\n"
-        #initializing a temporary register (iterative variable)
+        # initializing a temporary register (iterative variable)
         asm += f"\taddi {reg_file[5]},{reg_file[0]} ,20\n"
-        #initializing a temporary register (to end for loop)
+        # initializing a temporary register (to end for loop)
 
         asm += f"for:\n\tbeq x4,x5, end_for"
         asm += f"\n\tadd {reg_file[0]},{reg_file[0]},{reg_file[4]}"
         asm += f"\n\taddi {reg_file[4]},{reg_file[4]},2\n"
         asm += f"\tj for\n"
         asm += f"end_for:\n\tbne {reg_file[0]},{reg_file[1]},flag\n"
-        #if the register zero takes a nonzero value then ,
-        #register7 takes the value of 10
-        #thus giving us the indication of bug!!
+        # if the register zero takes a nonzero value then ,
+        # register7 takes the value of 10
+        # thus giving us the indication of bug!!
         asm += "\tj end\n"
         asm += f"flag:\n\taddi {reg_file[7]},{reg_file[1]},10\n"
         asm += "end:\n\tfence.i\n"
@@ -61,10 +62,10 @@ class uatg_regfiles_r1(IPlugin):
         # return asm_code and sig_code
         test_dict.append({
             'asm_code': asm,
-            #'asm_data': '',
+            # 'asm_data': '',
             'asm_sig': '',
             'compile_macros': compile_macros,
-            #'name_postfix': inst
+            # 'name_postfix': inst
         })
         return test_dict
 

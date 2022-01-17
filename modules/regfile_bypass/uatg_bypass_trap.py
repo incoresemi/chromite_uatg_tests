@@ -12,6 +12,7 @@ class uatg_bypass_trap(IPlugin):
 
     def __init__(self) -> None:
         super().__init__()
+        self.offset_inc = None
         self.isa = 'RV32I'
         self.isa_bit = 'rv32'
         self.xlen = 32
@@ -36,21 +37,21 @@ class uatg_bypass_trap(IPlugin):
         test_dict = []
         reg_file = base_reg_file.copy()
         asm = f"\taddi {reg_file[2]},{reg_file[0]} ,5\n"
-        #initializing register x2
+        # initializing register x2
         asm += f"\taddi {reg_file[3]},{reg_file[0]} ,7\n"
-        #initializing register x3
+        # initializing register x3
         asm += f"\tandi {reg_file[31]} ,{reg_file[0]} ,0\n"
-        #clearing the bits in register x31
+        # clearing the bits in register x31
         asm += f"\tmul {reg_file[8]} ,{reg_file[3]} ,{reg_file[2]}\n"
-        #x8<-- 7*5=35
+        # x8<-- 7*5=35
         asm += f"\tlw {reg_file[5]} ,1({reg_file[0]})\n"
-        #expected address misalign --> jumps to trap handler -->
-        #expected pipeline flush
+        # expected address misalign --> jumps to trap handler -->
+        # expected pipeline flush
         asm += f"\tsra {reg_file[31]} ,{reg_file[8]} ,{reg_file[2]}\n"
-        #Signature register should store arithmetic right shifted '35' by
-        #5 bits if the trap wasn't taken.
-        #if the misaligned trap is taken,
-        #then it'll have the reset  values (expected)
+        # Signature register should store arithmetic right shifted '35' by
+        # 5 bits if the trap wasn't taken.
+        # if the misaligned trap is taken,
+        # then it'll have the reset  values (expected)
         asm += f"\tbnez {reg_file[31]}, flag\n"
         asm += f"flag:\n\tj flag\n"
 
@@ -60,10 +61,10 @@ class uatg_bypass_trap(IPlugin):
         # return asm_code and sig_code
         test_dict.append({
             'asm_code': asm,
-            #'asm_data': '',
+            # 'asm_data': '',
             'asm_sig': '',
             'compile_macros': compile_macros,
-            #'name_postfix': inst
+            # 'name_postfix': inst
         })
         return test_dict
 

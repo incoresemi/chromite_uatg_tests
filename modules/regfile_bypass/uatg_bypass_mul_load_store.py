@@ -12,6 +12,7 @@ class uatg_bypass_mul_load_store(IPlugin):
 
     def __init__(self) -> None:
         super().__init__()
+        self.offset_inc = None
         self.isa = 'RV32I'
         self.isa_bit = 'rv32'
         self.xlen = 32
@@ -43,7 +44,7 @@ class uatg_bypass_mul_load_store(IPlugin):
         asm += f"\tmul {reg_file[4]} ,{reg_file[2]} ,{reg_file[3]}\n"
         # a multi-cycle instruction
         asm += f"\tsw {reg_file[4]} ,4({reg_file[0]})\n"
-        #store the product into memory
+        # store the product into memory
 
         asm += f"\tlw {reg_file[5]} ,4({reg_file[0]})\n"
         # load the stored product from the memory
@@ -63,10 +64,10 @@ class uatg_bypass_mul_load_store(IPlugin):
         # return asm_code and sig_code
         test_dict.append({
             'asm_code': asm,
-            #'asm_data': '',
+            # 'asm_data': '',
             'asm_sig': '',
             'compile_macros': compile_macros,
-            #'name_postfix': inst
+            # 'name_postfix': inst
         })
         return test_dict
 

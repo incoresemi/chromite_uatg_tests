@@ -12,6 +12,7 @@ class uatg_bypass_alu_alu(IPlugin):
 
     def __init__(self) -> None:
         super().__init__()
+        self.offset_inc = None
         self.isa = 'RV32I'
         self.isa_bit = 'rv32'
         self.xlen = 32
@@ -56,10 +57,10 @@ class uatg_bypass_alu_alu(IPlugin):
         # return asm_code and sig_code
         test_dict.append({
             'asm_code': asm,
-            #'asm_data': '',
+            # 'asm_data': '',
             'asm_sig': '',
             'compile_macros': compile_macros,
-            #'name_postfix': inst
+            # 'name_postfix': inst
         })
         return test_dict
 
