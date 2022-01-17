@@ -2,20 +2,21 @@
 
 from ruamel.yaml.main import safe_load
 from yapsy.IPlugin import IPlugin
-from ruamel.yaml import YAML
-import uatg.regex_formats as rf
+
 from typing import Dict, Union, Any, List
 import random
 import math
 
+
 class uatg_icache_set_thrashing_02(IPlugin):
+
     def __init__(self):
         super().__init__()
         self._sets = 64
         self._word_size = 4
         self._block_size = 16
         self._ways = 4
-    
+
     def execute(self, core_yaml, isa_yaml) -> bool:
         _icache_dict = core_yaml['icache_configuration']
         _icache_en = _icache_dict['instantiate']

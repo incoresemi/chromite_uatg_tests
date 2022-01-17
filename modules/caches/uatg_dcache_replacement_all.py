@@ -1,22 +1,23 @@
 # See LICENSE.incore for details
 
 from yapsy.IPlugin import IPlugin
-from ruamel.yaml import YAML
-import uatg.regex_formats as rf
+
 from typing import Dict, Union, Any, List
 import random
 
+
 class uatg_dcache_replacement_all(IPlugin):
+
     def __init__(self):
         """This function defines the default values for all the parameters 
         being taken as an input from the core and isa yaml files."""
-        
+
         super().__init__()
         self._sets = 64
         self._word_size = 8
         self._block_size = 8
         self._ways = 4
-    
+
     def execute(self, core_yaml, isa_yaml) -> bool:
         """This function gives us access to the core and isa configurations
         as a dictionary, and is used to parameterize inputs to efficiently 
@@ -45,21 +46,22 @@ class uatg_dcache_replacement_all(IPlugin):
         asm_data = f"\nrvtest_data:\n\t.align {self._word_size}\n"
 
         # We load the memory with data twice the size of our dcache.
-        for i in range(self._word_size * self._block_size * self._sets * 
-        	self._ways * 2):
+        for i in range(self._word_size * self._block_size * self._sets *
+                       self._ways * 2):
             # We generate random 8 byte numbers.
-            asm_data += "\t.dword 0x{0:8x}\n".format(random.randrange(16**16))
-        
+            asm_data += f"\t.dword 0x{random.randrange(16 ** 16):8x}\n"
+
         x2 = str(self._word_size * self._block_size)
 
-        asm_main = "\tfence\n\tli t0, 69\n\tli t1, 1\n\tli t3, "+str(self._sets * 
-        self._ways) + "\n\tli x10, 3\n\tli x8, "+x2+"\n\tla t2, rvtest_data\n"
+        asm_main = "\tfence\n\tli t0, 69\n\tli t1, 1\n\tli t3, " + str(
+            self._sets * self._ways
+        ) + "\n\tli x10, 3\n\tli x8, " + x2 + "\n\tla t2, rvtest_data\n"
         asm_lab1 = "lab1:\n\tlw t0, 0(t2)\n\tadd t2, t2, x8\n\t"
         asm_lab1 += "beq t4, t3, lab2\n\taddi t4, t4, 1\n\tj lab1\n"
         asm_lab2 = "lab2:\n\taddi x4, x0, 0\n\taddi x9, x9, 1\n\t"
         asm_lab2 += "beq x9, x10, end\n\tj lab1\n"
         asm_end = "end:\n\tnop\n\tfence.i\n"
-        
+
         # Concatenate all pieces of ASM.
         asm = asm_main + asm_lab1 + asm_lab2 + asm_end
         compile_macros = []

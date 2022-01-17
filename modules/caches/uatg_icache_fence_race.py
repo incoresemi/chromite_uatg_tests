@@ -1,20 +1,20 @@
 # See LICENSE.incore for details
 
-from ruamel.yaml.main import safe_load
 from yapsy.IPlugin import IPlugin
-from ruamel.yaml import YAML
-import uatg.regex_formats as rf
 from typing import Dict, Union, Any, List
-import random
+
 
 class uatg_icache_fence_race(IPlugin):
+
     def __init__(self):
         super().__init__()
+        self._instructions = None
+        self._cache_size = None
         self._sets = 64
         self._word_size = 4
         self._block_size = 16
         self._ways = 4
-    
+
     def execute(self, core_yaml, isa_yaml) -> bool:
         _icache_dict = core_yaml['icache_configuration']
         _icache_en = _icache_dict['instantiate']
@@ -30,8 +30,10 @@ class uatg_icache_fence_race(IPlugin):
         Perform a fence.i, and jump to the last instruction, check
         if the instruction still exists, and if there are any races in the bus.
         """
-        
-        ins_list = ["\taddi t1, x0, 1\n" for i in range(self._instructions * self._ways)]
+
+        ins_list = [
+            "\taddi t1, x0, 1\n" for _ in range(self._instructions * self._ways)
+        ]
         ins_list[0] = "\tfence.i\n\tj end\n"
         ins_list[-1] = "end:\n\taddi t3, x0, 3\n"
         asm = "".join(ins_list)

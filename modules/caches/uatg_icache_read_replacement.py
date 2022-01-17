@@ -1,22 +1,21 @@
 # See LICENSE.incore for details
-
-from ruamel.yaml.main import safe_load
 from yapsy.IPlugin import IPlugin
-from ruamel.yaml import YAML
-import uatg.regex_formats as rf
 from typing import Dict, Union, Any, List
 import random
-import math
+from math import log2 as log
+
 
 class uatg_icache_read_replacement(IPlugin):
     def __init__(self):
         super().__init__()
+        self._instructions = None
+        self._cache_size = None
         self._sets = 64
         self._word_size = 4
         self._block_size = 16
         self._ways = 4
         self._replacement = 'RR'
-    
+
     def execute(self, core_yaml, isa_yaml) -> bool:
         _icache_dict = core_yaml['icache_configuration']
         _icache_en = _icache_dict['instantiate']
@@ -37,22 +36,21 @@ class uatg_icache_read_replacement(IPlugin):
             ""
 
         if self._replacement == 'RR':
-            iter = self._ways + 1
-            k = 0
+            iter_var = self._ways + 1
+            size = self._sets * self._word_size * self._block_size
             ins_list = [[
-                f"\tli t0, {iter}\n" \
-                f"\t.align " \
-                f"{int(math.log2(i * self._word_size))}\n" \
-                f"ins1:\n\taddi t0, t0, -1\n\tbeqz t0, end\n\tj ins2\n" + \
+                f"\tli t0, {iter_var}\n" 
+                f"\t.align " 
+                f"{int(log(i * self._word_size))}\n" 
+                f"ins1:\n\taddi t0, t0, -1\n\tbeqz t0, end\n\tj ins2\n" +
                 f"".join([
-                    f"\t.align " \
-                    f"{int(math.log2(self._sets * self._word_size * self._block_size))}\n" \
-                    f"ins{k}:\n\tj ins{k+1}\n" for k in range(2, iter)
-                ]) + \
-                
-                f"\t.align " \
-                f"{int(math.log2(i * self._word_size))}\n" \
-                f"ins{iter}:\n\tj ins1\n" \
+                    f"\t.align " 
+                    f"{int(log(size))}\n"
+                    f"ins{k}:\n\tj ins{k + 1}\n" for k in range(2, iter_var)
+                ]) +
+                f"\t.align " 
+                f"{int(log(i * self._word_size))}\n"
+                f"ins{iter_var}:\n\tj ins1\n"
                 f"end:\n\tnop\n"
             ] for i in range(1, self._sets + 1)]
             compile_macros = []
@@ -63,26 +61,27 @@ class uatg_icache_read_replacement(IPlugin):
             } for i in ins_list]
 
         if self._replacement == 'PLRU':
-            iter = self._ways + 1
-            order = [z for z in range(2, iter)]
+            iter_var = self._ways + 1
+            order = [z for z in range(2, iter_var)]
             random.shuffle(order)
+            size = self._sets * self._word_size * self._block_size
             ins_list = [[
-                    f"\tli t0, {iter}\n" \
-                    f"\t.align " \
-                    f"{int(math.log2(i * self._word_size))}\n" \
-                    f"ins1:\n\taddi t0, t0, -1\n\tbeqz t0, end\n" \
-                    f"\tj ins{order[0]}\n" + \
-                    f"".join([
-                        f"\t.align " \
-                        f"{int(math.log2(self._sets * self._word_size * self._block_size))}\n" \
-                        f"ins{k}:\n\tj ins{k+1}\n"
-                        for k in order
-                        ]) + \
-                    f"\t.align " \
-                    f"{int(math.log2(i * self._word_size))}\n" \
-                    f"ins{iter}:\n\tj ins1\n" \
-                    f"end:\n\tnop\n"
-                ] for i in range(1, self._sets + 1)]
+                f"\tli t0, {iter_var}\n"
+                f"\t.align "
+                f"{int(log(i * self._word_size))}\n"
+                f"ins1:\n\taddi t0, t0, -1\n\tbeqz t0, end\n"
+                f"\tj ins{order[0]}\n" +
+                f"".join([
+                    f"\t.align "
+                    f"{int(log(size))}\n"
+                    f"ins{k}:\n\tj ins{k + 1}\n"
+                    for k in order
+                ]) +
+                f"\t.align "
+                f"{int(log(i * self._word_size))}\n"
+                f"ins{iter_var}:\n\tj ins1\n"
+                f"end:\n\tnop\n"
+            ] for i in range(1, self._sets + 1)]
             compile_macros = []
             return [{
                 'asm_code': "\t.option norvc\n" + "".join(i),

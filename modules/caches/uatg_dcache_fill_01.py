@@ -2,19 +2,19 @@
 # Co-authored-by: Vishweswaran K <vishwa.kans07@gmail.com>
 
 from yapsy.IPlugin import IPlugin
-from ruamel.yaml import YAML
-import uatg.regex_formats as rf
 from typing import Dict, Union, Any, List
 import random
 
+
 class uatg_dcache_fill_01(IPlugin):
+
     def __init__(self):
         super().__init__()
         self._sets = 64
         self._word_size = 8
         self._block_size = 8
         self._ways = 4
-    
+
     def execute(self, core_yaml, isa_yaml) -> bool:
         _dcache_dict = core_yaml['dcache_configuration']
         _dcache_en = _dcache_dict['instantiate']
@@ -28,22 +28,21 @@ class uatg_dcache_fill_01(IPlugin):
         # asm_data is the test data that is loaded into memory.
         # We use this to perform load operations.
         asm_data = f"\nrvtest_data:\n\t.align {self._word_size}\n"
-        
+
         # We load the memory with data twice the size of our dcache.
-        for i in range(self._word_size * self._block_size *
-        self._sets * self._ways * 2):
+        for i in range(self._word_size * self._block_size * self._sets *
+                       self._ways * 2):
             # We generate random 8 byte numbers.
-            asm_data += "\t.dword 0x{0:8x}\n".format(random.randrange(16**16))
+            asm_data += f"\t.dword 0x{random.randrange(16 ** 16):8x}\n"
 
         asm_main = "\tfence\n\tli t0, 69\n\tli t1, 1"
-        asm_main += "\n\tli t3, {0}".format(self._sets * self._ways)
+        asm_main += f"\n\tli t3, {self._sets * self._ways}"
         asm_main += "\n\tla t2, rvtest_data\n"
         asm_lab1 = "lab1:\n\tsw t0, 0(t2)\n\t"
-        asm_lab1 += "addi t2, t2, {0}\n\t".format(
-        	self._word_size * self._block_size)
+        asm_lab1 += f"addi t2, t2, {self._word_size * self._block_size}\n\t"
         asm_lab1 += "beq t4, t3, end\n\taddi t4, t4, 1\n\tj lab1\n"
         asm_end = "end:\n\tnop\n\tfence.i\n"
-        
+
         # Concatenate all pieces of ASM.
         asm = asm_main + asm_lab1 + asm_end
         compile_macros = []
