@@ -34,7 +34,6 @@ class uatg_bypass_alu_alu(IPlugin):
         Branch operation happens if bypass doesn't happen correctly
         Bypassing checked for base ISA alu operation
         """
-        test_dict = []
         reg_file = base_reg_file.copy()
         asm = f"\taddi {reg_file[1]} ,{reg_file[0]} ,4\n"
         asm += f"\taddi {reg_file[2]} ,{reg_file[0]} ,5\n"
@@ -55,14 +54,13 @@ class uatg_bypass_alu_alu(IPlugin):
         compile_macros = []
 
         # return asm_code and sig_code
-        test_dict.append({
+        return {
             'asm_code': asm,
             # 'asm_data': '',
             'asm_sig': '',
             'compile_macros': compile_macros,
             # 'name_postfix': inst
-        })
-        return test_dict
+        }
 
     def check_log(self, log_file_path, reports_dir) -> bool:
         return False
