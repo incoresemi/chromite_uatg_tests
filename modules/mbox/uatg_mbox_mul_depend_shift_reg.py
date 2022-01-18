@@ -6,7 +6,12 @@ import random
 
 
 class uatg_mbox_mul_depend_shift_reg(IPlugin):
-    """    """
+    """  
+     class evaluates mbox test  read after write dependency with
+     multiplication instructions(mul, mulh, mulhsu, mulw) and arithmetic
+     instructions(sll, srl, sra, sllw, srlw, sraw).
+
+    """
 
     def __init__(self) -> None:
         super().__init__()
@@ -46,6 +51,10 @@ class uatg_mbox_mul_depend_shift_reg(IPlugin):
         # instruction in m_extension_instructions and arithmetic instructions
 
         test_dict = []
+    
+        doc_string = 'Test evaluates the read after write dependency
+                      with mextension(producer) instructions and 
+                      arithmetic(consumer) instructions'
 
         reg_file = [register for register in base_reg_file if register != 'x0']
 
@@ -164,7 +173,8 @@ class uatg_mbox_mul_depend_shift_reg(IPlugin):
                     'asm_data': '',
                     'asm_sig': sig_code,
                     'compile_macros': compile_macros,
-                    'name_postfix': inst
+                    'name_postfix': inst,
+                    'doc_string': doc_string
                 })
         return test_dict
 

@@ -6,7 +6,12 @@ import random
 
 
 class uatg_mbox_div_add_reg_WAR(IPlugin):
-    """    """
+    """ 
+     class evaluate the mbox test with write after read dependency with mext
+     instructions(div, divu, rem, remu,divuw, remuw, divw,remw) 
+     and arithmetic instructions(add, sub, addw, subw). 
+   
+    """
 
     def __init__(self) -> None:
         super().__init__()
@@ -40,13 +45,19 @@ class uatg_mbox_div_add_reg_WAR(IPlugin):
     def generate_asm(
             self) -> List[Dict[str, Union[Union[str, List[Any]], Any]]]:
         """
-            Generates the ASM instructions for multiplier dependencies and
-            stores product in rd(upper 32 bits) and rd1(lower 32 bits) regs.
-            It creates asm for the following instructions based upon ISA
-               mul[w], mulh, mulhsu, mulhu. 
+           ASM generates the write after read dependency source 
+           register of mext instructions (div, divu, rem, remu, divuw,
+           remuw, divw, remw) depends on the destination register of 
+           arithmetic instructions(add, sub, addw, subw).
+           (i.e div x4, x2, x1
+                add x2, x5, imm_val) 
         """
 
         test_dict = []
+        
+        doc_string = 'Test evaluates the write after read dependency
+                      with mextension instructions(producer) 
+                      and arithmetic (consumer) instructions'
 
         reg_file = [
             register for register in base_reg_file
@@ -75,11 +86,14 @@ class uatg_mbox_div_add_reg_WAR(IPlugin):
             inst_count = 0
 
             code = ''
+            # rand_inst generates the arithmetic instructions randomly
             rand_inst = random.choice(random_list)
-
+            # initialize the source registers rs1, rs2, rs3 and rs4 
+            #destination register rd1
             rs1, rs2, rd1, rs3, rs4 = 'x3', 'x4', 'x5', 'x6', 'x7'
             rand_rs1, rand_rs2, rand_rd = 'x0', 'x0', 'x0'
-
+            #depends on the div_stages the mext and arithmetic 
+            #instructions are generated
             for i in range(self.div_stages):
 
                 code += f'{inst} {rd1},{rs1},{rs2};\n'
@@ -135,6 +149,7 @@ class uatg_mbox_div_add_reg_WAR(IPlugin):
                         rand_inst1 = new_rand_inst1
                     code += f'{rand_inst1} {rand_rd}, {rand_rs1}, {rand_rs2};\n'
                 code += f'{rand_inst} {rs1}, {rs3}, {rs4};\n\n'
+            #assign the rs1_val, rs2_val, rs3_val and rs4_val
             rs1_val = '0x48'
             rs2_val = '0x6'
             rs3_val = '0x18'
@@ -191,7 +206,8 @@ class uatg_mbox_div_add_reg_WAR(IPlugin):
                 'asm_data': '',
                 'asm_sig': sig_code,
                 'compile_macros': compile_macros,
-                'name_postfix': inst
+                'name_postfix': inst,
+                'doc_string': doc_string
             })
         return test_dict
 

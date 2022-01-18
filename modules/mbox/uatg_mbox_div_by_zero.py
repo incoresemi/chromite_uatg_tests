@@ -38,6 +38,9 @@ class uatg_mbox_div_by_zero(IPlugin):
         """
         test_dict = []
 
+        doc_string = 'Test evaluate the divided by zero 
+                      operation using div instruction' 
+
         reg_file = ['x0', 'x1']
 
         for rs2 in reg_file:
@@ -173,7 +176,8 @@ class uatg_mbox_div_by_zero(IPlugin):
                 'asm_data': '',
                 'asm_sig': sig_code,
                 'compile_macros': compile_macros,
-                'name_postfix': name
+                'name_postfix': name,
+                'doc_string': doc_string
             })
         return test_dict
 

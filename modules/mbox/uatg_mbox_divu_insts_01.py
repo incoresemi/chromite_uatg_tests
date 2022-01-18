@@ -5,7 +5,10 @@ import random
 
 
 class uatg_mbox_divu_insts_01(IPlugin):
-    """    """
+    """  
+     The class contains the division instructions ( div, divu, divw, divuw, 
+     rem, remu, remuw, remw)
+    """
 
     def __init__(self) -> None:
         super().__init__()
@@ -31,7 +34,7 @@ class uatg_mbox_divu_insts_01(IPlugin):
             return False
 
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
-        """x
+        """
             Generates the ASM instructions for divider and stores both quotient
             and remainder in rd and rd1 reg respectively.
             It creates asm for the following instructions based upon ISA
@@ -41,6 +44,8 @@ class uatg_mbox_divu_insts_01(IPlugin):
         # every instruction in m_extension_instructions
 
         test_dict = []
+       
+        doc_string = 'Test generates the operation of div, divu, divuw instructions'
 
         reg_file = base_reg_file.copy()
 
@@ -164,7 +169,8 @@ class uatg_mbox_divu_insts_01(IPlugin):
                     'asm_data': '',
                     'asm_sig': sig_code,
                     'compile_macros': compile_macros,
-                    'name_postfix': f'{inst}_rs1_{rs1}'
+                    'name_postfix': f'{inst}_rs1_{rs1}',
+                    'doc_string' : doc_string
                 })
         return test_dict
 

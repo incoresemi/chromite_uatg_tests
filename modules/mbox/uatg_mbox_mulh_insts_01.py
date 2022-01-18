@@ -5,7 +5,9 @@ import random
 
 
 class uatg_mbox_mulh_insts_01(IPlugin):
-    """    """
+    """ 
+     class contains the multiplier instructions ( mulh, mulhu, mulhsu)
+    """
 
     def __init__(self) -> None:
         super().__init__()
@@ -40,6 +42,9 @@ class uatg_mbox_mulh_insts_01(IPlugin):
         # every instruction in m_extension_instructions
 
         test_dict = []
+          
+        doc_string = 'Test evaluates the multiplier instructions  mulh, 
+                      mulhu, mulhsu'
 
         reg_file = base_reg_file.copy()
         reg_file.remove('x0')
@@ -147,7 +152,8 @@ class uatg_mbox_mulh_insts_01(IPlugin):
                     'asm_data': '',
                     'asm_sig': sig_code,
                     'compile_macros': compile_macros,
-                    'name_postfix': f'{inst}_rs1_{rs1}'
+                    'name_postfix': f'{inst}_rs1_{rs1}',
+                    'doc_string'  : doc_string
                 })
         return test_dict
 

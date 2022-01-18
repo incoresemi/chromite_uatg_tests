@@ -6,7 +6,12 @@ import random
 
 
 class uatg_mbox_div_WAW_logic_imm(IPlugin):
-    """    """
+    """  
+     class evaluates mbox test write after write dependency
+     with multiplication instructions(div, divu, divw, divuw,
+     rem, remw, remuw) and logic instructions(andi, ori, slti, sltui, xori)
+
+    """
 
     def __init__(self) -> None:
         super().__init__()
@@ -40,9 +45,20 @@ class uatg_mbox_div_WAW_logic_imm(IPlugin):
 
     def generate_asm(
             self) -> List[Dict[str, Union[Union[str, List[Any]], Any]]]:
-        """    """
+        """  
+          ASM generates the write after write dependency with multiplication 
+          instructions and logic instructions. destination register is 
+          same for logic instructions and mext instructions.
+          (i.e div x4, x3, x1
+               andi x4, x5, imm_val)
+ 
+        """
 
         test_dict = []
+
+        doc_string = 'Test evaluates the write after write dependency
+                      with mextension instructions(producer) 
+                      and arithmetic (consumer) instructions'
 
         reg_file = [
             register for register in base_reg_file
@@ -67,14 +83,19 @@ class uatg_mbox_div_WAW_logic_imm(IPlugin):
             sig_bytes = 0
 
             inst_count = 0
+            #assign the imm with range
             imm = range(100)
+            # imm_value get the random value from imm
             imm_val = random.choice(imm)
             code = ''
-
+            # rand_inst generates the logic instructions randomly
             rand_inst = random.choice(random_list)
+            # initialize the source registers rs1, rs2, rs3 and rs4 
+            #destination register rd1
             rs1, rs2, rd1, rs3, rs4 = 'x3', 'x4', 'x5', 'x6', 'x7'
             rand_rs1, rand_rs2, rand_rd = 'x0', 'x0', 'x0'
-
+            # depends on the div_stages_in the mext and arithmetic 
+            #instructions generated
             for i in range(self.div_stages):
                 code += f'{inst} {rd1},{rs1},{rs2};\n'
                 for j in range(i):
@@ -128,6 +149,7 @@ class uatg_mbox_div_WAW_logic_imm(IPlugin):
                         rand_inst1 = new_rand_inst1
                     code += f'{rand_inst1} {rand_rd}, {rand_rs1}, {imm_val};\n'
                 code += f'{rand_inst} {rd1}, {rs3}, {imm_val};\n\n'
+            #assign the rs1_val, rs2_val, rs3_val and rs4_val
             rs1_val = '0x48'
             rs2_val = '0x6'
             rs3_val = '0x18'
@@ -177,7 +199,8 @@ class uatg_mbox_div_WAW_logic_imm(IPlugin):
                 'asm_data': '',
                 'asm_sig': sig_code,
                 'compile_macros': compile_macros,
-                'name_postfix': inst
+                'name_postfix': inst,
+                'doc_string': doc_string
             })
         return test_dict
 

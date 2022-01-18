@@ -4,7 +4,7 @@ from typing import Dict, List, Union
 
 class uatg_mbox_unsigned_mul(IPlugin):
     """
-    This class contains methods to generate and validate the signed 
+    This class contains methods to generate and validate the unsigned 
     multiplication operation using mulhu instruction
     """
 
@@ -36,6 +36,9 @@ class uatg_mbox_unsigned_mul(IPlugin):
             It creates asm for unsigned multiplication using mulh instruction 
         """
         test_dict = []
+
+        doc_string = ' Test evaluates the unsigned multiplication 
+                       using mulh instruction'
 
         asm_code = '#' * 5 + ' mulhu/mul reg, reg, reg ' + '#' * 5 + '\n'
 
@@ -94,7 +97,8 @@ class uatg_mbox_unsigned_mul(IPlugin):
             'asm_code': asm_code,
             'asm_data': '',
             'asm_sig': sig_code,
-            'compile_macros': compile_macros
+            'compile_macros': compile_macros,
+            'doc_string' : doc_string
         })
         return test_dict
 

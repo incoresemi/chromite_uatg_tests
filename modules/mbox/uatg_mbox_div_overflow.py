@@ -36,6 +36,9 @@ class uatg_mbox_div_overflow(IPlugin):
             It creates asm for division overflow operation using div instruction 
         """
         test_dict = []
+     
+        doc_string = 'Test evaluate the division overflow 
+                      operation using div instruction'
 
         inst = ['div', 'rem']
 
@@ -129,7 +132,8 @@ class uatg_mbox_div_overflow(IPlugin):
             'asm_code': asm_code,
             'asm_data': '',
             'asm_sig': sig_code,
-            'compile_macros': compile_macros
+            'compile_macros': compile_macros,
+            'doc_string': doc_string
         })
         return test_dict
 

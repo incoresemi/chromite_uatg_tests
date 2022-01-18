@@ -6,7 +6,11 @@ import random
 
 
 class uatg_mbox_mul_dependencies_imm(IPlugin):
-    """    """
+    """  
+     class evaluates mbox test with multiplication instructions(mul, 
+     mulh, mulhsu, mulw) and aritmetic instructions (addi, addiw).
+
+    """
 
     def __init__(self) -> None:
         super().__init__()
@@ -37,9 +41,21 @@ class uatg_mbox_mul_dependencies_imm(IPlugin):
 
     def generate_asm(
             self) -> List[Dict[str, Union[Union[str, List[Any]], Any]]]:
-        """    """
+        """  
+         ASM generates the read after write dependency with multiplication 
+         instructions and arithmetic instructions. destination register of
+         mext instructions depends on the source register of arithmetic 
+         instructions.
+         (i.e mul x6, x5, x4
+              addi x3, x6, imm_val) 
+
+        """
 
         test_dict = []
+
+        doc_string = 'Test evaluates the read after write dependency
+                      with addi, addiw instructions and mul, mulh, mulhsu,
+                      mulw instructions'
 
         reg_file = [register for register in base_reg_file if register != 'x0']
 
@@ -66,7 +82,7 @@ class uatg_mbox_mul_dependencies_imm(IPlugin):
             sig_bytes = 0
 
             inst_count = 0
-
+            #assign the imm with range
             imm = range(1, 100)
 
             for rd in reg_file:
@@ -151,7 +167,8 @@ class uatg_mbox_mul_dependencies_imm(IPlugin):
                     'asm_data': '',
                     'asm_sig': sig_code,
                     'compile_macros': compile_macros,
-                    'name_postfix': inst
+                    'name_postfix': inst,
+                    'doc_string': doc_string
                 })
         return test_dict
 

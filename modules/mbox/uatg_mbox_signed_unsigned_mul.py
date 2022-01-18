@@ -38,6 +38,9 @@ class uatg_mbox_signed_unsigned_mul(IPlugin):
         """
         test_dict = []
 
+        doc_string = ' Test evaluates the signed multiplicand unsigned
+                        multiplier using mulhsu instructions'
+
         asm_code = '#' * 5 + ' mulhsu/mul reg, reg, reg ' + '#' * 5 + '\n'
 
         # initial register to use as signature pointer
@@ -98,7 +101,8 @@ class uatg_mbox_signed_unsigned_mul(IPlugin):
             'asm_code': asm_code,
             'asm_data': '',
             'asm_sig': sig_code,
-            'compile_macros': compile_macros
+            'compile_macros': compile_macros,
+            'doc_string' : doc_string
         })
         return test_dict
 
