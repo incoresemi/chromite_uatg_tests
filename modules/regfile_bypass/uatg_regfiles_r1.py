@@ -43,7 +43,8 @@ class uatg_regfiles_r1(IPlugin):
         asm += f"\taddi {reg_file[5]},{reg_file[0]} ,20\n"
         # initializing a temporary register (to end for loop)
 
-        
+        asm += f"\tsub {reg_file[31]}, {reg_file[0]}, {reg_file[0]}\n"
+        asm += f"\tbnez {reg_file[31]}, flag\n"
 
         asm += f"for:\n\tbeq x4,x5, end_for"
         asm += f"\n\tadd {reg_file[0]},{reg_file[0]},{reg_file[4]}"
