@@ -5,7 +5,10 @@ import random
 
 
 class uatg_mbox_RAW_div(IPlugin):
-    """    """
+    """  
+     class evaluates mbox test with multiplication instructions(mul, 
+     mulh, mulhsu, mulw) and mext instructions (div, divu, rem, remu).
+    """
 
     def __init__(self) -> None:
         super().__init__()
@@ -36,9 +39,20 @@ class uatg_mbox_RAW_div(IPlugin):
 
     def generate_asm(
             self) -> List[Dict[str, Union[Union[str, List[Any]], Any]]]:
-        """    """
+        """  
+         ASM generates the read after write dependency with multiplication 
+         instructions and mext instructions. destination register of
+         mext instructions depends on the source register of multiplication 
+         instructions.
+         (i.e mul x6, x5, x4
+              div x3, x6, x1)
+        """
 
         test_dict = []
+    
+        doc_string = 'Test evaluates the read after write dependency
+                      with multiplication(producer) instructions and 
+                      multiplication(consumer) instructions'
 
         reg_file = [
             register for register in base_reg_file
@@ -69,10 +83,14 @@ class uatg_mbox_RAW_div(IPlugin):
             inst_count = 0
 
             code = ''
+            # rand_inst generates the mext instructions(div, divu, rem, remu)
+            # randomly
             rand_inst = random.choice(random_list)
-
+            # initialize the source registers rs1, rs2 and 
+            #destination register rd1, rd2
             rs1, rs2, rd1, rd2 = 'x3', 'x4', 'x5', 'x6'
-
+            # depends on the mul_stages_in the mext and multiplication
+            #instructions generated
             for i in range(self.mul_stages_in):
 
                 code += f'{inst} {rd1},{rs1},{rs2};\n'
@@ -111,6 +129,7 @@ class uatg_mbox_RAW_div(IPlugin):
                         rand_inst1 = new_rand_inst1
                     code += f'{rand_inst1} {rand_rd}, {rand_rs1}, {rand_rs2};\n'
                 code += f'{rand_inst} {rd2}, {rd1}, {rs2};\n\n'
+            #assign the rs1_val and rs2_val
             rs1_val = '0x00000005acd7fe48'
             rs2_val = '0x0000000000000002'
 
@@ -137,7 +156,8 @@ class uatg_mbox_RAW_div(IPlugin):
                 'asm_data': '',
                 'asm_sig': sig_code,
                 'compile_macros': compile_macros,
-                'name_postfix': inst
+                'name_postfix': inst,
+                'doc_string': doc_string
             })
         return test_dict
 

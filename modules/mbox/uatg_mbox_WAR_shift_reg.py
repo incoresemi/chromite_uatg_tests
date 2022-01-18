@@ -6,7 +6,12 @@ import random
 
 
 class uatg_mbox_WAR_shift_reg(IPlugin):
-    """    """
+    """  
+     class evaluates mbox test write after read dependency
+     with multiplication instructions(mul,mulh, mulhsu, mulw)and 
+     arithmetic instructions(sll, sra, srl,
+     sllw, sraw, srlw).
+    """
 
     def __init__(self) -> None:
         super().__init__()
@@ -36,17 +41,27 @@ class uatg_mbox_WAR_shift_reg(IPlugin):
         else:
             return False
 
-    def generate_asm(
-            self) -> List[Dict[str, Union[Union[str, List[Any]], Any]]]:
-        """    """
+    def generate_asm(self) -> List[Dict[str, Union[Union[str, List[Any]], Any]]]:
+        """   
+          ASM generates the write after read dependency with multiplication 
+          instructions and arithmetic instructions. source register of 
+          multiplication instructions depends on the destination register
+          of arithmetic instructions.
+          (i.e mul x4, x3, x1
+               sll x1, x5, x6)
+        """
 
         test_dict = []
+      
+        doc_string = 'Test evaluates the write after read dependency
+                      with mextension(producer) instructions and
+                      arithmetic(consumer) instructions'
 
         reg_file = [
             register for register in base_reg_file
             if register not in ('x0', 'x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'x7')
         ]
-
+        
         instruction_list = []
         random_list = []
         if 'M' in self.isa or 'Zmmul' in self.isa:
@@ -68,10 +83,13 @@ class uatg_mbox_WAR_shift_reg(IPlugin):
             inst_count = 0
 
             code = ''
+            # rand_inst generates the logic instructions randomly
             rand_inst = random.choice(random_list)
-
+            # initialize the source registers rs1, rs2, rs3 and rs4 
+            #destination register rd1
             rs1, rs2, rs3, rs4, rd1 = 'x3', 'x4', 'x6', 'x7', 'x5'
-
+            # depends on the mul_stages_in the mext and logic 
+            #instructions generated
             for i in range(self.mul_stages_in):
 
                 code += f'{inst} {rd1},{rs1},{rs2};\n'
@@ -110,6 +128,7 @@ class uatg_mbox_WAR_shift_reg(IPlugin):
                         rand_inst1 = new_rand_inst1
                     code += f'{rand_inst1} {rand_rd}, {rand_rs1}, {rand_rs2};\n'
                 code += f'{rand_inst} {rs1}, {rs3}, {rs4};\n\n'
+            #assign the rs1_val, rs2_val, rs3_val and rs4_val
             rs1_val = '0x00000000abc23248'
             rs2_val = '0x6'
             rs3_val = '0x18'
@@ -139,7 +158,8 @@ class uatg_mbox_WAR_shift_reg(IPlugin):
                 'asm_data': '',
                 'asm_sig': sig_code,
                 'compile_macros': compile_macros,
-                'name_postfix': inst
+                'name_postfix': inst,
+                'doc_string': doc_string
             })
         return test_dict
 

@@ -6,7 +6,11 @@ import random
 
 
 class uatg_mbox_WAW_add_reg(IPlugin):
-    """    """
+    """ 
+     class evaluates mbox test write after write dependency
+     with multiplication instructions(mul, mulh, 
+     mulhsu, mulw) and arithmetic instructions(add, addw, sub, subw, subd).  
+    """
 
     def __init__(self) -> None:
         super().__init__()
@@ -35,11 +39,20 @@ class uatg_mbox_WAW_add_reg(IPlugin):
         else:
             return False
 
-    def generate_asm(
-            self) -> List[Dict[str, Union[Union[str, List[Any]], Any]]]:
-        """    """
+    def generate_asm(self) -> List[Dict[str, Union[Union[str, List[Any]], Any]]]:
+        """  
+          ASM generates the write after write dependency with multiplication 
+          instructions and multiplication instructions. destination register is 
+          same for the arithmetic instructions and multiplication instructions.
+          (i.e mul x5, x3, x1
+               add x5, x2, x6)
+        """
 
         test_dict = []
+     
+        doc_string = 'Test evaluates the write after write dependency
+                      with mextension(producer) instructions and 
+                      arithmetic (consumer) instructions'
 
         reg_file = [
             register for register in base_reg_file
@@ -70,10 +83,13 @@ class uatg_mbox_WAW_add_reg(IPlugin):
             inst_count = 0
 
             code = ''
+            # rand_inst generates the logic instructions randomly
             rand_inst = random.choice(random_list)
-
+            # initialize the source registers rs1, rs2, rs3 and rs4 
+            #destination register rd1
             rs1, rs2, rs3, rs4, rd1 = 'x3', 'x4', 'x6', 'x7', 'x5'
-
+            # depends on the mul_stages_in the mext and arithmetic 
+            #instructions generated
             for i in range(self.mul_stages_in):
 
                 code += f'{inst} {rd1},{rs1},{rs2};\n'
@@ -112,6 +128,7 @@ class uatg_mbox_WAW_add_reg(IPlugin):
                         rand_inst1 = new_rand_inst1
                     code += f'{rand_inst1} {rand_rd}, {rand_rs1}, {rand_rs2};\n'
                 code += f'{rand_inst} {rd1}, {rs4}, {rs3};\n\n'
+            #assign the rs1_val, rs2_val, rs3_val and rs4_val
             rs1_val = '0x0000000000000012'
             rs2_val = '0x0000000000000021'
             rs3_val = '0x0000000000000045'
@@ -140,7 +157,8 @@ class uatg_mbox_WAW_add_reg(IPlugin):
                 'asm_data': '',
                 'asm_sig': sig_code,
                 'compile_macros': compile_macros,
-                'name_postfix': inst
+                'name_postfix': inst,
+                'doc_string': doc_string
             })
         return test_dict
 

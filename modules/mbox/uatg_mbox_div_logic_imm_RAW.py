@@ -167,7 +167,7 @@ class uatg_mbox_div_logic_imm_RAW(IPlugin):
                 'asm_sig': sig_code,
                 'compile_macros': compile_macros,
                 'name_postfix': inst,
-                'doc_string' : doc_string
+                'doc_string' : ''
             })
         return test_dict
 
