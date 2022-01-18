@@ -43,6 +43,8 @@ class uatg_regfiles_r1(IPlugin):
         asm += f"\taddi {reg_file[5]},{reg_file[0]} ,20\n"
         # initializing a temporary register (to end for loop)
 
+        
+
         asm += f"for:\n\tbeq x4,x5, end_for"
         asm += f"\n\tadd {reg_file[0]},{reg_file[0]},{reg_file[4]}"
         asm += f"\n\taddi {reg_file[4]},{reg_file[4]},2\n"
@@ -66,10 +68,3 @@ class uatg_regfiles_r1(IPlugin):
             'compile_macros': compile_macros,
             # 'name_postfix': inst
         }
-
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv

@@ -91,10 +91,3 @@ class uatg_bypass_regfiles(IPlugin):
         }
 
     # after all the manual calculations, signature file should have value of 57
-
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv

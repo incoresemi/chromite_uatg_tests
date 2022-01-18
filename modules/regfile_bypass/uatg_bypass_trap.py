@@ -65,9 +65,3 @@ class uatg_bypass_trap(IPlugin):
             'compile_macros': compile_macros,
             # 'name_postfix': inst
         }
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv
