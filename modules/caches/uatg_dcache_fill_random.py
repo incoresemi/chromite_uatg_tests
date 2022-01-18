@@ -2,6 +2,7 @@
 
 from yapsy.IPlugin import IPlugin
 from typing import Dict, Union, Any, List
+from uatg.instruction_constants import load_store_instructions as lsi
 import random
 
 
@@ -32,10 +33,10 @@ class uatg_dcache_fill_random(IPlugin):
 
         for i in range(self._block_size * self._sets * self._ways * 2):
             asm_data += f"\t.dword 0x{random.randrange(16 ** 16):8x}\n"
-
-        tests = [
-            'lb', 'lbu', 'lh', 'lhu', 'lw', 'lwu', 'ld', 'sb', 'sh', 'sw', 'sd'
-        ]
+        
+        tests = []
+        tests.extend(lsi['rv64-loads'])
+        tests.extend(lsi['rv64-stores'])
 
         asm_main = "\tfence\n\tli t0, 69\n\tli t1, 1"
         asm_main += f"\n\tli t3, {self._sets * self._ways}"
