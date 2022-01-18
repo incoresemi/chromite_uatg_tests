@@ -82,12 +82,12 @@ class uatg_bypass_regfiles(IPlugin):
         sig_code += ".fill {0},4,0xdeadbeef\n".format(int(sig_bytes / 4))
 
         # return asm_code and sig_code
-        return {
+        return [{
             'asm_code': asm,
             'asm_data': '',
             'asm_sig': sig_code,
             'compile_macros': compile_macros,
             # 'name_postfix': inst
-        }
+        }]
 
     # after all the manual calculations, signature file should have value of 57

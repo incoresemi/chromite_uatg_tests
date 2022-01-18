@@ -54,10 +54,10 @@ class uatg_bypass_alu_alu(IPlugin):
         compile_macros = []
 
         # return asm_code and sig_code
-        return {
+        return [{
             'asm_code': asm,
             # 'asm_data': '',
             'asm_sig': '',
             'compile_macros': compile_macros,
             # 'name_postfix': inst
-        }
+        }]
