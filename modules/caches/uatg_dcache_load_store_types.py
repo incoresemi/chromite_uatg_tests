@@ -158,3 +158,7 @@ class uatg_dcache_load_store_types(IPlugin):
             'asm_sig': '',
             'compile_macros': compile_macros
         }]
+    def check_log(self, log_file_path, reports_dir):
+        ''
+    def generate_covergroups(self, config_file):
+        ''

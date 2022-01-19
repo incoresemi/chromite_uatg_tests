@@ -48,3 +48,7 @@ class uatg_icache_set_thrashing_02(IPlugin):
             'asm_sig': '',
             'compile_macros': compile_macros
         } for i in ins_list]
+    def check_log(self, log_file_path, reports_dir):
+        ''
+    def generate_covergroups(self, config_file):
+        ''
