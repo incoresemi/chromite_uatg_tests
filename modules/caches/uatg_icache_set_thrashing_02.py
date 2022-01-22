@@ -25,6 +25,11 @@ class uatg_icache_set_thrashing_02(IPlugin):
         self._block_size = _icache_dict['block_size']
         self._cache_size = self._sets * self._word_size * self._block_size
         self._instructions = self._sets * self._block_size
+        self._ISA = isa_yaml['hart0']['ISA']
+        if '32' in self._ISA:
+            self._XLEN = 32
+        elif '64' in self._ISA:
+            self._XLEN = 64
         return _icache_en
 
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:

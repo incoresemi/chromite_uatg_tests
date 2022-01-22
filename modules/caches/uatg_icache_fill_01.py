@@ -22,6 +22,11 @@ class uatg_icache_fill(IPlugin):
         self._word_size = _icache_dict['word_size']
         self._block_size = _icache_dict['block_size']
         self._ways = _icache_dict['ways']
+        self._ISA = isa_yaml['hart0']['ISA']
+        if '32' in self._ISA:
+            self._XLEN = 32
+        elif '64' in self._ISA:
+            self._XLEN = 64
         return _icache_en
 
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:

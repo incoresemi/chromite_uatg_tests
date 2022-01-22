@@ -25,6 +25,11 @@ class uatg_dcache_load_store_types(IPlugin):
         self._block_size = _dcache_dict['block_size']
         self._ways = _dcache_dict['ways']
         self._fb_size = _dcache_dict['fb_size']
+        self._ISA = isa_yaml['hart0']['ISA']
+        if '32' in self._ISA:
+            self._XLEN = 32
+        elif '64' in self._ISA:
+            self._XLEN = 64
         return _dcache_en
 
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:

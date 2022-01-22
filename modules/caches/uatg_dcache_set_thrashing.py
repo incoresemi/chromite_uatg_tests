@@ -26,20 +26,25 @@ class uatg_dcache_set_thrashing(IPlugin):
         self._block_size = _dcache_dict['block_size']
         self._ways = _dcache_dict['ways']
         self._fb_size = _dcache_dict['fb_size']
+        self._ISA = isa_yaml['hart0']['ISA']
+        if '32' in self._ISA:
+            self._XLEN = 32
+        elif '64' in self._ISA:
+            self._XLEN = 64
         return _dcache_en
 
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
         """
         - Perform a  `fence`  operation to clear out the data cache
         subsystem and the fill buffer.
-    - First the cache is filled up using the following logic. All the
-    ways of a set should either be  *dirty or clean*.
-    - This is followed by a large series of back to back `store operations`
-    with an address that maps to a single set in the cache. This ensures that
-    the fillbuffer gets filled and the set thrashing process begins.
-    - Now after the fill buffer is full, with each store operation a cache
-    miss is encountered.
-    - This process is iterated to test each cache set.
+        - First the cache is filled up using the following logic. All the
+        ways of a set should either be  *dirty or clean*.
+        - This is followed by a large series of back to back `store operations`
+        with an address that maps to a single set in the cache. This ensures that
+        the fillbuffer gets filled and the set thrashing process begins.
+        - Now after the fill buffer is full, with each store operation a cache
+        miss is encountered.
+        - This process is iterated to test each cache set.
         """
         '''This test aims to perform a series of store operations to perform
         line thrashing. The sw instruction only takes a 12 bit signed offset
