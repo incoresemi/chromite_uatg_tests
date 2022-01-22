@@ -82,14 +82,15 @@ class uatg_dcache_load_store_types(IPlugin):
                     f"\tsh t2, {self._word_size * self._block_size * 2}(t1)\n" \
                     f"\tlhu t3, {self._word_size * self._block_size * 2}(t1)" \
                     "\n\tbne a2, t3, end\n"
-        asm_pass3 = f"pass3:\n\tli a2, 0x99999999\n" \
-                    f"\tsw t2, {self._word_size * self._block_size * 3}(t1)\n" \
-                    f"\tlwu t3, {self._word_size * self._block_size * 3}(t1)" \
-                    f"\n\tbne a2, t3, end\n"
-        asm_pass4 = "pass4:\n\tli a2, 0x9999999999999999\n" \
-                    f"\tsd t2, {self._word_size * self._block_size * 4}(t1)\n" \
-                    f"\tld t3, {self._word_size * self._block_size * 4}(t1)\n" \
-                    f"\tbne a2, t3, end\n"
+        if self._XLEN == 64:
+            asm_pass3 = f"pass3:\n\tli a2, 0x99999999\n" \
+                        f"\tsw t2, {self._word_size * self._block_size * 3}(t1)\n" \
+                        f"\tlwu t3, {self._word_size * self._block_size * 3}(t1)" \
+                        f"\n\tbne a2, t3, end\n"
+            asm_pass4 = "pass4:\n\tli a2, 0x9999999999999999\n" \
+                        f"\tsd t2, {self._word_size * self._block_size * 4}(t1)\n" \
+                        f"\tld t3, {self._word_size * self._block_size * 4}(t1)\n" \
+                        f"\tbne a2, t3, end\n"
         asm_pass5 = f"pass5:\n\tli a2, 0xFFFFFFFFFFFFFF99\n" \
                     f"\tlb t3, {self._word_size * self._block_size * 1}(t1)\n" \
                     f"\tbne t3, a2, end\n"
@@ -99,8 +100,9 @@ class uatg_dcache_load_store_types(IPlugin):
         asm_pass7 = "pass7:\n\tli a2, 0xFFFFFFFF99999999\n" \
                     f"\tlw t3, {self._word_size * self._block_size * 3}(t1)\n" \
                     f"\tbne t3, a2, end\n"
-        asm_pass8 = "pass8:\n\tli a2, 0x9999999999999999\n\tld t3, {0}(t1)\n\
-\tbne t3, a2, end\n".format(self._word_size * self._block_size * 4)
+        if self._XLEN == 64:
+            asm_pass8 = "pass8:\n\tli a2, 0x9999999999999999\n\tld t3, {0}(t1)\n"  \
+                        f"\tbne t3, a2, end\n".format(self._word_size * self._block_size * 4)
         asm_pass9 = "pass9:\n\tli a2, 0x9999999999999999\n\t"
 
         for i in range(7):
@@ -126,36 +128,22 @@ class uatg_dcache_load_store_types(IPlugin):
                      f"\tadd s6, s6, s1\n\tslli s6, s6, 32\n\tlw s1, " \
                      f"{(self._word_size * self._block_size * 4) + 32}(t1)\n" \
                      f"\tadd s6, s6, s1\n\tbne s6, s2, end\n"
-        asm_pass12 = f"pass12:\n\tli a2, 0x9999999911119999\n\tsh t4, " \
-                     f"{self._word_size * self._block_size + (8 * 4)}(t1)" \
-                     f"\n\tld t3, {self._word_size * self._block_size}(t1)" \
-                     f"\n\tbne t3, a2, end\n"
+        if self._XLEN == 64:
+            asm_pass12 = f"pass12:\n\tli a2, 0x9999999911119999\n\tsh t4, " \
+                         f"{self._word_size * self._block_size + (8 * 4)}(t1)" \
+                         f"\n\tld t3, {self._word_size * self._block_size}(t1)" \
+                         f"\n\tbne t3, a2, end\n"
         asm_valid = "valid:\n\taddi x31, x0, 1\n"
-        asm_fence = "\tfence\n"
-        asm_critical1 = "critical1:\n\tla s1, rvtest_data\n" \
-                        "\tlb s2, 7(s1)\n\tfence\n\tlb s2, 0(s1)\n\tfence\n" \
-                        "\tlb s2, 3(s1)\n\tfence\n\tlb s2, 7(s1)\n\tfence\n" \
-                        "\tlb s2, 3(s1)\n\tfence\n\tlb s2, 0(s1)\n\tfence\n" \
-                        "\tlb s2, 3(s1)\n\tfence\n\tlb s2, 6(s1)\n\tfence\n" \
-                        "\tlb s2, 3(s1)\n\tfence\n\tlb s2, 1(s1)\n\tfence\n" \
-                        "\tlb s2, 3(s1)\n\tfence\n\tlb s2, 5(s1)\n\tfence\n" \
-                        "\tlb s2, 3(s1)\n\tfence\n\tlb s2, 2(s1)\n\tfence\n" \
-                        "\tlb s2, 0(s1)\n\tfence\n\tlb s2, 7(s1)\n\tfence\n" \
-                        "\tnop\n"
-        asm_critical2 = "critical2:\n\tla s1, rvtest_data\n" \
-                        "\tlh s2, 6(s1)\n\tfence\n\tlh s2, 0(s1)\n\tfence\n" \
-                        "\tlh s2, 4(s1)\n\tfence\n\tlh s2, 2(s1)\n\tfence\n" \
-                        "\tnop\n"
-        asm_critical3 = "critical3:\n\tla s1, rvtest_data\n" \
-                        "\tlw s2, 4(s1)\n\tfence\n\tlw s2, 0(s1)\n\tfence\n" \
-                        "\tnop\n"
         asm_end = "end:\n\tnop\n\tfence.i\n"
 
         # Concatenate all pieces of asm.
-        asm = "".join(asm_init) + asm_main + asm_pass1 + asm_pass2 + asm_pass3 + asm_pass4 + \
-            asm_pass5 + asm_pass6 + asm_pass7 + asm_pass8 + asm_pass9 + \
-            asm_pass10 + asm_pass11 + asm_pass12 + asm_valid + asm_fence + \
-            asm_critical1 + asm_critical2 + asm_critical3 + asm_end
+        asm = "".join(asm_init) + asm_main + asm_pass1 + asm_pass2 + \
+            (asm_pass3 if self._XLEN == 64 else "") + \
+            (asm_pass4 if self._XLEN == 64 else "") + \
+            asm_pass5 + asm_pass6 + asm_pass7 + \
+            (asm_pass8 if self._XLEN == 64 else "") + \
+            asm_pass9 + asm_pass10 + asm_pass11 + \
+            (asm_pass12 if self._XLEN == 64 else "") + asm_valid + asm_end
         compile_macros = []
 
         return [{

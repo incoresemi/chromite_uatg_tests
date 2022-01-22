@@ -44,7 +44,7 @@ class uatg_dcache_atomic_random(IPlugin):
         #assumes x0 is zero
         asm_init = [f"\tmv x{i}, x0\n" for i in range(1,32)]
         
-        inst_list = inst_dict['rv64-mem-ops']
+        inst_list = inst_dict['rv64-mem-ops'] if self._XLEN == 64 else inst_dict['rv32-mem-ops']
 
         asm_main = "\tfence\n\tli t0, 69\n\tli t1, 1"
         asm_main += f"\n\tli t3, {self._sets * self._ways}"
