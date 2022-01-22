@@ -31,10 +31,9 @@ class uatg_dcache_atomic_random(IPlugin):
         """
         asm_data = f"\nrvtest_data:\n\t.align {self._word_size}\n"
 
-        for i in range(self._word_size * self._block_size * self._sets *
-                       self._ways * 2):
-            # We generate random 8 byte numbers.
-            asm_data += f"\t.dword 0x{random.randrange(16 ** 16):8x}\n"
+        asm_data += f"\t.rept " + \
+            f"{self._sets * self._word_size * self._block_size}\n" + \
+            f"\t.dword 0x{random.randrange(16 ** 16):8x}\n" + f"\t.endr\n"
         
         #initialise all registers to 0
         #assumes x0 is zero

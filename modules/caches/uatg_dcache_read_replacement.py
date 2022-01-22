@@ -35,10 +35,9 @@ class uatg_dcache_read_replacement(IPlugin):
         asm_data = f"\nrvtest_data:\n\t.align {self._word_size}\n"
 
         # We load the memory with data twice the size of our dcache.
-        for i in range(self._word_size * self._block_size * self._sets *
-                       self._ways * 2):
-            # We generate random 8 byte numbers.
-            asm_data += f"\t.dword 0x{random.randrange(16 ** 16):8x}\n"
+        asm_data += f"\t.rept " + \
+            f"{self._sets * self._word_size * self._block_size}\n" + \
+            f"\t.dword 0x{random.randrange(16 ** 16):8x}\n" + f"\t.endr\n"
 
         asm_main = f"\tfence\n\tli t0, {data}\n" + \
                    f"\tli t3, {self._sets * self._ways}\n" + \
