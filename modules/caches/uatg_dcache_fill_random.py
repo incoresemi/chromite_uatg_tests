@@ -33,7 +33,9 @@ class uatg_dcache_fill_random(IPlugin):
 
         for i in range(self._block_size * self._sets * self._ways * 2):
             asm_data += f"\t.dword 0x{random.randrange(16 ** 16):8x}\n"
-        
+        #initialise all registers to 0
+        #assumes x0 is zero
+        asm_init = [f"\tmv x{i}, x0\n" for i in range(1,32)]   
         tests = []
         tests.extend(lsi['rv64-loads'])
         tests.extend(lsi['rv64-stores'])
@@ -61,7 +63,7 @@ class uatg_dcache_fill_random(IPlugin):
             asm_lab1 += "add t3, t2, t1\n\t"
             asm_lab1 += temp + " t0, 0(t3)\n\n\t"
 
-        asm = asm_main + asm_lab1
+        asm = "".join(asm_init) + asm_main + asm_lab1
         compile_macros = []
 
         return [{

@@ -30,7 +30,9 @@ class uatg_icache_set_thrashing_01(IPlugin):
         that is atleast 12bits atmost 18bits apart in terms of the address,
         causing the instruction to map to the same set. This is being done
         after filling the cache entirely with NOPs."""
-
+        #initialise all registers to 0
+        #assumes x0 is zero
+        asm_init = [f"\tmv x{i}, x0\n" for i in range(1,32)]
         ins_list = [
             f"ins{i}:\n\tj ins{self._instructions + i}\n"
             for i in range(self._instructions * (self._ways * 2))
@@ -44,7 +46,7 @@ class uatg_icache_set_thrashing_01(IPlugin):
         asm = "".join(ins_list)
         compile_macros = []
         return [{
-            'asm_code': f"\t.align {self._word_size}\n" + asm,
+            'asm_code': "".join(asm_init) + f"\t.align {self._word_size}\n" + asm,
             'asm_sig': '',
             'compile_macros': compile_macros
         }]

@@ -65,7 +65,9 @@ class uatg_dcache_load_store_types(IPlugin):
                        self._ways * 2):
             # We generate random 8 byte numbers.
             asm_data += f"\t.dword 0x{random.randrange(16 ** 16):8x}\n"
-
+        #initialise all registers to 0
+        #assumes x0 is zero
+        asm_init = [f"\tmv x{i}, x0\n" for i in range(1,32)]
         asm_main = "\tfence\n\tli t1, 8000\n\tli t2, 0x9999999999999999\n" \
                    "\tli t4, 0x1111\n"
         asm_pass1 = f"pass1:\n\tli a2, 0x99\n" \
@@ -146,7 +148,7 @@ class uatg_dcache_load_store_types(IPlugin):
         asm_end = "end:\n\tnop\n\tfence.i\n"
 
         # Concatenate all pieces of asm.
-        asm = asm_main + asm_pass1 + asm_pass2 + asm_pass3 + asm_pass4 + \
+        asm = "".join(asm_init) + asm_main + asm_pass1 + asm_pass2 + asm_pass3 + asm_pass4 + \
             asm_pass5 + asm_pass6 + asm_pass7 + asm_pass8 + asm_pass9 + \
             asm_pass10 + asm_pass11 + asm_pass12 + asm_valid + asm_fence + \
             asm_critical1 + asm_critical2 + asm_critical3 + asm_end

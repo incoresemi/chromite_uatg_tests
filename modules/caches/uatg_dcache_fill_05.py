@@ -29,7 +29,9 @@ class uatg_dcache_fill_05(IPlugin):
         fence operation to check if there is any race in the bus."""
 
         asm_data = f"\nrvtest_data:\n\t.align {self._word_size}\n"
-
+        #initialise all registers to 0
+        #assumes x0 is zero
+        asm_init = [f"\tmv x{i}, x0\n" for i in range(1,32)]
         # We load the memory with data twice the size of our dcache.
         for i in range(self._word_size * self._block_size * self._sets *
                        self._ways * 2):
@@ -62,7 +64,7 @@ class uatg_dcache_fill_05(IPlugin):
 
         asm_end = "\tnop\n\tfence.i\n"
 
-        asm = asm_main + asm_fill + asm_race + asm_end
+        asm = "".join(asm_init) + asm_main + asm_fill + asm_race + asm_end
         compile_macros = []
 
         return [{

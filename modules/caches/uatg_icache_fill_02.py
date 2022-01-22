@@ -32,7 +32,9 @@ class uatg_icache_fill_02(IPlugin):
 
         # 0-f-10-1a-2a-20-3a-3f-4f-40-5f-5a
         # 0-f-10-1a-20-2a-3a-3f-40-4f-5a-5f
-
+        #initialise all registers to 0
+        #assumes x0 is zero
+        asm_init = [f"\tmv x{i}, x0\n" for i in range(1,32)]
         li = []
         for i in range(4032):
             li.append("\tnop\n")
@@ -50,7 +52,7 @@ class uatg_icache_fill_02(IPlugin):
 
         compile_macros = []
         return [{
-            'asm_code': f"\t.align {self._word_size}\n" + asm,
+            'asm_code': "".join(asm_init) + f"\t.align {self._word_size}\n" + asm,
             'asm_sig': '',
             'compile_macros': compile_macros
         }]

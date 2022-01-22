@@ -36,7 +36,9 @@ class uatg_icache_self_modifying(IPlugin):
         # t2 = exit - starting address
         # t3 = jump opcode to be written in t0
         # t4 = temporary values
-
+        #initialise all registers to 0
+        #assumes x0 is zero
+        asm_init = [f"\tmv x{i}, x0\n" for i in range(1,32)]
         asm = ".option norvc\n"
         asm += "begin:\n"
         asm += "\tli t0, 0x80000000\n"
@@ -74,7 +76,7 @@ class uatg_icache_self_modifying(IPlugin):
 
         compile_macros = []
         return [{
-            'asm_code': asm,
+            'asm_code': "".join(asm_init) + asm,
             'asm_sig': '',
             'compile_macros': compile_macros
         }]

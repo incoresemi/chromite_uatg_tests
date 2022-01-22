@@ -44,7 +44,9 @@ class uatg_dcache_replacement_all(IPlugin):
         # asm_data is the test data that is loaded into memory.
         # We use this to perform load operations.
         asm_data = f"\nrvtest_data:\n\t.align {self._word_size}\n"
-
+        #initialise all registers to 0
+        #assumes x0 is zero
+        asm_init = [f"\tmv x{i}, x0\n" for i in range(1,32)]
         # We load the memory with data twice the size of our dcache.
         for i in range(self._word_size * self._block_size * self._sets *
                        self._ways * 2):
@@ -63,7 +65,7 @@ class uatg_dcache_replacement_all(IPlugin):
         asm_end = "end:\n\tnop\n\tfence.i\n"
 
         # Concatenate all pieces of ASM.
-        asm = asm_main + asm_lab1 + asm_lab2 + asm_end
+        asm = "".join(asm_init) + asm_main + asm_lab1 + asm_lab2 + asm_end
         compile_macros = []
 
         return [{

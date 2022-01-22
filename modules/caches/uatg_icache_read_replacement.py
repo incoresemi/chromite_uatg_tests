@@ -31,7 +31,9 @@ class uatg_icache_read_replacement(IPlugin):
         """This function generates asm to test replacement policies
         in the icache. A random replacement policy would result in a single
         NOP being put in the ASM."""
-
+        #initialise all registers to 0
+        #assumes x0 is zero
+        asm_init = [f"\tmv x{i}, x0\n" for i in range(1,32)]
         if self._replacement == 'RANDOM':
             ""
 
@@ -55,7 +57,7 @@ class uatg_icache_read_replacement(IPlugin):
             ] for i in range(1, self._sets + 1)]
             compile_macros = []
             return [{
-                'asm_code': "\t.option norvc\n" + "".join(i),
+                'asm_code': "".join(asm_init) + "\t.option norvc\n" + "".join(i),
                 'asm_sig': '',
                 'compile_macros': compile_macros
             } for i in ins_list]
@@ -84,7 +86,7 @@ class uatg_icache_read_replacement(IPlugin):
             ] for i in range(1, self._sets + 1)]
             compile_macros = []
             return [{
-                'asm_code': "\t.option norvc\n" + "".join(i),
+                'asm_code': "".join(asm_init) + "\t.option norvc\n" + "".join(i),
                 'asm_sig': '',
                 'compile_macros': compile_macros
             } for i in ins_list]

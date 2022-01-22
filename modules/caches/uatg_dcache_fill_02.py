@@ -40,7 +40,9 @@ class uatg_dcache_fill_02(IPlugin):
                        self._ways * 2):
             # We generate random 8 byte numbers.
             asm_data += f"\t.dword 0x{random.randrange(16 ** 16):8x}\n"
-
+        #initialise all registers to 0
+        #assumes x0 is zero
+        asm_init = [f"\tmv x{i}, x0\n" for i in range(1,32)]
         asm_main = f"\tfence\n\tli t0, 69\n\tli t1, {self._sets}\n\t"
         asm_main += f"li t5, {self._ways}\n\t"
         asm_main += f"li t6, {self._block_size * self._word_size}"
@@ -54,7 +56,7 @@ class uatg_dcache_fill_02(IPlugin):
         asm_end = "end:\n\tnop\n\tfence.i\n"
 
         # Concatenate all pieces of asm.
-        asm = asm_main + asm_lab1 + asm_end
+        asm = "".join(asm_init) + asm_main + asm_lab1 + asm_end
         compile_macros = []
 
         return [{

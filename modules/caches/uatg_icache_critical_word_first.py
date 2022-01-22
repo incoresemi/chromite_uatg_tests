@@ -33,7 +33,9 @@ class uatg_icache_critical_word_first(IPlugin):
         first to last and vice versa
         middle to last and vice versa
         """
-
+        #initialise all registers to 0
+        #assumes x0 is zero
+        asm_init = [f"\tmv x{i}, x0\n" for i in range(1,32)]
         # 0-f-10-1a-2a-20-3a-3f-4f-40-5f-5a
         # 0-f-10-1a-20-2a-3a-3f-40-4f-5a-5f
 
@@ -65,7 +67,7 @@ class uatg_icache_critical_word_first(IPlugin):
                     int(di[i], 0)) + "\n"
                 li[int(i, 0)] = temp
 
-        asm = ".option norvc\n"
+        asm = "".join(asm_init) + ".option norvc\n"
         for i in li:
             asm += i
 

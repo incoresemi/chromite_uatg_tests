@@ -32,6 +32,9 @@ class uatg_dcache_fb_hit_01(IPlugin):
 
         data = random.randrange(1, 100)
 
+        #initialise all registers to 0
+        #assumes x0 is zero
+        asm_init = [f"\tmv x{i}, x0\n" for i in range(1,32)]
         # We load the memory with data twice the size of our dcache.
         for i in range(self._word_size * self._block_size * self._sets *
                        self._ways * 2):
@@ -71,7 +74,7 @@ class uatg_dcache_fb_hit_01(IPlugin):
             asm_fb_hit += f"\tlw a1, {i}(t2)\n"
             # all these loads should lead to a hit in the fill buffer
 
-        asm = asm_main + asm_lab1 + asm_nop + asm_fb_miss + asm_fb_hit
+        asm = "".join(asm_init) + asm_main + asm_lab1 + asm_nop + asm_fb_miss + asm_fb_hit
         compile_macros = []
 
         return [{

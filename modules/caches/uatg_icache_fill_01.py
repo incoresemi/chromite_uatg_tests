@@ -29,7 +29,9 @@ class uatg_icache_fill(IPlugin):
         Filling icache by using only jump from one line to another
         """
         asm_data = f"\nrvtest_data:\n\t.align {self._word_size}\n"
-
+        #initialise all registers to 0
+        #assumes x0 is zero
+        asm_init = [f"\tmv x{i}, x0\n" for i in range(1,32)]
         # We load the memory with data twice the size of our icache.
         for i in range(self._word_size * self._block_size * self._sets *
                        self._ways * 2):
@@ -52,7 +54,7 @@ class uatg_icache_fill(IPlugin):
         compile_macros = []
 
         return [{
-            'asm_code': asm,
+            'asm_code': "".join(asm_init) + asm,
             'asm_data': asm_data,
             'asm_sig': '',
             'compile_macros': compile_macros

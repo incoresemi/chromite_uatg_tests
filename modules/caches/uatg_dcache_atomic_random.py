@@ -36,6 +36,10 @@ class uatg_dcache_atomic_random(IPlugin):
             # We generate random 8 byte numbers.
             asm_data += f"\t.dword 0x{random.randrange(16 ** 16):8x}\n"
         
+        #initialise all registers to 0
+        #assumes x0 is zero
+        asm_init = [f"\tmv x{i}, x0\n" for i in range(1,32)]
+        
         inst_list = inst_dict['rv64-mem-ops']
 
         asm_main = "\tfence\n\tli t0, 69\n\tli t1, 1"
@@ -59,7 +63,7 @@ class uatg_dcache_atomic_random(IPlugin):
             asm_lab1 += "add t3, t2, t1\n\t"
             asm_lab1 += inst + " t0, t4, 0(t3)\n\n\t"
 
-        asm = asm_main + asm_lab1
+        asm = "".join(asm_init) + asm_main + asm_lab1
         compile_macros = []
 
         return [{

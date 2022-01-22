@@ -60,7 +60,9 @@ class uatg_dcache_line_thrashing(IPlugin):
         # asm_data is the test data that is loaded into memory.
         # We use this to perform load operations.
         asm_data = f"\nrvtest_data:\n\t.align {self._word_size}\n"
-
+        #initialise all registers to 0
+        #assumes x0 is zero
+        asm_init = [f"\tmv x{i}, x0\n" for i in range(1,32)]
         for i in range(self._word_size * self._block_size * self._sets *
                        self._ways * 2):
             # We generate random 8 byte numbers.
@@ -80,7 +82,7 @@ class uatg_dcache_line_thrashing(IPlugin):
                                (self._word_size * self._block_size)) / high))):
             asm_main += f"\n\tli x{27 - i}, " + \
                 f"{((high + (self._word_size * self._block_size)) * (i + 1))}"
-
+        
         # Initialize base address registers.
         for i in range(
                 int(
@@ -118,7 +120,7 @@ class uatg_dcache_line_thrashing(IPlugin):
         asm_end = "\nend:\n\tnop\n\tfence.i\n"
 
         # Concatenate all pieces of asm.
-        asm = asm_main + asm_lab1 + asm_lab2 + asm_nop + asm_lt + asm_end
+        asm = "".join(asm_init) + asm_main + asm_lab1 + asm_lab2 + asm_nop + asm_lt + asm_end
         compile_macros = []
 
         return [{

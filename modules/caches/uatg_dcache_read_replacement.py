@@ -47,7 +47,9 @@ class uatg_dcache_read_replacement(IPlugin):
                    f"\taddi t2, t2, {self._word_size * self._block_size}\n" + \
                    "\tbeq t4, t3, asm_nop\n\taddi t4, t4, 1\n\tj lab1\n"
         asm_nop = "asm_nop:\n"
-
+        #initialise all registers to 0
+        #assumes x0 is zero
+        asm_init = [f"\tmv x{i}, x0\n" for i in range(1,32)]
         # Perform a series of NOPs to empty the fill buffer.
         for i in range(self._fb_size * 2):
             asm_nop += "\tnop\n"
@@ -116,7 +118,7 @@ class uatg_dcache_read_replacement(IPlugin):
         asm_end = "end:\n\tnop\n\tfence.i\n"
 
         # Concatenate all pieces of ASM.
-        asm = asm_main + asm_lab1 + asm_nop + asm_lw + asm_repl + asm_end
+        asm = "".join(asm_init) + asm_main + asm_lab1 + asm_nop + asm_lw + asm_repl + asm_end
         compile_macros = []
 
         return [{
