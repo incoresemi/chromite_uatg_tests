@@ -110,3 +110,5 @@ mbox:
   uatg_mbox_comp_comp_imm_WAR: False #test passed
   uatg_mbox_comp_comp_rv64_imm_WAR: False #test passed
  
+csrs:
+  uatg_misa: True
