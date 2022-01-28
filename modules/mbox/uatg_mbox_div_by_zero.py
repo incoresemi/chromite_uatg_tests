@@ -1,6 +1,7 @@
-from yapsy.IPlugin import IPlugin
-from typing import Dict, List, Union
 from random import randint
+from typing import Dict, List, Union
+
+from yapsy.IPlugin import IPlugin
 
 
 class uatg_mbox_div_by_zero(IPlugin):
@@ -38,8 +39,8 @@ class uatg_mbox_div_by_zero(IPlugin):
         """
         test_dict = []
 
-        doc_string = 'Test evaluate the divided by zero 
-                      operation using div instruction' 
+        doc_string = 'Test evaluate the divided by zero operation using div ' \
+                     'instruction'
 
         reg_file = ['x0', 'x1']
 

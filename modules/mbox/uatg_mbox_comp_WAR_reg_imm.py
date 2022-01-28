@@ -55,9 +55,7 @@ class uatg_mbox_comp_WAR_reg_imm(IPlugin):
 
 
         test_dict = []
-        doc_string = 'Test evaluates write after read dependency with
-                      compressed(consumer) instruction and multiplication
-                      (producer) instruction'
+        doc_string = 'Test evaluates write after read dependency with compressed(consumer) instruction and multiplication (producer) instruction'
         
         reg_file = ['x' + str(reg_no) for reg_no in range(32)]  
         reg_file.remove('x0')

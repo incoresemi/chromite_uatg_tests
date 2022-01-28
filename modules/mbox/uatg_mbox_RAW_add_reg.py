@@ -1,8 +1,9 @@
-from yapsy.IPlugin import IPlugin
+import random
+from typing import Dict, Any, List, Union
+
 from uatg.instruction_constants import base_reg_file, mext_instructions, \
     arithmetic_instructions
-from typing import Dict, Any, List, Union
-import random
+from yapsy.IPlugin import IPlugin
 
 
 class uatg_mbox_RAW_add_reg(IPlugin):
@@ -51,9 +52,9 @@ class uatg_mbox_RAW_add_reg(IPlugin):
 
         test_dict = []
 
-        doc_string = 'Test evaluates the read after write dependency
-                      with multiplication (producer) instructions 
-                      and arithmetic (cosumer)instructions'
+        doc_string = 'Test evaluates the read after write dependency with ' \
+                     'multiplication (producer) instructions and arithmetic (' \
+                     'consumer)instructions '
 
         reg_file = [
             register for register in base_reg_file
@@ -87,10 +88,10 @@ class uatg_mbox_RAW_add_reg(IPlugin):
             # rand_inst generates the arithmetic instructions randomly
             rand_inst = random.choice(random_list)
             # initialize the source registers rs1, rs2 and 
-            #destination register rd1, rd2
+            # destination register rd1, rd2
             rs1, rs2, rd1, rd2 = 'x3', 'x4', 'x5', 'x6'
             # depends on the mul_stages_in the mext and arithmetic
-            #instructions generated
+            # instructions generated
             for i in range(self.mul_stages_in):
 
                 code += f'{inst} {rd1},{rs1},{rs2};\n'
@@ -129,7 +130,7 @@ class uatg_mbox_RAW_add_reg(IPlugin):
                         rand_inst1 = new_rand_inst1
                     code += f'{rand_inst1} {rand_rd}, {rand_rs1}, {rand_rs2};\n'
                 code += f'{rand_inst} {rd2}, {rd1}, {rs2};\n\n'
-            #assign the rs1_val and rs2_val
+            # assign the rs1_val and rs2_val
             rs1_val = '0x0000000000000012'
             rs2_val = '0x0000000000000021'
 
@@ -137,8 +138,8 @@ class uatg_mbox_RAW_add_reg(IPlugin):
 
             asm_code += f'\ninst_{inst_count}:\n'
 
-            asm_code += f'MBOX_DEPENDENCIES_RR_OP({rand_inst}, {inst}, {rs1},'\
-                        f'{rs2}, {rd1}, {rd2}, 0, {rs1_val}, {rs2_val}, '\
+            asm_code += f'MBOX_DEPENDENCIES_RR_OP({rand_inst}, {inst}, {rs1},' \
+                        f'{rs2}, {rd1}, {rd2}, 0, {rs1_val}, {rs2_val}, ' \
                         f'{swreg}, {offset}, {code})'
 
             inst_count += 1

@@ -1,8 +1,9 @@
-from yapsy.IPlugin import IPlugin
+import random
+from typing import Dict, Any, List, Union
+
 from uatg.instruction_constants import base_reg_file, mext_instructions, \
     arithmetic_instructions
-from typing import Dict, Any, List, Union
-import random
+from yapsy.IPlugin import IPlugin
 
 
 class uatg_mbox_WAW_shift_reg(IPlugin):
@@ -52,10 +53,9 @@ class uatg_mbox_WAW_shift_reg(IPlugin):
 
         test_dict = []
 
-        doc_string = 'Test evaluates the write after write dependency
-                      with arithmetic(producer) instructions and 
-                      mext(consumer) instructions'
-
+        doc_string = 'Test evaluates the write after write dependency with ' \
+                     'arithmetic(producer) instructions and mext(consumer) ' \
+                     'instructions '
 
         reg_file = [
             register for register in base_reg_file
@@ -89,10 +89,10 @@ class uatg_mbox_WAW_shift_reg(IPlugin):
             # rand_inst generates the shift instructions randomly
             rand_inst = random.choice(random_list)
             # initialize the source registers rs1, rs2, rs3 and rs4 
-            #destination register rd1
+            # destination register rd1
             rs1, rs2, rs3, rs4, rd1 = 'x3', 'x4', 'x6', 'x7', 'x5'
             # depends on the mul_stages_in the mext and mext 
-            #instructions generated
+            # instructions generated
             for i in range(self.mul_stages_in):
 
                 code += f'{inst} {rd1},{rs1},{rs2};\n'
@@ -131,7 +131,7 @@ class uatg_mbox_WAW_shift_reg(IPlugin):
                         rand_inst1 = new_rand_inst1
                     code += f'{rand_inst1} {rand_rd}, {rand_rs1}, {rand_rs2};\n'
                 code += f'{rand_inst} {rd1}, {rs4}, {rs3};\n\n'
-            #assign the rs1_val, rs2_val, rs3_val and rs4_val
+            # assign the rs1_val, rs2_val, rs3_val and rs4_val
             rs1_val = '0x0000000000000012'
             rs2_val = '0x0000000000000021'
             rs3_val = '0x0000000000000045'
@@ -140,10 +140,10 @@ class uatg_mbox_WAW_shift_reg(IPlugin):
             # perform the  required assembly operation
 
             asm_code += f'\ninst_{inst_count}:\n'
-            asm_code += f'MBOX_DEPENDENCIES_WAW_RR_OP({rand_inst}, {inst}, '\
-                        f'{rs1}, {rs2}, {rs3}, {rs4}, {rd1}, 0, {rs1_val}, '\
-                        f'{rs2_val}, {rs3_val}, {rs4_val}, {swreg}, {offset}, '\
-                        f'{testreg}, {code})'
+            asm_code += f'MBOX_DEPENDENCIES_WAW_RR_OP({rand_inst}, {inst}, ' \
+                        f'{rs1}, {rs2}, {rs3}, {rs4}, {rd1}, 0, {rs1_val}, ' \
+                        f'{rs2_val}, {rs3_val}, {rs4_val}, {swreg}, {offset},' \
+                        f' {testreg}, {code})'
 
             inst_count += 1
 

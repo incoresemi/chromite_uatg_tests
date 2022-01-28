@@ -1,7 +1,8 @@
-from yapsy.IPlugin import IPlugin
-from uatg.instruction_constants import base_reg_file, mext_instructions
-from typing import Dict, List, Union, Any
 import random
+from typing import Dict, List, Union, Any
+
+from uatg.instruction_constants import base_reg_file, mext_instructions
+from yapsy.IPlugin import IPlugin
 
 
 class uatg_mbox_mulh_insts_01(IPlugin):
@@ -42,9 +43,9 @@ class uatg_mbox_mulh_insts_01(IPlugin):
         # every instruction in m_extension_instructions
 
         test_dict = []
-          
-        doc_string = 'Test evaluates the multiplier instructions  mulh, 
-                      mulhu, mulhsu'
+
+        doc_string = 'Test evaluates the multiplier instructions  mulh, ' \
+                     'mulhu, mulhsu '
 
         reg_file = base_reg_file.copy()
         reg_file.remove('x0')
@@ -153,7 +154,7 @@ class uatg_mbox_mulh_insts_01(IPlugin):
                     'asm_sig': sig_code,
                     'compile_macros': compile_macros,
                     'name_postfix': f'{inst}_rs1_{rs1}',
-                    'doc_string'  : doc_string
+                    'doc_string': doc_string
                 })
         return test_dict
 

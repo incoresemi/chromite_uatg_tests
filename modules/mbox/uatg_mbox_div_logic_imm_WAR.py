@@ -1,8 +1,9 @@
-from yapsy.IPlugin import IPlugin
-from uatg.instruction_constants import base_reg_file, mext_instructions,\
-    logic_instructions
-from typing import Dict, List, Union, Any
 import random
+from typing import Dict, List, Union, Any
+
+from uatg.instruction_constants import base_reg_file, mext_instructions, \
+    logic_instructions
+from yapsy.IPlugin import IPlugin
 
 
 class uatg_mbox_div_logic_imm_WAR(IPlugin):
@@ -56,9 +57,9 @@ class uatg_mbox_div_logic_imm_WAR(IPlugin):
 
         test_dict = []
 
-        doc_string = 'Test evaluates the write after read dependency
-                      with mextension instructions(producer) 
-                      and logical (consumer) instructions'
+        doc_string = 'Test evaluates the write after read dependency with ' \
+                     'mextension instructions(producer) and logical (' \
+                     'consumer) instructions '
 
         reg_file = [
             register for register in base_reg_file
@@ -89,18 +90,18 @@ class uatg_mbox_div_logic_imm_WAR(IPlugin):
             inst_count = 0
 
             code = ''
-            #assign the imm with range
+            # assign the imm with range
             imm = range(1, 10)
             # imm_value get the random value from imm
             imm_val = random.choice(imm)
             # rand_inst generates the arithmetic instructions randomly
             rand_inst = random.choice(random_list)
             # initialize the source registers rs1, rs2
-            #destination register rd1
+            # destination register rd1
             rs1, rs2, rd1 = 'x3', 'x4', 'x5'
             rand_rs1, rand_rd = 'x0', 'x0'
-            #depends on the div_stages the mext and arithmetic 
-            #instructions are generated
+            # depends on the div_stages the mext and arithmetic
+            # instructions are generated
             for i in range(self.div_stages):
                 rs1 = 'x3'
                 rs2 = 'x4'
@@ -138,7 +139,7 @@ class uatg_mbox_div_logic_imm_WAR(IPlugin):
                         rand_inst1 = new_rand_inst1
                     code += f'{rand_inst1} {rand_rd}, {rand_rs1}, {imm_val};\n'
                 code += f'{rand_inst} {rs1}, {rs2}, {imm_val};\n\n'
-            #assign the rs1 and rs2 value
+            # assign the rs1 and rs2 value
             rs1_val = '0x48'
             rs2_val = '0x6'
 

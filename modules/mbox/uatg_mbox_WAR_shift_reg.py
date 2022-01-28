@@ -53,9 +53,7 @@ class uatg_mbox_WAR_shift_reg(IPlugin):
 
         test_dict = []
       
-        doc_string = 'Test evaluates the write after read dependency
-                      with mextension(producer) instructions and
-                      arithmetic(consumer) instructions'
+        doc_string = 'Test evaluates the write after read dependency with mextension(producer) instructions and arithmetic(consumer) instructions'
 
         reg_file = [
             register for register in base_reg_file

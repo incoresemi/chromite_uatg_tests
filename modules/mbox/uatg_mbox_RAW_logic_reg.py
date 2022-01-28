@@ -1,8 +1,9 @@
-from yapsy.IPlugin import IPlugin
+import random
+from typing import Dict, Any, List, Union
+
 from uatg.instruction_constants import base_reg_file, mext_instructions, \
     logic_instructions
-from typing import Dict, Any, List, Union
-import random
+from yapsy.IPlugin import IPlugin
 
 
 class uatg_mbox_RAW_logic_reg(IPlugin):
@@ -52,9 +53,9 @@ class uatg_mbox_RAW_logic_reg(IPlugin):
 
         test_dict = []
 
-        doc_string = 'Test evaluates the read after write dependency
-                      with multiplication (producer) instructions
-                      arithmetic (consumer) instructions'
+        doc_string = 'Test evaluates the read after write dependency with ' \
+                     'multiplication (producer) instructions arithmetic (' \
+                     'consumer) instructions '
 
         reg_file = [
             register for register in base_reg_file

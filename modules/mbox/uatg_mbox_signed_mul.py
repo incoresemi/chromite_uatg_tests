@@ -1,5 +1,6 @@
-from yapsy.IPlugin import IPlugin
 from typing import Dict, List, Union
+
+from yapsy.IPlugin import IPlugin
 
 
 class uatg_mbox_signed_mul(IPlugin):
@@ -37,8 +38,8 @@ class uatg_mbox_signed_mul(IPlugin):
         """
         test_dict = []
 
-        doc_string = ' Test evaluates the signed multiplication
-                       using mulh instruction ' 
+        doc_string = 'Test evaluates the signed multiplication using mulh ' \
+                     'instruction'
 
         asm_code = '#' * 5 + ' mulh/mul reg, reg, reg ' + '#' * 5 + '\n'
 
