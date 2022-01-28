@@ -39,7 +39,7 @@ class uatg_dcache_fill_05(IPlugin):
         asm_init = [f"\tmv x{i}, x0\n" for i in range(1,32)]
         # We load the memory with data twice the size of our dcache.
         asm_data += f"\t.rept " + \
-            f"{self._sets * self._word_size * self._block_size}\n" + \
+            f"{self._sets * self._word_size * self._block_size * 8}\n" + \
             f"\t.dword 0x{random.randrange(16 ** 16):8x}\n" + f"\t.endr\n"
 
         data = random.randrange(0, 100)
@@ -55,7 +55,7 @@ class uatg_dcache_fill_05(IPlugin):
         # now we have the address where we can start decrementing from
         asm_fill = "fill:\n"
         for i in range(self._sets * self._ways):
-            asm_fill += "\tsw t0, 0(t1)\n\tsub t1, t2, t3\n"
+            asm_fill += "\tsw t0, 0(t1)\n\tsub t1, t1, t3\n"
 
         # now that we have completely filled up the cache, let's fence.
         # after this fence, we immidiately perform a load from the last location
@@ -64,7 +64,7 @@ class uatg_dcache_fill_05(IPlugin):
         asm_fill += "\tfence\n"
         asm_race = ""
         for i in range(self._sets * self._ways):
-            asm_race += "\tlw a2, 0(a1)\n\tsub a1, a2, t3\n"
+            asm_race += "\tlw a2, 0(a1)\n\tsub a1, a1, t3\n"
 
         asm_end = "\tnop\n\tfence.i\n"
 

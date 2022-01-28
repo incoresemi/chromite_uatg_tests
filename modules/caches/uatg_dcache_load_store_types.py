@@ -72,7 +72,7 @@ class uatg_dcache_load_store_types(IPlugin):
         #initialise all registers to 0
         #assumes x0 is zero
         asm_init = [f"\tmv x{i}, x0\n" for i in range(1,32)]
-        asm_main = "\tfence\n\tli t1, 8000\n\tli t2, 0x9999999999999999\n" \
+        asm_main = "\tfence\n\tla t1, rvtest_data\n\tli t2, 0x9999999999999999\n" \
                    "\tli t4, 0x1111\n"
         asm_pass1 = f"pass1:\n\tli a2, 0x99\n" \
                     f"\tsb t2, {self._word_size * self._block_size * 1}(t1)\n" \

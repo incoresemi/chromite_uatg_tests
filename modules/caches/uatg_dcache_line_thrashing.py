@@ -69,13 +69,13 @@ class uatg_dcache_line_thrashing(IPlugin):
         #assumes x0 is zero
         asm_init = [f"\tmv x{i}, x0\n" for i in range(1,32)]
         asm_data += f"\t.rept " + \
-            f"{self._sets * self._word_size * self._block_size}\n" + \
+            f"{self._sets * self._word_size * self._block_size * 16}\n" + \
             f"\t.dword 0x{random.randrange(16 ** 16):8x}\n" + f"\t.endr\n"
 
         asm_main = f"\tfence\n\tli t0, 69\n\tli t3, {self._sets}\n" + \
                    f"\tli t1, 1\n\tli t5, {self._ways - 1}\n" + \
                    f"\tla t2, rvtest_data\n" + \
-                   f"\tli a1, {self._block_size * self._word_size * self._sets}"
+                   f"\tli x8, {self._block_size * self._word_size * self._sets}"
 
         # We use the high number determined by YAML imputs to pass legal
         # operands to load/store.
@@ -96,7 +96,7 @@ class uatg_dcache_line_thrashing(IPlugin):
 
         asm_main += "\n"
 
-        asm_lab1 = "lab1:\n\tsw t0, 0(t2)\n\tadd t2, t2, a1\n" + \
+        asm_lab1 = "lab1:\n\tsw t0, 0(t2)\n\tadd t2, t2, x8\n" + \
                    "\taddi t0, t0, 1\n\taddi t4, t4, 1\n\tblt t4, t5, lab1\n"
         asm_lab2 = f"lab2:\n\tmv t4, x0\n\tlw t0, 0(t2)\n" + \
                    f"\taddi t2, t2, {self._block_size * self._word_size}\n" + \
