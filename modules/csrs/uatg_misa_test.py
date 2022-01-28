@@ -3,6 +3,7 @@ from random import randint
 from yapsy.IPlugin import IPlugin
 from typing import Dict, List, Union, Any
 from riscv_config.warl import warl_interpreter as validator
+from uatg.instruction_generator import instruction_generator
 
 
 class uatg_misa_test(IPlugin):
@@ -15,10 +16,12 @@ class uatg_misa_test(IPlugin):
         self.isa, self.xlen = 'RV32I', 32
         self.fields = ['extensions', 'mxl']
         self.csr, self.fields, self.reset_val = None, None, None
+        self.mpp = None
 
     def execute(self, core_yaml, isa_yaml) -> bool:
         self.isa = isa_yaml['hart0']['ISA']
         self.xlen = 64 if '64' in self.isa else 32
+
         if 'misa' in isa_yaml['hart0'].keys():
             self.reset_val = isa_yaml['hart0']['misa']['reset-val']
             if self.xlen == 32 and isa_yaml['hart0']['misa']['rv32'][
@@ -31,8 +34,12 @@ class uatg_misa_test(IPlugin):
                 return False
         else:
             return False
-
         self.fields = [i for i in self.csr['fields'] if isinstance(i, str)]
+        try:
+            self.mpp = isa_yaml['hart0']['mstatus'][f'rv{self.xlen}']['mpp']
+        except KeyError:
+            raise 'MSTATUS CSR required for this test'
+        return True  # returns true after checks are done
 
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
 
@@ -44,7 +51,12 @@ class uatg_misa_test(IPlugin):
         # x3  - csr output
         # x4+ - temp
         ext = validator(self.csr['extensions']['type']['warl'])
-        asm_code = f'.option norvc\n\nli x1, {self.reset_val}\n'
+        asm_code = f'\nli x1, {self.reset_val}\n'
+        ig = instruction_generator(isa=self.isa)
+        # Checking if reset_val matches with yaml specification
+        asm_code += f'\n\n# 0. Checking whether reset_value matches with ' \
+                    f'YAML specification\ncsrr x4, misa\n' \
+                    f'bne x4, x1, fail_case\n'
 
         # Disabling I-extension if E is not implemented
         if ext.islegal(self.reset_val - (1 << 8)) and 'E' not in self.isa:
@@ -66,8 +78,8 @@ class uatg_misa_test(IPlugin):
             asm_code += f'\n# 2a. Disabling & Enabling A extension\n' \
                         f'li x2, {1 << 0}\n' \
                         f'li x5, {randint(80001000, 80002000)}\n' \
-                        f'csrc misa, x2 # Clear 0th bit\nlr.w x4, x5\n' \
-                        f'csrs misa, x2 # Set 0th bit\nlr.w x4, x5\n'
+                        f'csrc misa, x2 # Clear 0th bit\nlr.w x4, (x5)\n' \
+                        f'csrs misa, x2 # Set 0th bit\nlr.w x4, (x5)\n'
         if 'B' in self.isa and ext.islegal(self.reset_val - (1 << 1)):
             asm_code += f'\n# 2b. Disabling & Enabling B extension\n' \
                         f'li x2, {1 << 1} \ncsrc misa, x2 # Clear 1st bit' \
@@ -89,10 +101,11 @@ class uatg_misa_test(IPlugin):
                         f'fadd.s f0, f0, f0\n' \
                         f'csrs misa, x2 # Set 5th bit\nfadd.s f0, f0, f0\n'
         if 'M' in self.isa and ext.islegal(self.reset_val - (1 << 12)):
+            all_m_insts = '\n'.join(ig.generate_all_m_inst())
             asm_code += f'\n# 2m. Disabling & Enabling M extension\n' \
                         f'li x2, {1 << 12}\ncsrc misa, x2 # Clear 12th bit\n' \
-                        f'mul x0, x0, x0\n' \
-                        f'csrs misa, x2 # Set 12th bit\nmul x31, x31, x31\n'
+                        f'# All M instructions\n{all_m_insts}\n' \
+                        f'csrs misa, x2 # Set 12th bit\n{all_m_insts}\n'
         if 'S' in self.isa and ext.islegal(self.reset_val - (1 << 18)):
             asm_code += f'\n# 2s. Disabling & Enabling S extension\n' \
                         f'li x2, {1 << 18}\ncsrc misa, x2 # Clear 18th bit\n' \
@@ -100,12 +113,18 @@ class uatg_misa_test(IPlugin):
                         f'csrs misa, x2 # Set 18th bit\ncsrr x4, sstatus\n'
         if 'U' in self.isa and ext.islegal(self.reset_val - (1 << 20)):
             # Disable Supervisor mode and access Supervisor CSR's
-            # TODO. add testing for U instruction
+            _lsb, _msb = self.mpp['lsb'], self.mpp['msb']
+            _bit_width = (_msb - _lsb + 1)
+            mpp_bits = (((1 << _bit_width) - 1) << _lsb)
+
             asm_code += f'\n# 2s. Disabling & Enabling U extension\n' \
                         f'li x2, {1 << 20}\ncsrc misa, x2 # Clear 20th bit\n' \
-                        f'######### - U Testing - #########\n' \
-                        f'csrs misa, x2 # Set 20th bit\n' \
-                        f'######### - U Testing - #########\n\n'
+                        f'csrr x3, mstatus # Copying mstatus before making it' \
+                        f'dirty\nli x31, {mpp_bits}\ncsrc mstatus, x31 ' \
+                        f'# Clear mpp bits of mstatus\nMRET\n' \
+                        f'csrr x4, mstatus\nbne x4, x3, fail_case' \
+                        f'csrs misa, x2 # Set 20th bit\nMRET\n' \
+                        f'csrw mstatus, x3 # Rewriting mstatus to old value\n\n'
 
         # Enabling unimplemented extensions
         unimplemented_ext = self.reset_val + (self.reset_val % 2**26) ^ (
@@ -156,7 +175,7 @@ class uatg_misa_test(IPlugin):
                         f'byte boundary\nli x2, {1 << 2}\ncsrs misa, x2\n' \
                         'c.nop\ncsrr x3, misa\ncsrc misa, x2 ' \
                         '# clearing C bit\ncsrr x4, misa #4 byte instruction ' \
-                        'to be misaligned\nbne x3, x4 fail_case ' \
+                        'to be misaligned\nbne x3, x4, fail_case ' \
                         '# if x3!=x4 jump to fail_case\n'
 
         # Enabling Zero bits
@@ -198,21 +217,3 @@ class uatg_misa_test(IPlugin):
 
     def generate_covergroups(self, config_file):
         pass
-
-# def main():
-#     isa_yaml = load_yaml('/home/purushoth/.config/JetBrains/PyCharmCE2021.3'
-#                          '/scratches/rv64i_isa_checked.yaml')
-#     obj = uatg_misa_test()
-#     obj.execute(core_yaml='', isa_yaml=isa_yaml)
-#     # val = validator(
-#     #     isa_yaml['hart0']['misa']['rv64']['mxl']['type']['warl'])
-#     # reset_val = isa_yaml['hart0']['misa']['reset-val']
-#     # for i in range(4):
-#     #     print(val.islegal(i))
-#     obj.generate_asm()
-#     with open('temp.txt', 'w') as f:
-#         f.writelines(obj.generate_asm()[0]['asm_code'])
-#
-#
-# if __name__ == '__main__':
-#     main()
