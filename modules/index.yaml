@@ -1,12 +1,12 @@
 branch_predictor:
-  uatg_gshare_fa_btb_fill_01: False
-  uatg_gshare_fa_btb_selfmodifying_01: False
-  uatg_gshare_fa_fence_01: False
-  uatg_gshare_fa_ghr_alternating_01: False
-  uatg_gshare_fa_ghr_ones_01: False
-  uatg_gshare_fa_ghr_zeros_01: False
-  uatg_gshare_fa_mispredict_loop_01: False
-  uatg_gshare_fa_ras_push_pop_01: False
+  uatg_gshare_fa_btb_fill_01: True
+  uatg_gshare_fa_btb_selfmodifying_01: True
+  uatg_gshare_fa_fence_01: True
+  uatg_gshare_fa_ghr_alternating_01: True
+  uatg_gshare_fa_ghr_ones_01: True
+  uatg_gshare_fa_ghr_zeros_01: True
+  uatg_gshare_fa_mispredict_loop_01: True
+  uatg_gshare_fa_ras_push_pop_01: True
 
 decoder:
   uatg_decoder_arithmetic_insts_1: True
@@ -29,46 +29,34 @@ decoder:
   uatg_decoder_reserved_fence: True
   uatg_decoder_reserved_insts: True
   uatg_decoder_reserved_lui: True
-  uatg_decoder_arithmetic_insts_1: False
-  uatg_decoder_arithmetic_insts_2: False
-  uatg_decoder_arithmetic_insts_3: False
-  uatg_decoder_arithmetic_insts_4: False
-  uatg_decoder_arithmetic_insts_ui: False
-  uatg_decoder_branch_insts_1: False
-  uatg_decoder_jump_jal: False
-  uatg_decoder_jump_jalr: False
-  uatg_decoder_logical_insts_1: False
-  uatg_decoder_logical_insts_2: False
-  uatg_decoder_memory_insts_1: False
-  uatg_decoder_mext: False
-
+  
 caches:
-  uatg_dcache_atomic_random: False
-  uatg_dcache_fb_hit_01: False
-  uatg_dcache_fill_01: False
-  uatg_dcache_fill_02: False
-  uatg_dcache_fill_03: False
-  uatg_dcache_fill_04: False
-  uatg_dcache_fill_05: False
-  uatg_dcache_fill_06: False
-  uatg_dcache_fill_buffer_01: False
-  uatg_dcache_fill_buffer_02: False
-  uatg_dcache_fill_random: False
-  uatg_dcache_line_thrashing: False
-  uatg_dcache_load_store_types: False
-  uatg_dcache_ram_hit_01: False
-  uatg_dcache_read_replacement: False
-  uatg_dcache_replacement_all: False
-  uatg_dcache_set_thrashing: False
-  uatg_dcache_critical_word: False
-  uatg_icache_fill_01: False
-  uatg_icache_fill_02: False
-  uatg_icache_set_thrashing_01: False
-  uatg_icache_set_thrashing_02: False # Generates 'sets' number of ASM Files
-  uatg_icache_read_replacement: False # Generates 'sets' number of ASM files
-  uatg_icache_fence_race: False
+  uatg_dcache_atomic_random: True
+  uatg_dcache_fb_hit_01: True
+  uatg_dcache_fill_01: True
+  uatg_dcache_fill_02: True
+  uatg_dcache_fill_03: True
+  uatg_dcache_fill_04: True
+  uatg_dcache_fill_05: True
+  uatg_dcache_fill_06: True
+  uatg_dcache_fill_buffer_01: True
+  uatg_dcache_fill_buffer_02: True
+  uatg_dcache_fill_random: True
+  uatg_dcache_line_thrashing: True
+  uatg_dcache_load_store_types: True
+  uatg_dcache_ram_hit_01: True
+  uatg_dcache_read_replacement: True
+  uatg_dcache_replacement_all: True
+  uatg_dcache_set_thrashing: True
+  uatg_dcache_critical_word: True
+  uatg_icache_fill_01: True
+  uatg_icache_fill_02: True
+  uatg_icache_set_thrashing_01: True
+  uatg_icache_set_thrashing_02: True # Generates 'sets' number of ASM Files
+  uatg_icache_read_replacement: True # Generates 'sets' number of ASM files
+  uatg_icache_fence_race: True
   uatg_icache_self_modifying: True
-  uatg_icache_critical_word_first: False
+  uatg_icache_critical_word_first: True
 
 decompressor:
   uatg_decompressor_01: True # buggy
@@ -77,45 +65,6 @@ decompressor:
   uatg_decompressor_reserved_insts: True
 
 mbox:
-<<<<<<< HEAD
-  uatg_mbox_divu_insts_01: False # buggy
-  uatg_mbox_mul_div_insts_01: False
-  uatg_mbox_mulh_insts_01: False # buggy
-
-caches:
-  uatg_dcache_atomic_random: False
-  uatg_dcache_fb_hit_01: False
-  uatg_dcache_fill_01: False
-  uatg_dcache_fill_02: False
-  uatg_dcache_fill_03: False
-  uatg_dcache_fill_04: False
-  uatg_dcache_fill_05: False
-  uatg_dcache_fill_06: False
-  uatg_dcache_fill_buffer_01: False
-  uatg_dcache_fill_buffer_02: False
-  uatg_dcache_fill_random: False
-  uatg_dcache_line_thrashing: False
-  uatg_dcache_load_store_types: False
-  uatg_dcache_ram_hit_01: False
-  uatg_dcache_read_replacement: False
-  uatg_dcache_replacement_all: False
-  uatg_dcache_set_thrashing: False
-  uatg_icache_fill_01: False
-  uatg_icache_set_thrashing_01: False
-  uatg_icache_set_thrashing_02: False # Generates 'sets' number of ASM Files
-  uatg_icache_read_replacement: False # Generates 'sets' number of ASM files
-  uatg_icache_fence_race: False
-  uatg_icache_self_modifying: False
-  uatg_icache_critical_word_first: False
-
-regfile_bypass:
-  uatg_bypass_alu_alu: True
-  uatg_bypass_mul_load_store: True
-  uatg_bypass_mul_mul: True
-  uatg_bypass_regfiles: True
-  uatg_bypass_trap: True
-  uatg_regfiles_r1: True
-=======
   uatg_mbox_divu_insts_01: True #test passed
   uatg_mbox_mul_div_insts_01: True #test passed
   uatg_mbox_mulh_insts_01: True #test passed
@@ -188,5 +137,12 @@ regfile_bypass:
   uatg_mbox_comp_comp_reg_WAR: True #test passed
   uatg_mbox_comp_comp_rv64_WAR: True #test passed
   uatg_mbox_comp_comp_imm_WAR: True #test passed
-  uatg_mbox_comp_comp_rv64_imm_WAR: True #test passed
->>>>>>> dev
+  uatg_mbox_comp_comp_rv64_imm_WAR: True #test passed 
+
+regfile_bypass:
+  uatg_bypass_alu_alu: True
+  uatg_bypass_mul_load_store: True
+  uatg_bypass_mul_mul: True
+  uatg_bypass_regfiles: True
+  uatg_bypass_trap: True
+  uatg_regfiles_r1: True
