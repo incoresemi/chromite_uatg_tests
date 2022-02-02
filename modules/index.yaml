@@ -39,13 +39,13 @@ caches:
   uatg_dcache_fill_02: False
   uatg_dcache_fill_03: False
   uatg_dcache_fill_04: False
-  uatg_dcache_fill_05: True
+  uatg_dcache_fill_05: False
   uatg_dcache_fill_06: False
   uatg_dcache_fill_buffer_01: False
   uatg_dcache_fill_buffer_02: False
   uatg_dcache_fill_random: False
-  uatg_dcache_line_thrashing: True
-  uatg_dcache_load_store_types: True
+  uatg_dcache_line_thrashing: False
+  uatg_dcache_load_store_types: False
   uatg_dcache_ram_hit_01: False
   uatg_dcache_read_replacement: False
   uatg_dcache_replacement_all: False
@@ -57,5 +57,5 @@ caches:
   uatg_icache_set_thrashing_02: False # Generates 'sets' number of ASM Files
   uatg_icache_read_replacement: False # Generates 'sets' number of ASM files
   uatg_icache_fence_race: False
-  uatg_icache_self_modifying: False
+  uatg_icache_self_modifying: True
   uatg_icache_critical_word_first: False

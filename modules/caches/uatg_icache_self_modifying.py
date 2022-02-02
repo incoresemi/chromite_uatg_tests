@@ -46,7 +46,7 @@ class uatg_icache_self_modifying(IPlugin):
         asm_init = [f"\tmv x{i}, x0\n" for i in range(1,32)]
         asm = ".option norvc\n"
         asm += "begin:\n"
-        asm += "\tli t0, 0x80000000\n"
+        asm += "\tla t0, begin\n"
         asm += "\tbeqz t0, begin\n"
         asm += "\tla t1, exit\n"
         asm += "\tsub t2, t1, t0\n"
