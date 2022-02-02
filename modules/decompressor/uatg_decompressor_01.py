@@ -2,7 +2,8 @@
 # occur In addition to this, the GHR is also filled with ones (additional
 # test case) uses assembly macros
 
-# To-Do -> Create another function which prints the includes and other
+# TODO -> Format the file!
+#  Create another function which prints the includes and other
 # assembler directives complying to the test format spec
 
 from yapsy.IPlugin import IPlugin
@@ -14,7 +15,7 @@ class uatg_decompressor_01(IPlugin):
         super().__init__()
         pass
 
-    def execute(self, core_yaml, isa_yaml):
+    def execute(self, core_yaml, isa_yaml) -> bool:
         isa = (isa_yaml['hart0']['ISA']).lower()
         if 'c' in isa:
             return True
@@ -27,70 +28,66 @@ class uatg_decompressor_01(IPlugin):
         asm = '\n\n## test: decompressor_01 ##\n\n'
         asm += f"###Integer Constant-Generation Instructions###\n" \
                f"c.li x1,1   ## x1=1\n" \
-               f"c.li x2,2   ## x2=2\n" \
-
+               f"c.li x2,2   ## x2=2\n"
         for loop_var in range(3, 32):
             asm += f"c.lui x{loop_var},{loop_var}  ## x{loop_var}={loop_var}\n"
 
         asm += f"\n###Stack-Pointer-Based Loads and Stores####\n" \
-        f"LA (x2,sample_data)\n" \
-        f"c.swsp x31,4(x2) ## [x2+4]=31\n" \
-        f"c.lwsp x3,4(x2)  ## x3=31\n" \
-        f"c.sdsp x30,8(x2) ## [x2+8]=30\n" \
-        f"c.ldsp x4,8(x2)  ## x4=30\n\n" \
-        f"###Register-Based Loads and Stores###\n" \
-        f"LA (x15,sample_data)\n" \
-        f"c.sw x8,4(x15)  ## [x15+4]=8\n" \
-        f"c.lw x9,4(x15)  ## x9=8\n" \
-        f"LA (x14,sample_data)\n" \
-        f"c.sd x10,8(x14) ## [x14+8]=10\n" \
-        f"c.ld x11,8(x14) ## x11=10\n\n" \
-        f"###Integer Register-Immediate Operations###\n" \
-        f"c.addi x12,5       ## x12=12+5\n" \
-        f"c.addiw x13,6      ## x13=13+6\n" \
-        f"c.addi16sp x2,32   ## x2=2+32\n" \
-        f"c.addi4spn x14,x2,12  ## x14=x2+12\n" \
-        f"c.slli x5,1        ## x5=x5<<1\n" \
-        f"c.srli x15,1       ## x15=x15>>1\n" \
-        f"c.srai x8,4        ## x8=x8arith>>4\n" \
-        f"c.andi x9,8        ## x9=x9&8\n\n" \
-        f"##Integer Register-Register Operations##\n" \
-        f"c.mv x16,x17   ## x16=17\n" \
-        f"c.add x18,x19  ## x18=x18+x19\n" \
-        f"c.and x8,x9    ## x8=x8&x9\n" \
-        f"c.or  x9,x10   ## x9=x9|x10\n" \
-        f"c.xor x10,x11  ## x10=x10^x11\n" \
-        f"c.sub x11,x12  ## x11=x11-x12\n" \
-        f"c.addw x12,x13 ## x12=x12+x13\n" \
-        f"c.subw x13,x14 ## x13=x13+14\n\n" \
-        f"##control transfer instructions##\n" \
-        f"c.li x15,0             ## x15=0\n" \
-        f"c.beqz x15, entry1 \n" \
-        f"c.bnez x14,entry2\n" \
-        f"c.j entry3\n\n" \
-        f"entry1: c.li x15,2    ##x15=2\n\n" \
-        f"entry2: c.li x14,0\n\n" \
-        f"entry3:\n" \
-        f"c.add x9,x10    ## x9=x9+x10\n" \
-        f"c.sub x10,x9    ## x10=x10-x9\n\n" \
-        f"LA (x29,entry_jalr)\n" \
-        f"LA (x28, entry_jr)\n" \
-        f"c.jalr x29\n" \
-        f"c.nop\n\n" \
-        f"entry_jalr:\n" \
-        f"c.add x9,x10\n\n" \
-        f"c.jr x28\n\n" \
-        f"entry_jr:\n" \
-        f"c.add x9,x10\n\n" \
-        f"c.nop\n\n" \
-
-        # compile macros for the test
-        compile_macros = []
+               f"LA (x2,sample_data)\n" \
+               f"c.swsp x31,4(x2) ## [x2+4]=31\n" \
+               f"c.lwsp x3,4(x2)  ## x3=31\n" \
+               f"c.sdsp x30,8(x2) ## [x2+8]=30\n" \
+               f"c.ldsp x4,8(x2)  ## x4=30\n\n" \
+               f"###Register-Based Loads and Stores###\n" \
+               f"LA (x15,sample_data)\n" \
+               f"c.sw x8,4(x15)  ## [x15+4]=8\n" \
+               f"c.lw x9,4(x15)  ## x9=8\n" \
+               f"LA (x14,sample_data)\n" \
+               f"c.sd x10,8(x14) ## [x14+8]=10\n" \
+               f"c.ld x11,8(x14) ## x11=10\n\n" \
+               f"###Integer Register-Immediate Operations###\n" \
+               f"c.addi x12,5       ## x12=12+5\n" \
+               f"c.addiw x13,6      ## x13=13+6\n" \
+               f"c.addi16sp x2,32   ## x2=2+32\n" \
+               f"c.addi4spn x14,x2,12  ## x14=x2+12\n" \
+               f"c.slli x5,1        ## x5=x5<<1\n" \
+               f"c.srli x15,1       ## x15=x15>>1\n" \
+               f"c.srai x8,4        ## x8=x8arith>>4\n" \
+               f"c.andi x9,8        ## x9=x9&8\n\n" \
+               f"##Integer Register-Register Operations##\n" \
+               f"c.mv x16,x17   ## x16=17\n" \
+               f"c.add x18,x19  ## x18=x18+x19\n" \
+               f"c.and x8,x9    ## x8=x8&x9\n" \
+               f"c.or  x9,x10   ## x9=x9|x10\n" \
+               f"c.xor x10,x11  ## x10=x10^x11\n" \
+               f"c.sub x11,x12  ## x11=x11-x12\n" \
+               f"c.addw x12,x13 ## x12=x12+x13\n" \
+               f"c.subw x13,x14 ## x13=x13+14\n\n" \
+               f"##control transfer instructions##\n" \
+               f"c.li x15,0             ## x15=0\n" \
+               f"c.beqz x15, entry1 \n" \
+               f"c.bnez x14,entry2\n" \
+               f"c.j entry3\n\n" \
+               f"entry1: c.li x15,2    ##x15=2\n\n" \
+               f"entry2: c.li x14,0\n\n" \
+               f"entry3:\n" \
+               f"c.add x9,x10    ## x9=x9+x10\n" \
+               f"c.sub x10,x9    ## x10=x10-x9\n\n" \
+               f"LA (x29,entry_jalr)\n" \
+               f"LA (x28, entry_jr)\n" \
+               f"c.jalr x29\n" \
+               f"c.nop\n\n" \
+               f"entry_jalr:\n" \
+               f"c.add x9,x10\n\n" \
+               f"c.jr x28\n\n" \
+               f"entry_jr:\n" \
+               f"c.add x9,x10\n\n" \
+               f"c.nop\n\n" \
 
         return [{
             'asm_code': asm,
             'asm_sig': '',
-            'compile_macros': compile_macros
+            'compile_macros': []
         }]
 
     def check_log(self):
@@ -191,4 +188,4 @@ class uatg_decompressor_01(IPlugin):
 `endif\n}\n
 endgroup\n\n"""
 
-        return (sv)
+        return sv

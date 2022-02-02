@@ -3,7 +3,7 @@ from ruamel.yaml import YAML
 import uatg.regex_formats as rf
 import re
 import os
-from typing import Dict, List
+from typing import Dict, Union, Any, List
 
 
 class uatg_gshare_fa_mispredict_loop_01(IPlugin):
@@ -37,7 +37,7 @@ class uatg_gshare_fa_mispredict_loop_01(IPlugin):
         else:
             return False
 
-    def generate_asm(self) -> List[Dict[str, str]]:
+    def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
         """
         The function creates a simple loop in assembly which checks if
         mis-predictions occur during the warm-up phase of the BPU
@@ -56,13 +56,31 @@ class uatg_gshare_fa_mispredict_loop_01(IPlugin):
                + "\tadd t2,t2,t2\n\taddi t2,t2,-10\n" \
                + "\tblt t1,t0,loop\n\n"
         asm += "\tadd t2,t0,t1\n"
+        # trap signature bytes
+        trap_sigbytes = 24
+        trap_count = 0
+
+        # initialize the signature region
+        sig_code = 'mtrap_count:\n'
+        sig_code += ' .fill 1, 8, 0x0\n'
+        sig_code += 'mtrap_sigptr:\n'
+        sig_code += ' .fill {0},4,0xdeadbeef\n'.format(int(trap_sigbytes / 4))
         # compile macros for the test
-        compile_macros = []
+        compile_macros = ['rvtest_mtrap_routine']
+
+        supervisor_dict = {
+            'enable': True,
+            'page_size': 4096,
+            'paging_mode': 'sv39',
+            'll_pages': 64,
+            'u_bit': False
+        }
 
         return [{
             'asm_code': asm,
-            'asm_sig': '',
-            'compile_macros': compile_macros
+            'asm_sig': sig_code,
+            'compile_macros': compile_macros,
+            'supervisor_mode': supervisor_dict
         }]
 
     def check_log(self, log_file_path, reports_dir) -> bool:

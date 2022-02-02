@@ -1,15 +1,12 @@
 from yapsy.IPlugin import IPlugin
 from uatg.instruction_constants import base_reg_file, mext_instructions
-from uatg.utils import rvtest_data
-from typing import Dict, Any
-from random import randint
+from typing import Dict, List, Union, Any
 import random
 
 
 class uatg_mbox_mul_div_insts_01(IPlugin):
-    """
-    This class contains methods to generate and validate the tests for
-    mbox module
+    """ 
+     class contains the mulitiplier and divider instructions.
     """
 
     def __init__(self) -> None:
@@ -35,7 +32,7 @@ class uatg_mbox_mul_div_insts_01(IPlugin):
         else:
             return False
 
-    def generate_asm(self) -> Dict[str, str]:
+    def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
         """x
             Generates the ASM instructions for multiplier and divider.
             It creates asm for the following instructions based upon ISA
@@ -45,7 +42,8 @@ class uatg_mbox_mul_div_insts_01(IPlugin):
         # every instruction in m_extension_instructions
 
         test_dict = []
-
+      
+        doc_string = 'Test evaluates the multiplier and divider instructions '
         reg_file = base_reg_file.copy()
 
         reg_file.remove('x0')
@@ -93,8 +91,11 @@ class uatg_mbox_mul_div_insts_01(IPlugin):
 
                         # perform the  required assembly operation
                         asm_code += f'\ninst_{inst_count}:'
-                        asm_code += f'\n#operation: {inst}, rs1={rs1}, rs2={rs2}, rd={rd}\n'
-                        asm_code += f'TEST_RR_OP({inst}, {rd}, {rs1}, {rs2}, 0, {rs1_val}, {rs2_val}, {swreg}, {offset}, x0)\n'
+                        asm_code += f'\n#operation: {inst}, rs1={rs1}, rs2=' \
+                                    f'{rs2}, rd={rd}\n'
+                        asm_code += f'TEST_RR_OP({inst}, {rd}, {rs1}, {rs2}, ' \
+                                    f'0, {rs1_val}, {rs2_val}, {swreg}, ' \
+                                    f'{offset}, x0)\n'
 
                         # adjust the offset. reset to 0 if it crosses 2048 and
                         # increment the current signature pointer with the
@@ -126,7 +127,8 @@ class uatg_mbox_mul_div_insts_01(IPlugin):
                 'asm_data': '',
                 'asm_sig': sig_code,
                 'compile_macros': compile_macros,
-                'name_postfix': inst
+                'name_postfix': inst,
+                'doc_string' : doc_string
             })
         return test_dict
 
