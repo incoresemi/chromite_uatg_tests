@@ -53,7 +53,7 @@ class uatg_icache_fill_02(IPlugin):
         for i in li:
             asm += i
 
-        asm += "label4032:\n\tbeq x3,x5 label1\n"
+        asm += "label4032:\n\tbeq x3,x5, label1\n"
 
         compile_macros = []
         return [{
