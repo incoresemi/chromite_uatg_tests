@@ -5,7 +5,7 @@ from ruamel.yaml import YAML
 import uatg.regex_formats as rf
 import re
 import os
-from typing import Dict, List
+from typing import Dict, Union, Any, List
 
 
 class uatg_gshare_fa_ghr_ones_01(IPlugin):
@@ -37,7 +37,7 @@ class uatg_gshare_fa_ghr_ones_01(IPlugin):
         else:
             return False
 
-    def generate_asm(self) -> List[Dict[str, str]]:
+    def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
         """
           the for loop iterates ghr_width + 2 times printing an
           assembly program which contains ghr_width + 2 branches which
@@ -51,13 +51,32 @@ class uatg_gshare_fa_ghr_ones_01(IPlugin):
         asm = f"\n\taddi t0, x0, {loop_count}\n\taddi t1,x0 ,0 \n\nloop:\n"
         asm += "\taddi t1, t1, 1\n\tblt t1, t0, loop\n"
 
+        # trap signature bytes
+        trap_sigbytes = 24
+        trap_count = 0
+
+        # initialize the signature region
+        sig_code = 'mtrap_count:\n'
+        sig_code += ' .fill 1, 8, 0x0\n'
+        sig_code += 'mtrap_sigptr:\n'
+        sig_code += ' .fill {0},4,0xdeadbeef\n'.format(int(trap_sigbytes / 4))
         # compile macros for the test
-        compile_macros = []
+        compile_macros = ['rvtest_mtrap_routine']
+
+        supervisor_dict = {
+            'enable': True,
+            'page_size': 4096,
+            'paging_mode': 'sv39',
+            'll_pages': 64,
+            'u_bit': False
+        }
 
         return [{
             'asm_code': asm,
-            'asm_sig': '',
-            'compile_macros': compile_macros
+            'asm_sig': sig_code,
+            'compile_macros': compile_macros,
+            'supervisor_mode': supervisor_dict,
+            'docstring': 'This test fills ghr register with ones'
         }]
 
     def check_log(self, log_file_path, reports_dir):

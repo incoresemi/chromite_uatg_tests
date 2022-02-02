@@ -3,7 +3,7 @@
 from yapsy.IPlugin import IPlugin
 from ruamel.yaml import YAML
 import uatg.regex_formats as rf
-from typing import Dict, List
+from typing import Dict, Union, Any, List
 import re
 import os
 
@@ -47,7 +47,7 @@ class uatg_gshare_fa_btb_fill_01(IPlugin):
             return False
             # return false if this test cannot.
 
-    def generate_asm(self) -> List[Dict[str, str]]:
+    def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
         """
         This method returns a string of the ASM file to be generated.
 
@@ -114,13 +114,31 @@ class uatg_gshare_fa_btb_fill_01(IPlugin):
         # concatenate the strings to form the final ASM sting to be returned
         asm = asm_start + asm_branch + asm_jump + asm_call + asm_end
 
+        # trap signature bytes
+        trap_sigbytes = 24
+        trap_count = 0
+
+        # initialize the signature region
+        sig_code = 'mtrap_count:\n'
+        sig_code += ' .fill 1, 8, 0x0\n'
+        sig_code += 'mtrap_sigptr:\n'
+        sig_code += ' .fill {0},4,0xdeadbeef\n'.format(int(trap_sigbytes / 4))
         # compile macros for the test
-        compile_macros = []
+        compile_macros = ['rvtest_mtrap_routine']
+
+        supervisor_dict = {
+            'enable': True,
+            'page_size': 4096,
+            'paging_mode': 'sv39',
+            'll_pages': 64,
+            'u_bit': False
+        }
 
         return [{
             'asm_code': asm,
-            'asm_sig': '',
-            'compile_macros': compile_macros
+            'asm_sig': sig_code,
+            'compile_macros': compile_macros,
+            'supervisor_mode': supervisor_dict
         }]
 
     def check_log(self, log_file_path, reports_dir):

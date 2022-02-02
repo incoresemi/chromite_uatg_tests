@@ -1,9 +1,6 @@
 from yapsy.IPlugin import IPlugin
 from uatg.instruction_constants import base_reg_file, jump_instructions
 from uatg.instruction_constants import bit_walker
-from uatg.utils import rvtest_data
-from typing import List, Dict, Any
-from random import randint
 import random
 
 
@@ -14,6 +11,7 @@ class uatg_decoder_jump_jal(IPlugin):
     """
 
     def __init__(self) -> None:
+        super().__init__()
         self.isa = 'RV64I'
         self.isa_bit = 'rv64'
         self.offset_inc = 4
@@ -177,9 +175,3 @@ class uatg_decoder_jump_jal(IPlugin):
     def generate_covergroups(self, config_file) -> str:
         sv = ''
         return sv
-
-
-if __name__ == "__main__":
-    obj = uatg_decoder_jump_jal()
-    out = obj.generate_asm()
-    print(out)
