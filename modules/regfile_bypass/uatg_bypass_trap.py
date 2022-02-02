@@ -35,7 +35,8 @@ class uatg_bypass_trap(IPlugin):
         trap handler by creating misaligned loads
         """
         reg_file = base_reg_file.copy()
-        asm = f"\taddi {reg_file[2]},{reg_file[0]} ,5\n"
+        asm = f"\tla {reg_file[1]} ,sample_data\n"
+        asm += f"\taddi {reg_file[2]},{reg_file[0]} ,5\n"
         # initializing register x2
         asm += f"\taddi {reg_file[3]},{reg_file[0]} ,7\n"
         # initializing register x3
@@ -43,7 +44,7 @@ class uatg_bypass_trap(IPlugin):
         # clearing the bits in register x31
         asm += f"\tmul {reg_file[8]} ,{reg_file[3]} ,{reg_file[2]}\n"
         # x8<-- 7*5=35
-        asm += f"\tlw {reg_file[5]} ,1({reg_file[0]})\n"
+        asm += f"\tlw {reg_file[5]} ,0({reg_file[1]})\n"
         # expected address misalign --> jumps to trap handler -->
         # expected pipeline flush
         asm += f"\tsra {reg_file[31]} ,{reg_file[8]} ,{reg_file[2]}\n"
@@ -52,7 +53,10 @@ class uatg_bypass_trap(IPlugin):
         # if the misaligned trap is taken,
         # then it'll have the reset  values (expected)
         asm += f"\tbnez {reg_file[31]}, flag\n"
-        asm += f"flag:\n\tj flag\n"
+        asm += f"\tj end\n"
+        asm += f"flag:\n\taddi {reg_file[7]} ,{reg_file[0]} ,10\n"
+        asm += "end:\n\tfence.i\n"
+        
 
         # compile macros for the test
         compile_macros = []

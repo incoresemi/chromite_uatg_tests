@@ -36,16 +36,17 @@ class uatg_bypass_mul_load_store(IPlugin):
         Bypassing checked for load/store instructions as well
         """
         reg_file = base_reg_file.copy()
-        asm = f"\taddi {reg_file[2]} ,{reg_file[0]} ,5\n"
+        asm = f"\tla {reg_file[1]} ,sample_data\n"
+        asm += f"\taddi {reg_file[2]} ,{reg_file[0]} ,5\n"
         asm += f"\taddi {reg_file[3]} ,{reg_file[0]} ,7\n"
         asm += f"\taddi {reg_file[4]} ,{reg_file[0]} ,1\n"
 
         asm += f"\tmul {reg_file[4]} ,{reg_file[2]} ,{reg_file[3]}\n"
         # a multi-cycle instruction
-        asm += f"\tsw {reg_file[4]} ,4({reg_file[0]})\n"
+        asm += f"\tsw {reg_file[4]} ,4({reg_file[1]})\n"
         # store the product into memory
 
-        asm += f"\tlw {reg_file[5]} ,4({reg_file[0]})\n"
+        asm += f"\tlw {reg_file[5]} ,4({reg_file[1]})\n"
         # load the stored product from the memory
         asm += f"\taddi {reg_file[6]} ,{reg_file[0]} ,35\n"
         # store the product(5*7) to verify in the next step
