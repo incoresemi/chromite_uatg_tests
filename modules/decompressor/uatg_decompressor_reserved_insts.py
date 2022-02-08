@@ -1,7 +1,7 @@
 from yapsy.IPlugin import IPlugin
 
 
-class uatg_decoder_illegal_instructions(IPlugin):
+class uatg_decompressor_illegal_instructions(IPlugin):
     """
         This class contains methods to generate compressed reserved instructions
          for which the core should trap.
