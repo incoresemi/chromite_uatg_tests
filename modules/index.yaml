@@ -111,4 +111,13 @@ mbox:
   uatg_mbox_comp_comp_rv64_imm_WAR: False #test passed
  
 csrs:
-  uatg_misa: True
+  uatg_misa_disable_A: False
+  uatg_misa_disable_C: False  # Buggy
+  uatg_misa_disable_FDQ: False # To be tested in future
+  uatg_misa_disable_IE: False # Buggy
+  uatg_misa_disable_M: False
+  uatg_misa_enable_unimplemented_exts: False
+  uatg_misa_misaligned_compressed: False
+  uatg_misa_mxl: False
+  uatg_misa_reset_val: False
+  uatg_misa_zero_bits: False
