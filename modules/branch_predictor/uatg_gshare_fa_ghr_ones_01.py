@@ -23,6 +23,7 @@ class uatg_gshare_fa_ghr_ones_01(IPlugin):
         # initializing variables
         super().__init__()
         self._history_len = 8
+        self.isa = 'RV64I'
 
     def execute(self, core_yaml, isa_yaml):
         # Function to check whether to generate/validate this test or not
@@ -31,6 +32,14 @@ class uatg_gshare_fa_ghr_ones_01(IPlugin):
         _bpu_dict = core_yaml['branch_predictor']
         _en_bpu = _bpu_dict['instantiate']
         self._history_len = _bpu_dict['history_len']
+        self.isa = isa_yaml['hart0']['ISA']
+        self.modes = ['machine']
+
+        if 'S' in self.isa:
+            self.modes.append('supervisor')
+
+        if 'S' and 'U' in self.isa:
+            self.modes.append('user')
 
         if _en_bpu and self._history_len:
             return True
@@ -44,40 +53,55 @@ class uatg_gshare_fa_ghr_ones_01(IPlugin):
           will are TAKEN. This fills the ghr with zeros
         """
 
-        loop_count = self._history_len + 2  # here, 2 is added arbitrarily.
-        # it makes sure the loop iterate 2 more times keeping the ghr filled
-        # with ones for 2 more predictions
+        return_list = []
 
-        asm = f"\n\taddi t0, x0, {loop_count}\n\taddi t1,x0 ,0 \n\nloop:\n"
-        asm += "\taddi t1, t1, 1\n\tblt t1, t0, loop\n"
+        for mode in self.modes:
 
-        # trap signature bytes
-        trap_sigbytes = 24
-        trap_count = 0
+            loop_count = self._history_len + 2  # here, 2 is added arbitrarily.
+            # it makes sure the loop iterate 2 more times keeping the ghr filled
+            # with ones for 2 more predictions
 
-        # initialize the signature region
-        sig_code = 'mtrap_count:\n'
-        sig_code += ' .fill 1, 8, 0x0\n'
-        sig_code += 'mtrap_sigptr:\n'
-        sig_code += ' .fill {0},4,0xdeadbeef\n'.format(int(trap_sigbytes / 4))
-        # compile macros for the test
-        compile_macros = ['rvtest_mtrap_routine']
+            asm = f"\n\taddi t0, x0, {loop_count}\n\taddi t1,x0 ,0 \n\nloop:\n"
+            asm += "\taddi t1, t1, 1\n\tblt t1, t0, loop\n"
 
-        supervisor_dict = {
-            'enable': True,
-            'page_size': 4096,
-            'paging_mode': 'sv39',
-            'll_pages': 64,
-            'u_bit': False
-        }
+            # trap signature bytes
+            trap_sigbytes = 24
+            trap_count = 0
 
-        return [{
-            'asm_code': asm,
-            'asm_sig': sig_code,
-            'compile_macros': compile_macros,
-            'supervisor_mode': supervisor_dict,
-            'docstring': 'This test fills ghr register with ones'
-        }]
+            # initialize the signature region
+            sig_code = 'mtrap_count:\n'
+            sig_code += ' .fill 1, 8, 0x0\n'
+            sig_code += 'mtrap_sigptr:\n'
+            sig_code += ' .fill {0},4,0xdeadbeef\n'.format(
+                int(trap_sigbytes / 4))
+            # compile macros for the test
+            if mode != 'machine':
+                compile_macros = ['rvtest_mtrap_routine']
+            else:
+                compile_macros = []
+
+            # user can choose to generate supervisor and/or user tests in addition
+            # to machine mode tests here.
+            privileged_test_enable = True
+
+            privileged_test_dict = {
+                'enable': privileged_test_enable,
+                'mode': mode,
+                'page_size': 4096,
+                'paging_mode': 'sv39',
+                'll_pages': 64,
+            }
+
+            return_list.append({
+                'asm_code': asm,
+                'asm_sig': sig_code,
+                'compile_macros': compile_macros,
+                'privileged_test': privileged_test_dict,
+                'docstring': 'This test fills ghr register with ones',
+                'name_postfix': mode
+            })
+
+        return return_list
 
     def check_log(self, log_file_path, reports_dir):
         """

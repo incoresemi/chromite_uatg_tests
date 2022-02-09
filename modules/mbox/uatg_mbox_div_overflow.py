@@ -1,5 +1,6 @@
-from yapsy.IPlugin import IPlugin
 from typing import Dict, List, Union
+
+from yapsy.IPlugin import IPlugin
 
 
 class uatg_mbox_div_overflow(IPlugin):
@@ -36,9 +37,9 @@ class uatg_mbox_div_overflow(IPlugin):
             It creates asm for division overflow operation using div instruction 
         """
         test_dict = []
-     
-        doc_string = 'Test evaluate the division overflow 
-                      operation using div instruction'
+
+        doc_string = 'Test evaluate the division overflow operation using ' \
+                     'div instruction '
 
         inst = ['div', 'rem']
 
@@ -77,7 +78,7 @@ class uatg_mbox_div_overflow(IPlugin):
         # perform the  required assembly operation
         asm_code += f'\n#operation: div, rs1={rs1}, rs2={rs2}, rd={rd}\n'
 
-        asm_code += f'TEST_RR_OP({inst[0]}, {rd}, {rs1}, {rs2}, '\
+        asm_code += f'TEST_RR_OP({inst[0]}, {rd}, {rs1}, {rs2}, ' \
                     f'{correct_val_div}, {rs1_val}, ' \
                     f'{rs2_val}, {swreg}, {offset}, x0)\n'
 
@@ -91,7 +92,7 @@ class uatg_mbox_div_overflow(IPlugin):
 
         asm_code += f'\n#operation: rem, rs1={rs1}, rs2={rs2}, rd={rd}\n'
 
-        asm_code += f'TEST_RR_OP({inst[1]}, {rd1}, {rs1}, {rs2}, '\
+        asm_code += f'TEST_RR_OP({inst[1]}, {rd1}, {rs1}, {rs2}, ' \
                     f'{correct_val_rem}, {rs1_val}, ' \
                     f'{rs2_val}, {swreg}, {offset}, x0)\n'
 
@@ -106,7 +107,7 @@ class uatg_mbox_div_overflow(IPlugin):
             # perform the  required assembly operation
             asm_code += f'\n#operation: divw, rs1={rs1}, rs2={rs2}, rd={rd}\n'
 
-            asm_code += f'TEST_RR_OP({inst[2]}, {rd}, {rs1}, {rs2}, '\
+            asm_code += f'TEST_RR_OP({inst[2]}, {rd}, {rs1}, {rs2}, ' \
                         f'{new_correct_val_div}, {rs1_val}, ' \
                         f'{rs2_val}, {swreg}, {offset}, x0)\n'
 
@@ -115,7 +116,7 @@ class uatg_mbox_div_overflow(IPlugin):
 
             asm_code += f'\n#operation: remw, rs1={rs1}, rs2={rs2}, rd={rd}\n'
 
-            asm_code += f'TEST_RR_OP({inst[3]}, {rd1}, {rs1}, {rs2}, '\
+            asm_code += f'TEST_RR_OP({inst[3]}, {rd1}, {rs1}, {rs2}, ' \
                         f'{correct_val_rem}, {rs1_val}, ' \
                         f'{rs2_val}, {swreg}, {offset}, x0)\n'
             sig_bytes = sig_bytes + self.offset_inc

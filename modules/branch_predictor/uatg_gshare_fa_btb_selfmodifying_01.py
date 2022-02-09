@@ -30,6 +30,16 @@ class uatg_gshare_fa_btb_selfmodifying_01(IPlugin):
         _bpu_dict = core_yaml['branch_predictor']
         _en_bpu = _bpu_dict[
             'instantiate']  # States if the DUT has a branch predictor
+
+        self.isa = isa_yaml['hart0']['ISA']
+        self.modes = ['machine']
+
+        if 'S' in self.isa:
+            self.modes.append('supervisor')
+
+        if 'S' and 'U' in self.isa:
+            self.modes.append('user')
+
         if _en_bpu:  # check condition, if BPU exists
             return True  # return true if this test can exist.
         else:
@@ -48,34 +58,67 @@ class uatg_gshare_fa_btb_selfmodifying_01(IPlugin):
         instruction again. fence will also invalidate the BTB entries,
         empty the GHR, empty RAS, make rg allocate 0
         """
+        return_list = []
 
-        # ASM Syntax
-        asm = ".option norvc\n\n"
-        asm += "\taddi t3,x0,0\n\taddi t4,x0,3\n\tjal x0,first\n\n"
-        asm += "first:\n\taddi t3,t3,1\n\n"
-        asm += "b_address:\n\tbeq t3,t4,end\n\n"
-        asm += "j_address:\n\tjal x0,first\n"
-        asm += "\n\tjal x0,fin\n\n"
-        asm += "end:\n\taddi x0,x0,0\n\taddi t0,x0,1\n"
-        asm += "\tla t0, b_address\n\tla t2, j_address\n"
-        asm += "\tla t5, add_instruction\n\tlw t1, 0(t5)\n"
-        asm += "\taddi t3,x0,5\n\tsw t1, 0(t2)\n\tsw t1, 0(t0)\n"
-        asm += "\tfence.i\n\tjal x0,first\n\n"
-        asm = asm + "fin:\n"
+        for mode in self.modes:
 
-        # rvtest_data
-        asm_data = "\n.align 4\n\nadd_instruction:\n"
-        asm_data += "\t.word 0x00000033\n"
+            # ASM Syntax
+            asm = ".option norvc\n\n"
+            asm += "\taddi t3,x0,0\n\taddi t4,x0,3\n\tjal x0,first\n\n"
+            asm += "first:\n\taddi t3,t3,1\n\n"
+            asm += "b_address:\n\tbeq t3,t4,end\n\n"
+            asm += "j_address:\n\tjal x0,first\n"
+            asm += "\n\tjal x0,fin\n\n"
+            asm += "end:\n\taddi x0,x0,0\n\taddi t0,x0,1\n"
+            asm += "\tla t0, b_address\n\tla t2, j_address\n"
+            asm += "\tla t5, add_instruction\n\tlw t1, 0(t5)\n"
+            asm += "\taddi t3,x0,5\n\tsw t1, 0(t2)\n\tsw t1, 0(t0)\n"
+            asm += "\tfence.i\n\tjal x0,first\n\n"
+            asm = asm + "fin:\n"
 
-        # compile macros for the test
-        compile_macros = []
+            # rvtest_data
+            asm_data = "\n.align 4\n\nadd_instruction:\n"
+            asm_data += "\t.word 0x00000033\n"
 
-        return [{
-            'asm_code': asm,
-            'asm_sig': '',
-            'asm_data': asm_data,
-            'compile_macros': compile_macros
-        }]
+            # trap signature bytes
+            trap_sigbytes = 24
+            trap_count = 0
+
+            # initialize the signature region
+            sig_code = 'mtrap_count:\n'
+            sig_code += ' .fill 1, 8, 0x0\n'
+            sig_code += 'mtrap_sigptr:\n'
+            sig_code += ' .fill {0},4,0xdeadbeef\n'.format(
+                int(trap_sigbytes / 4))
+            # compile macros for the test
+            if mode != 'machine':
+                compile_macros = ['rvtest_mtrap_routine']
+            else:
+                compile_macros = []
+
+            # user can choose to generate supervisor and/or user tests in addition
+            # to machine mode tests here.
+            privileged_test_enable = True
+
+            privileged_test_dict = {
+                'enable': privileged_test_enable,
+                'mode': mode,
+                'page_size': 4096,
+                'paging_mode': 'sv39',
+                'll_pages': 64,
+            }
+
+            return_list.append({
+                'asm_code': asm,
+                'asm_sig': sig_code,
+                'asm_data': asm_data,
+                'compile_macros': compile_macros,
+                'privileged_test': privileged_test_dict,
+                'docstring': '',
+                'name_postfix': mode
+            })
+
+        return return_list
 
     def check_log(self, log_file_path, reports_dir):
         """

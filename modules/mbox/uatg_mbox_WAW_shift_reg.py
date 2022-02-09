@@ -1,12 +1,17 @@
-from yapsy.IPlugin import IPlugin
+import random
+from typing import Dict, Any, List, Union
+
 from uatg.instruction_constants import base_reg_file, mext_instructions, \
     arithmetic_instructions
-from typing import Dict, Any, List, Union
-import random
+from yapsy.IPlugin import IPlugin
 
 
 class uatg_mbox_WAW_shift_reg(IPlugin):
-    """    """
+    """  
+     class evaluates mbox test write after write dependency
+     with multiplication instructions(mul,mulh, mulhsu, mulw) 
+     and aritmetic instructions (sll, sra, srl, sllw, sraw, srlw).
+    """
 
     def __init__(self) -> None:
         super().__init__()
@@ -37,9 +42,20 @@ class uatg_mbox_WAW_shift_reg(IPlugin):
 
     def generate_asm(
             self) -> List[Dict[str, Union[Union[str, List[Any]], Any]]]:
-        """    """
+        """   
+          ASM generates the write after write dependency with multiplication 
+          instructions and arithmetic instructions. destination register
+          is same for arithmetic instructions and mext instructions.
+          (i.e mulh x6, x5, x4
+               sll x6, x3, x1)
+       
+        """
 
         test_dict = []
+
+        doc_string = 'Test evaluates the write after write dependency with ' \
+                     'arithmetic(producer) instructions and mext(consumer) ' \
+                     'instructions '
 
         reg_file = [
             register for register in base_reg_file
@@ -70,10 +86,13 @@ class uatg_mbox_WAW_shift_reg(IPlugin):
             inst_count = 0
 
             code = ''
+            # rand_inst generates the shift instructions randomly
             rand_inst = random.choice(random_list)
-
+            # initialize the source registers rs1, rs2, rs3 and rs4 
+            # destination register rd1
             rs1, rs2, rs3, rs4, rd1 = 'x3', 'x4', 'x6', 'x7', 'x5'
-
+            # depends on the mul_stages_in the mext and mext 
+            # instructions generated
             for i in range(self.mul_stages_in):
 
                 code += f'{inst} {rd1},{rs1},{rs2};\n'
@@ -112,6 +131,7 @@ class uatg_mbox_WAW_shift_reg(IPlugin):
                         rand_inst1 = new_rand_inst1
                     code += f'{rand_inst1} {rand_rd}, {rand_rs1}, {rand_rs2};\n'
                 code += f'{rand_inst} {rd1}, {rs4}, {rs3};\n\n'
+            # assign the rs1_val, rs2_val, rs3_val and rs4_val
             rs1_val = '0x0000000000000012'
             rs2_val = '0x0000000000000021'
             rs3_val = '0x0000000000000045'
@@ -120,10 +140,10 @@ class uatg_mbox_WAW_shift_reg(IPlugin):
             # perform the  required assembly operation
 
             asm_code += f'\ninst_{inst_count}:\n'
-            asm_code += f'MBOX_DEPENDENCIES_WAW_RR_OP({rand_inst}, {inst}, '\
-                        f'{rs1}, {rs2}, {rs3}, {rs4}, {rd1}, 0, {rs1_val}, '\
-                        f'{rs2_val}, {rs3_val}, {rs4_val}, {swreg}, {offset}, '\
-                        f'{testreg}, {code})'
+            asm_code += f'MBOX_DEPENDENCIES_WAW_RR_OP({rand_inst}, {inst}, ' \
+                        f'{rs1}, {rs2}, {rs3}, {rs4}, {rd1}, 0, {rs1_val}, ' \
+                        f'{rs2_val}, {rs3_val}, {rs4_val}, {swreg}, {offset},' \
+                        f' {testreg}, {code})'
 
             inst_count += 1
 
@@ -140,7 +160,8 @@ class uatg_mbox_WAW_shift_reg(IPlugin):
                 'asm_data': '',
                 'asm_sig': sig_code,
                 'compile_macros': compile_macros,
-                'name_postfix': inst
+                'name_postfix': inst,
+                'doc_string': doc_string
             })
         return test_dict
 

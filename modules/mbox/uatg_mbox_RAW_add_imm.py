@@ -1,12 +1,17 @@
-from yapsy.IPlugin import IPlugin
+import random
+from typing import Dict, Any, List, Union
+
 from uatg.instruction_constants import base_reg_file, mext_instructions, \
     arithmetic_instructions
-from typing import Dict, Any, List, Union
-import random
+from yapsy.IPlugin import IPlugin
 
 
 class uatg_mbox_RAW_add_imm(IPlugin):
-    """    """
+    """ 
+     class evaluates mbox test with multiplication instructions(mul, 
+     mulh, mulhsu, mulw) and aritmetic instructions (addi, addiw).
+
+    """
 
     def __init__(self) -> None:
         super().__init__()
@@ -37,9 +42,20 @@ class uatg_mbox_RAW_add_imm(IPlugin):
 
     def generate_asm(
             self) -> List[Dict[str, Union[Union[str, List[Any]], Any]]]:
-        """    """
+        """  
+         ASM generates the read after write dependency with multiplication 
+         instructions and arithmetic instructions. destination register of
+         mext instructions depends on the source register of arithmetic 
+         instructions.
+         (i.e mulh x6, x5, x4
+              addi x3, x6, imm_val)
+        """
 
         test_dict = []
+
+        doc_string = 'Test evaluates the read after write dependency with ' \
+                     'multiplication(producer) instructions and arithmetic(' \
+                     'consumer) instructions '
 
         reg_file = [
             register for register in base_reg_file
@@ -68,14 +84,18 @@ class uatg_mbox_RAW_add_imm(IPlugin):
             sig_bytes = 0
 
             inst_count = 0
-
+            # assign the imm with range
             imm = range(1, 100)
             code = ''
+            # rand_inst generates the arithmetic instructions randomly
             rand_inst = random.choice(random_list)
+            # imm_value get the random value from imm
             imm_val = random.choice(imm)
-
+            # initialize the source registers rs1, rs2 and 
+            # destination register rd1, rd2
             rs1, rs2, rd1, rd2 = 'x3', 'x4', 'x5', 'x6'
-
+            # depends on the mul_stages_in the mext and arithmetic
+            # instructions generated
             for i in range(self.mul_stages_in):
 
                 code += f'{inst} {rd1},{rs1},{rs2};\n'
@@ -107,6 +127,7 @@ class uatg_mbox_RAW_add_imm(IPlugin):
                         rand_inst1 = new_rand_inst1
                     code += f'{rand_inst1} {rand_rd}, {rand_rs1}, {imm_val};\n'
                 code += f'{rand_inst} {rd2}, {rd1}, {imm_val};\n\n'
+            # assign the rs1_val and rs2_val
             rs1_val = '0x0000000000000004'
             rs2_val = '0x0000000000000002'
 
@@ -133,7 +154,8 @@ class uatg_mbox_RAW_add_imm(IPlugin):
                 'asm_data': '',
                 'asm_sig': sig_code,
                 'compile_macros': compile_macros,
-                'name_postfix': inst
+                'name_postfix': inst,
+                'doc_string': doc_string
             })
         return test_dict
 

@@ -1,5 +1,6 @@
-from yapsy.IPlugin import IPlugin
 from typing import Dict, List, Union
+
+from yapsy.IPlugin import IPlugin
 
 
 class uatg_mbox_unsigned_mul(IPlugin):
@@ -37,8 +38,8 @@ class uatg_mbox_unsigned_mul(IPlugin):
         """
         test_dict = []
 
-        doc_string = ' Test evaluates the unsigned multiplication 
-                       using mulh instruction'
+        doc_string = 'Test evaluates the unsigned multiplication using mulh ' \
+                     'instruction '
 
         asm_code = '#' * 5 + ' mulhu/mul reg, reg, reg ' + '#' * 5 + '\n'
 
@@ -98,7 +99,7 @@ class uatg_mbox_unsigned_mul(IPlugin):
             'asm_data': '',
             'asm_sig': sig_code,
             'compile_macros': compile_macros,
-            'doc_string' : doc_string
+            'doc_string': doc_string
         })
         return test_dict
 

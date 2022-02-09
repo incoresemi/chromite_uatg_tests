@@ -29,6 +29,14 @@ class uatg_gshare_fa_ghr_zeros_01(IPlugin):
         _bpu_dict = core_yaml['branch_predictor']
         self._history_len = _bpu_dict['history_len']
         _en_bpu = _bpu_dict['instantiate']
+        self.isa = isa_yaml['hart0']['ISA']
+        self.modes = ['machine']
+
+        if 'S' in self.isa:
+            self.modes.append('supervisor')
+
+        if 'S' and 'U' in self.isa:
+            self.modes.append('user')
 
         if _en_bpu and self._history_len:
             return True
@@ -41,39 +49,56 @@ class uatg_gshare_fa_ghr_zeros_01(IPlugin):
           assembly program which contains ghr_width + 2 branches which
           will are NOT TAKEN. This fills the ghr with zeros
         """
-        loop_count = self._history_len + 2
-        asm = "\n\n## test: gshare_fa_ghr_zeros_01 ##\n\n"
-        asm += "  addi t0,x0,1\n"
 
-        for i in range(1, loop_count):
-            asm += f"branch_{i}:\n\tbeq t0, x0, branch_{i}\n\taddi t0, t0, 1\n"
+        return_list = []
 
-        # trap signature bytes
-        trap_sigbytes = 24
-        trap_count = 0
+        for mode in self.modes:
 
-        # initialize the signature region
-        sig_code = 'mtrap_count:\n'
-        sig_code += ' .fill 1, 8, 0x0\n'
-        sig_code += 'mtrap_sigptr:\n'
-        sig_code += ' .fill {0},4,0xdeadbeef\n'.format(int(trap_sigbytes / 4))
-        # compile macros for the test
-        compile_macros = ['rvtest_mtrap_routine']
+            loop_count = self._history_len + 2
+            asm = "\n\n## test: gshare_fa_ghr_zeros_01 ##\n\n"
+            asm += "  addi t0,x0,1\n"
 
-        supervisor_dict = {
-            'enable': True,
-            'page_size': 4096,
-            'paging_mode': 'sv39',
-            'll_pages': 64,
-            'u_bit': False
-        }
+            for i in range(1, loop_count):
+                asm += f"branch_{i}:\n\tbeq t0, x0, branch_{i}\n\taddi t0, t0, 1\n"
 
-        return [{
-            'asm_code': asm,
-            'asm_sig': sig_code,
-            'compile_macros': compile_macros,
-            'supervisor_mode': supervisor_dict
-        }]
+            # trap signature bytes
+            trap_sigbytes = 24
+            trap_count = 0
+
+            # initialize the signature region
+            sig_code = 'mtrap_count:\n'
+            sig_code += ' .fill 1, 8, 0x0\n'
+            sig_code += 'mtrap_sigptr:\n'
+            sig_code += ' .fill {0},4,0xdeadbeef\n'.format(
+                int(trap_sigbytes / 4))
+            # compile macros for the test
+            if mode != 'machine':
+                compile_macros = ['rvtest_mtrap_routine']
+            else:
+                compile_macros = []
+
+            # user can choose to generate supervisor and/or user tests in addition
+            # to machine mode tests here.
+            privileged_test_enable = True
+
+            privileged_test_dict = {
+                'enable': privileged_test_enable,
+                'mode': mode,
+                'page_size': 4096,
+                'paging_mode': 'sv39',
+                'll_pages': 64,
+            }
+
+            return_list.append({
+                'asm_code': asm,
+                'asm_sig': sig_code,
+                'compile_macros': compile_macros,
+                'privileged_test': privileged_test_dict,
+                'docstring': 'This test fills ghr register with ones',
+                'name_postfix': mode
+            })
+
+        return return_list
 
     def check_log(self, log_file_path, reports_dir):
         """

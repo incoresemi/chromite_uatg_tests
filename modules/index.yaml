@@ -1,39 +1,67 @@
 branch_predictor:
-  uatg_gshare_fa_btb_fill_01: False
-  uatg_gshare_fa_btb_selfmodifying_01: False
-  uatg_gshare_fa_fence_01: False
-  uatg_gshare_fa_ghr_alternating_01: False
-  uatg_gshare_fa_ghr_ones_01: False
-  uatg_gshare_fa_ghr_zeros_01: False
-  uatg_gshare_fa_mispredict_loop_01: False
-  uatg_gshare_fa_ras_push_pop_01: False
+  uatg_gshare_fa_btb_fill_01: True
+  uatg_gshare_fa_btb_selfmodifying_01: True
+  uatg_gshare_fa_fence_01: True
+  uatg_gshare_fa_ghr_alternating_01: True
+  uatg_gshare_fa_ghr_ones_01: True
+  uatg_gshare_fa_ghr_zeros_01: True
+  uatg_gshare_fa_mispredict_loop_01: True
+  uatg_gshare_fa_ras_push_pop_01: True
 
 decoder:
-  uatg_decoder_arithmetic_insts_1: False
-  uatg_decoder_arithmetic_insts_2: False
-  uatg_decoder_arithmetic_insts_3: False
-  uatg_decoder_arithmetic_insts_4: False
-  uatg_decoder_arithmetic_insts_ui: False
-  uatg_decoder_atomic_lr_sc_instructions: False
-  uatg_decoder_atomic_memory_instructions: False
-  uatg_decoder_illegal_instructions: False
-  uatg_decoder_branch_insts_1: False
-  uatg_decoder_jump_jal: False
-  uatg_decoder_jump_jalr: False
-  uatg_decoder_logical_insts_1: False
-  uatg_decoder_logical_insts_2: False
-  uatg_decoder_memory_insts_1: False
-  uatg_decoder_mext: False
-  uatg_decoder_reserved_arithmetic: False
-  uatg_decoder_reserved_auipc: False
-  uatg_decoder_reserved_fence: False
-  uatg_decoder_reserved_insts: False
-  uatg_decoder_reserved_lui: False
+  uatg_decoder_arithmetic_insts_1: True
+  uatg_decoder_arithmetic_insts_2: True
+  uatg_decoder_arithmetic_insts_3: True
+  uatg_decoder_arithmetic_insts_4: True
+  uatg_decoder_arithmetic_insts_ui: True
+  uatg_decoder_atomic_lr_sc_instructions: True
+  uatg_decoder_atomic_memory_instructions: True
+  uatg_decoder_illegal_instructions: True
+  uatg_decoder_branch_insts_1: True
+  uatg_decoder_jump_jal: True
+  uatg_decoder_jump_jalr: True
+  uatg_decoder_logical_insts_1: True
+  uatg_decoder_logical_insts_2: True
+  uatg_decoder_memory_insts_1: True
+  uatg_decoder_mext: True
+  uatg_decoder_reserved_arithmetic: True
+  uatg_decoder_reserved_auipc: True
+  uatg_decoder_reserved_fence: True
+  uatg_decoder_reserved_insts: True
+  uatg_decoder_reserved_lui: True
+  
+caches:
+  uatg_dcache_atomic_random: True
+  uatg_dcache_fb_hit_01: True
+  uatg_dcache_fill_01: True
+  uatg_dcache_fill_02: True
+  uatg_dcache_fill_03: True
+  uatg_dcache_fill_04: True
+  uatg_dcache_fill_05: True
+  uatg_dcache_fill_06: True
+  uatg_dcache_fill_buffer_01: True
+  uatg_dcache_fill_buffer_02: True
+  uatg_dcache_fill_random: True
+  uatg_dcache_line_thrashing: True
+  uatg_dcache_load_store_types: True
+  uatg_dcache_ram_hit_01: True
+  uatg_dcache_read_replacement: True
+  uatg_dcache_replacement_all: True
+  uatg_dcache_set_thrashing: True
+  uatg_dcache_critical_word: True
+  uatg_icache_fill_01: True
+  uatg_icache_fill_02: True
+  uatg_icache_set_thrashing_01: True
+  uatg_icache_set_thrashing_02: True # Generates 'sets' number of ASM Files
+  uatg_icache_read_replacement: True # Generates 'sets' number of ASM files
+  uatg_icache_fence_race: True
+  uatg_icache_self_modifying: True
+  uatg_icache_critical_word_first: True
 
 decompressor:
-  uatg_decompressor_01: False # buggy
-  uatg_decompressor_02: False
-  uatg_decompressor_floating_01: False
+  uatg_decompressor_01: True # buggy
+  uatg_decompressor_02: True
+  uatg_decompressor_floating_01: True
   uatg_decompressor_reserved_insts: True
 
 mbox:
@@ -121,3 +149,11 @@ csrs:
   uatg_misa_mxl: False
   uatg_misa_reset_val: False
   uatg_misa_zero_bits: False
+  
+regfile_bypass:
+  uatg_bypass_alu_alu: True
+  uatg_bypass_mul_load_store: True
+  uatg_bypass_mul_mul: True
+  uatg_bypass_regfiles: True
+  uatg_bypass_trap: True
+  uatg_regfiles_r1: True

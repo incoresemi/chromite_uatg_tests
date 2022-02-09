@@ -1,14 +1,14 @@
 from yapsy.IPlugin import IPlugin
-from uatg.instruction_constants import  mext_instructions, compressed_instructions
-from uatg.utils import rvtest_data
-from typing import Dict, Any
-from random import randint
+from uatg.instruction_constants import  mext_instructions, \
+     compressed_instructions
+from typing import Dict, Any, List, Union
 import random
 
 class uatg_mbox_comp_WAR_reg_imm(IPlugin):
     """
-    This class contains methods to generate and validate the tests for
-    mbox module
+     This class contains the write after read dependency and 
+     validate the tests for mbox module with compressed instruction
+     and multiplication instructions
     """
 
     def __init__(self) -> None:
@@ -37,17 +37,25 @@ class uatg_mbox_comp_WAR_reg_imm(IPlugin):
         else:
             return False
 
-    def generate_asm(self) -> Dict[str, str]:
+    def generate_asm(
+         self) -> List[Dict[str, Union[Union[str, List[Any]], Any]]]:
         """
-            Generates the ASM instructions for multiplier dependencies with compressed instructions.
-            It creates asm for the following instructions based upon ISA mul[w], mulh, mulhsu, mulhu 
-            with compressed instructions(reg-imm).  
+         Generates the ASM instructions for multiplier dependencies
+         with compressed instructions.It creates asm for the following 
+         instructions based upon ISA mul[w], mulh, mulhsu, mulhu 
+         with compressed instructions(reg-imm). 
+         (i.e mul x3, x5, x1
+              addi x5, imm_val)
+ 
         """
-       # compressed instructions for CI format has no limit to use the registers it will support x0 to x31 registers.
-       # Test to validate the mextension instructions with compressed (reg-imm) instructions.
+       # compressed instructions for CI format has no limit to use 
+       # the registers it will support x0 to x31 registers.
+       # Test to validate the mextension instructions with compressed
+       # (reg-imm) instructions.
 
 
         test_dict = []
+        doc_string = 'Test evaluates write after read dependency with compressed(consumer) instruction and multiplication (producer) instruction'
         
         reg_file = ['x' + str(reg_no) for reg_no in range(32)]  
         reg_file.remove('x0')
@@ -76,11 +84,16 @@ class uatg_mbox_comp_WAR_reg_imm(IPlugin):
             inst_count = 0
 
             code = ''
+            # rand_inst generates the compressed instructions randomly
             rand_inst = random.choice(random_list)
+            #assign the imm with range
             imm = range(1,10)
+            # imm_value get the random value from imm
             imm_val = random.choice(imm)
+            # depends on the mul_stages_in the mext and logic
+            #instructions generated
             for i in range(self.mul_stages_in):
-                 
+                 #initialize the source and destination register
                  rs1 = 'x9'
                  rs2 = 'x10'
                  rd1 = 'x11'
@@ -125,6 +138,7 @@ class uatg_mbox_comp_WAR_reg_imm(IPlugin):
                              rand_inst1 = new_rand_inst1
                      code += f'{rand_inst1} {rand_rd}, {rand_rs1}, {rand_rs2};\n'
                  code += f'{rand_inst} {rd1}, {imm_val};\n\n'
+            # assign the rs1, rs2 and rs3 values
             rs1_val = '0xacde785'
             rs2_val = '0x21'
             rs3_val = '0x21'
@@ -176,7 +190,8 @@ class uatg_mbox_comp_WAR_reg_imm(IPlugin):
                     'asm_data': '',
                     'asm_sig': sig_code,
                     'compile_macros': compile_macros,
-                    'name_postfix': inst
+                    'name_postfix': inst,
+                    'doc_string' : doc_string
                 })
         return test_dict
 

@@ -1,8 +1,9 @@
-from yapsy.IPlugin import IPlugin
+import random
+from typing import Dict, List, Any, Union
+
 from uatg.instruction_constants import arithmetic_instructions, \
     mext_instructions, base_reg_file
-from typing import Dict, List, Any, Union
-import random
+from yapsy.IPlugin import IPlugin
 
 
 class uatg_mbox_mul_depend_shift_imm(IPlugin):
@@ -51,9 +52,9 @@ class uatg_mbox_mul_depend_shift_imm(IPlugin):
         """
         test_dict = []
 
-        doc_string = 'Test evaluates the read after write dependency
-                      with mextension(producer) instructions and 
-                      arithmetic(consumer) instructions'
+        doc_string = 'Test evaluates the read after write dependency with ' \
+                     'mextension(producer) instructions and arithmetic(' \
+                     'consumer) instructions '
 
         reg_file = [register for register in base_reg_file if register != 'x0']
 
@@ -80,7 +81,7 @@ class uatg_mbox_mul_depend_shift_imm(IPlugin):
             sig_bytes = 0
 
             inst_count = 0
-            #assign the imm with range
+            # assign the imm with range
             imm = range(1, 4)
 
             for rd in reg_file:

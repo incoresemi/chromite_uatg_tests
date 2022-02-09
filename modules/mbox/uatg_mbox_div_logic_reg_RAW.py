@@ -1,8 +1,9 @@
-from yapsy.IPlugin import IPlugin
+import random
+from typing import Dict, List, Union, Any
+
 from uatg.instruction_constants import base_reg_file, mext_instructions, \
     logic_instructions
-from typing import Dict, List, Union, Any
-import random
+from yapsy.IPlugin import IPlugin
 
 
 class uatg_mbox_div_logic_reg_RAW(IPlugin):
@@ -54,9 +55,9 @@ class uatg_mbox_div_logic_reg_RAW(IPlugin):
 
         test_dict = []
 
-        doc_string = 'Test evaluates the read after write dependency
-                      with mextension instructions(producer) 
-                      and logic (consumer) instructions'
+        doc_string = 'Test evaluates the read after write dependency with ' \
+                     'mextension instructions(producer) and logic (consumer) ' \
+                     'instructions '
 
         reg_file = [
             register for register in base_reg_file
@@ -86,14 +87,14 @@ class uatg_mbox_div_logic_reg_RAW(IPlugin):
             inst_count = 0
 
             code = ''
-            #rand_inst generate logic instructions randomly
+            # rand_inst generate logic instructions randomly
             rand_inst = random.choice(random_list)
-            #initialize the source register rs1, rs2 destination 
-            #register rd1 and rd2
+            # initialize the source register rs1, rs2 destination
+            # register rd1 and rd2
             rs1, rs2, rd1, rd2 = 'x3', 'x4', 'x5', 'x6'
             rand_rs1, rand_rs2, rand_rd = 'x0', 'x0', 'x0'
-            #depends on the div_stages the mext and logic 
-            #instructions are generated
+            # depends on the div_stages the mext and logic
+            # instructions are generated
             for i in range(self.div_stages):
                 code += f'{inst} {rd1},{rs1},{rs2};\n'
                 for j in range(i):
@@ -139,7 +140,7 @@ class uatg_mbox_div_logic_reg_RAW(IPlugin):
                         rand_inst1 = new_rand_inst1
                     code += f'{rand_inst1} {rand_rd}, {rand_rs1}, {rand_rs2};\n'
                 code += f'{rand_inst} {rd2}, {rd1}, {rs1};\n\n'
-            #initialize rs1 and rs2 values
+            # initialize rs1 and rs2 values
             rs1_val = '0x48'
             rs2_val = '0x6'
             # if signature register needs to be used for operations
@@ -180,7 +181,7 @@ class uatg_mbox_div_logic_reg_RAW(IPlugin):
                 'asm_sig': sig_code,
                 'compile_macros': compile_macros,
                 'name_postfix': inst,
-                'doc_string' : doc_string
+                'doc_string': doc_string
             })
         return test_dict
 

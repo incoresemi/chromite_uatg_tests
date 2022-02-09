@@ -22,3 +22,6 @@
 docs/build/
 
 !constants/*.txt
+
+# Logs
+*.log

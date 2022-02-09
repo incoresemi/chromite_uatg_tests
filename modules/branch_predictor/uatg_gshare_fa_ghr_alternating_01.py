@@ -31,6 +31,15 @@ class uatg_gshare_fa_ghr_alternating_01(IPlugin):
         self._history_len = _bpu_dict['history_len']
         # states the length of the history register
 
+        self.isa = isa_yaml['hart0']['ISA']
+        self.modes = ['machine']
+
+        if 'S' in self.isa:
+            self.modes.append('supervisor')
+
+        if 'S' and 'U' in self.isa:
+            self.modes.append('user')
+
         if _en_bpu and self._history_len:
             # check condition, if BPU exists and history len is valid
             return True  # return true if this test can exist.
@@ -51,60 +60,77 @@ class uatg_gshare_fa_ghr_alternating_01(IPlugin):
         # The generated assembly code will use the t0 register to alternatively
         # enter and exit branches.
 
-        # initial section in the ASM
-        asm = ".option norvc\n"
-        asm = asm + '\taddi t0,x0,1\n'
-        asm = asm + '\taddi t1,x0,1\n\taddi t2,x0,2\n\n'
-        asm = asm + '\tbeq  t0,x0,lab0\n'
+        return_list = []
 
-        # the assembly program is structured in a way that
-        # there are odd number of labels.
-        if self._history_len % 2:
-            self._history_len = self._history_len + 1
+        for mode in self.modes:
 
-        # loop to generate labels and branches
-        for i in range(self._history_len):
-            if i % 2:
-                asm = asm + 'lab' + str(i) + ':\n'
-                asm = asm + '\taddi t0,t0,1\n'
-                asm = asm + '\tbeq  t0,x0,lab' + str(i + 1) + '\n'
+            # initial section in the ASM
+            asm = ".option norvc\n"
+            asm = asm + '\taddi t0,x0,1\n'
+            asm = asm + '\taddi t1,x0,1\n\taddi t2,x0,2\n\n'
+            asm = asm + '\tbeq  t0,x0,lab0\n'
+
+            # the assembly program is structured in a way that
+            # there are odd number of labels.
+            if self._history_len % 2:
+                self._history_len = self._history_len + 1
+
+            # loop to generate labels and branches
+            for i in range(self._history_len):
+                if i % 2:
+                    asm = asm + 'lab' + str(i) + ':\n'
+                    asm = asm + '\taddi t0,t0,1\n'
+                    asm = asm + '\tbeq  t0,x0,lab' + str(i + 1) + '\n'
+                else:
+                    asm = asm + 'lab' + str(i) + ':\n'
+                    asm = asm + '\taddi t0,t0,-1\n'
+                    asm = asm + '\tbeq  t0,x0,lab' + str(i + 1) + '\t\n'
+
+            asm = asm + 'lab' + str(self._history_len) + ':\n'
+            asm = asm + '\taddi t0,t0,-1\n\n'
+            asm = asm + '\taddi t1,t1,-1\n\taddi t2,t2,-1\n'
+            asm = asm + '\tbeq  t1,x0,lab0\n\taddi t0,t0,2\n'
+            asm = asm + '\tbeq  t2,x0,lab0\n'
+
+            # trap signature bytes
+            trap_sigbytes = 24
+            trap_count = 0
+
+            # initialize the signature region
+            sig_code = 'mtrap_count:\n'
+            sig_code += ' .fill 1, 8, 0x0\n'
+            sig_code += 'mtrap_sigptr:\n'
+            sig_code += ' .fill {0},4,0xdeadbeef\n'.format(
+                int(trap_sigbytes / 4))
+
+            # compile macros for the test
+            if mode != 'machine':
+                compile_macros = ['rvtest_mtrap_routine']
             else:
-                asm = asm + 'lab' + str(i) + ':\n'
-                asm = asm + '\taddi t0,t0,-1\n'
-                asm = asm + '\tbeq  t0,x0,lab' + str(i + 1) + '\t\n'
+                compile_macros = []
 
-        asm = asm + 'lab' + str(self._history_len) + ':\n'
-        asm = asm + '\taddi t0,t0,-1\n\n'
-        asm = asm + '\taddi t1,t1,-1\n\taddi t2,t2,-1\n'
-        asm = asm + '\tbeq  t1,x0,lab0\n\taddi t0,t0,2\n'
-        asm = asm + '\tbeq  t2,x0,lab0\n'
+            # user can choose to generate supervisor and/or user tests in addition
+            # to machine mode tests here.
+            privileged_test_enable = True
 
-        # trap signature bytes
-        trap_sigbytes = 24
-        trap_count = 0
+            privileged_test_dict = {
+                'enable': privileged_test_enable,
+                'mode': mode,
+                'page_size': 4096,
+                'paging_mode': 'sv39',
+                'll_pages': 64,
+            }
 
-        # initialize the signature region
-        sig_code = 'mtrap_count:\n'
-        sig_code += ' .fill 1, 8, 0x0\n'
-        sig_code += 'mtrap_sigptr:\n'
-        sig_code += ' .fill {0},4,0xdeadbeef\n'.format(int(trap_sigbytes / 4))
-        # compile macros for the test
-        compile_macros = ['rvtest_mtrap_routine']
+            return_list.append({
+                'asm_code': asm,
+                'asm_sig': sig_code,
+                'compile_macros': compile_macros,
+                'privileged_test': privileged_test_dict,
+                'docstring': '',
+                'name_postfix': mode
+            })
 
-        supervisor_dict = {
-            'enable': True,
-            'page_size': 4096,
-            'paging_mode': 'sv39',
-            'll_pages': 64,
-            'u_bit': False
-        }
-
-        return [{
-            'asm_code': asm,
-            'asm_sig': sig_code,
-            'compile_macros': compile_macros,
-            'supervisor_mode': supervisor_dict
-        }]
+        return return_list
 
     def check_log(self, log_file_path, reports_dir):
         """

@@ -55,9 +55,7 @@ class uatg_mbox_div_shift_imm_RAW(IPlugin):
         """
 
         test_dict = []
-        doc_string = 'Test evaluates the read after write dependency
-                      with mextension instructions(producer) 
-                      and arithmetic (consumer) instructions'
+        doc_string = 'Test evaluates the read after write dependency with mextension instructions(producer) and arithmetic (consumer) instructions'
 
         reg_file = [
             register for register in base_reg_file

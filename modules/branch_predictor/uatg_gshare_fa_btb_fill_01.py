@@ -39,6 +39,16 @@ class uatg_gshare_fa_btb_fill_01(IPlugin):
         # States if the DUT has a branch predictor
         self._btb_depth = _bpu_dict['btb_depth']
         # states the depth of the BTB to customize the test
+
+        self.isa = isa_yaml['hart0']['ISA']
+        self.modes = ['machine']
+
+        if 'S' in self.isa:
+            self.modes.append('supervisor')
+
+        if 'S' and 'U' in self.isa:
+            self.modes.append('user')
+
         if _en_bpu and self._btb_depth:
             # check condition, if BPU exists as well as btb_depth is an integer.
             return True
@@ -54,92 +64,109 @@ class uatg_gshare_fa_btb_fill_01(IPlugin):
         This ASM file is written as the ASM file which will be run on the DUT.
         """
 
-        branch_count = int(self._btb_depth / 4)
-        # The branch_count is used equally split the instructions
-        # between call, jump, branch and returns
+        return_list = []
 
-        asm_start = "\taddi t1,x0,0\n\taddi t2,x0,1\n\n"
-        asm_end = "exit:\n\n\taddi x0,x0,0\n\tadd x0,x0,0\n\n"
-        # variables to store some asm boiler plate
+        for mode in self.modes:
 
-        asm_branch = ""
-        # empty string which will be populated with branching directives
-        asm_jump = f"\tadd t1,t1,t2\n\tjal x0,entry_{branch_count + 1}\n\n"
-        # string with jump directives which will be used in a loop
-        asm_call = f"entry_{(2 * branch_count) + 1}:\n\n"
-        # string with call directives
+            branch_count = int(self._btb_depth / 4)
+            # The branch_count is used equally split the instructions
+            # between call, jump, branch and returns
 
-        for j in range((2 * branch_count) + 2, ((3 * branch_count) + 1)):
-            # for loop to iterate through the branch counts and create a string
-            # with required call directives
-            asm_call += f"\tcall x1,entry_{j}\n"
-        asm_call += "\tj exit\n\n"
-        # final directive to jump to the exit label
+            asm_start = "\taddi t1,x0,0\n\taddi t2,x0,1\n\n"
+            asm_end = "exit:\n\n\taddi x0,x0,0\n\tadd x0,x0,0\n\n"
+            # variables to store some asm boiler plate
 
-        for i in range(1, self._btb_depth):
-            # for loop to iterate and generate the asm string to be returned
-            if i <= branch_count:
-                # first populate the BTB with branch instructions
-                if (i % 2) == 1:
-                    # conditions to return branch and loop directives
-                    asm_branch += f"entry_{i}:\n"
-                    # we do this to increment/decrement control variable
-                    asm_branch += f"\tadd t1,t1,t2\n\tbeq t1, t2, entry_{i}\n\n"
-                    # in the loop/branch.
+            asm_branch = ""
+            # empty string which will be populated with branching directives
+            asm_jump = f"\tadd t1,t1,t2\n\tjal x0,entry_{branch_count + 1}\n\n"
+            # string with jump directives which will be used in a loop
+            asm_call = f"entry_{(2 * branch_count) + 1}:\n\n"
+            # string with call directives
+
+            for j in range((2 * branch_count) + 2, ((3 * branch_count) + 1)):
+                # for loop to iterate through the branch counts and create a string
+                # with required call directives
+                asm_call += f"\tcall x1,entry_{j}\n"
+            asm_call += "\tj exit\n\n"
+            # final directive to jump to the exit label
+
+            for i in range(1, self._btb_depth):
+                # for loop to iterate and generate the asm string to be returned
+                if i <= branch_count:
+                    # first populate the BTB with branch instructions
+                    if (i % 2) == 1:
+                        # conditions to return branch and loop directives
+                        asm_branch += f"entry_{i}:\n"
+                        # we do this to increment/decrement control variable
+                        asm_branch += f"\tadd t1,t1,t2\n\tbeq t1, t2, entry_{i}\n\n"
+                        # in the loop/branch.
+                    else:
+                        asm_branch += f"entry_{i}:\n"
+                        asm_branch += f"\tsub t1,t1,t2\n\tbeq t1, t2, entry_{i}\n\n"
+                elif branch_count < i <= 2 * branch_count:
+                    # populate the the next area in the BTB with Jump
+                    if (i % 2) == 1:
+                        # conditions checks to populate the asm string
+                        # accordingly while tracking the control variable
+                        asm_jump += "entry_" + str(i) + ":\n"
+                        asm_jump += "\tsub t1,t1,t2\n\tjal x0,entry_" + \
+                                    str(i + 1) + "\n\taddi x0,x0,0\n\n"
+                    else:
+                        asm_jump += "entry_" + str(i) + ":\n"
+                        asm_jump += "\tadd t1,t1,t2\n\tjal x0,entry_" + \
+                                    str(i + 1) + "\n\taddi x0,x0,0\n\n"
+
                 else:
-                    asm_branch += f"entry_{i}:\n"
-                    asm_branch += f"\tsub t1,t1,t2\n\tbeq t1, t2, entry_{i}\n\n"
-            elif branch_count < i <= 2 * branch_count:
-                # populate the the next area in the BTB with Jump
-                if (i % 2) == 1:
-                    # conditions checks to populate the asm string
-                    # accordingly while tracking the control variable
-                    asm_jump += "entry_" + str(i) + ":\n"
-                    asm_jump += "\tsub t1,t1,t2\n\tjal x0,entry_" + \
-                                str(i + 1) + "\n\taddi x0,x0,0\n\n"
-                else:
-                    asm_jump += "entry_" + str(i) + ":\n"
-                    asm_jump += "\tadd t1,t1,t2\n\tjal x0,entry_" + \
-                                str(i + 1) + "\n\taddi x0,x0,0\n\n"
+                    # finally populate the BTB with call and return instructions
+                    if i >= 3 * branch_count:
+                        break
+                    asm_call = asm_call + "entry_" + str(i + 1) + ":\n"
+                    for j in range(2):
+                        asm_call = asm_call + "\taddi x0,x0,0\n"
+                    asm_call = asm_call + "\tret\n\n"
 
+            # concatenate the strings to form the final ASM sting to be returned
+            asm = asm_start + asm_branch + asm_jump + asm_call + asm_end
+
+            # trap signature bytes
+            trap_sigbytes = 24
+            trap_count = 0
+
+            # initialize the signature region
+            sig_code = 'mtrap_count:\n'
+            sig_code += ' .fill 1, 8, 0x0\n'
+            sig_code += 'mtrap_sigptr:\n'
+            sig_code += ' .fill {0},4,0xdeadbeef\n'.format(
+                int(trap_sigbytes / 4))
+
+            # compile macros for the test
+            if mode != 'machine':
+                compile_macros = ['rvtest_mtrap_routine']
             else:
-                # finally populate the BTB with call and return instructions
-                if i >= 3 * branch_count:
-                    break
-                asm_call = asm_call + "entry_" + str(i + 1) + ":\n"
-                for j in range(2):
-                    asm_call = asm_call + "\taddi x0,x0,0\n"
-                asm_call = asm_call + "\tret\n\n"
+                compile_macros = []
 
-        # concatenate the strings to form the final ASM sting to be returned
-        asm = asm_start + asm_branch + asm_jump + asm_call + asm_end
+            # user can choose to generate supervisor and/or user tests in addition
+            # to machine mode tests here.
+            privileged_test_enable = True
 
-        # trap signature bytes
-        trap_sigbytes = 24
-        trap_count = 0
+            privileged_test_dict = {
+                'enable': privileged_test_enable,
+                'mode': mode,
+                'page_size': 4096,
+                'paging_mode': 'sv39',
+                'll_pages': 64,
+            }
 
-        # initialize the signature region
-        sig_code = 'mtrap_count:\n'
-        sig_code += ' .fill 1, 8, 0x0\n'
-        sig_code += 'mtrap_sigptr:\n'
-        sig_code += ' .fill {0},4,0xdeadbeef\n'.format(int(trap_sigbytes / 4))
-        # compile macros for the test
-        compile_macros = ['rvtest_mtrap_routine']
+            return_list.append({
+                'asm_code': asm,
+                'asm_sig': sig_code,
+                'compile_macros': compile_macros,
+                'privileged_test': privileged_test_dict,
+                'docstring': '',
+                'name_postfix': mode
+            })
 
-        supervisor_dict = {
-            'enable': True,
-            'page_size': 4096,
-            'paging_mode': 'sv39',
-            'll_pages': 64,
-            'u_bit': False
-        }
-
-        return [{
-            'asm_code': asm,
-            'asm_sig': sig_code,
-            'compile_macros': compile_macros,
-            'supervisor_mode': supervisor_dict
-        }]
+        return return_list
 
     def check_log(self, log_file_path, reports_dir):
         """

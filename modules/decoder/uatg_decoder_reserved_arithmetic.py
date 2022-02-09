@@ -30,26 +30,13 @@ class uatg_decoder_illegal_instructions(IPlugin):
     def generate_asm(self):
 
         reg_file = ['x' + str(i) for i in range(0, 32)]
-        imm_12 = [hex(i) for i in range(-2 ** 11, 2 ** 11)]
 
         # contains the format x0, x0-31, x0-31
         x0_rf_rf_cross = [f'x0, {rs1}, {rs2}' for rs1 in reg_file
                           for rs2 in reg_file]
-        x0_rf_imm_12_cross = [f'x0, {rs1}, {imm}' for rs1 in reg_file
-                              for imm in imm_12]
         i_insts = {}
 
-        for inst in ('andi', 'ori', 'xori'):
-            i_insts[inst] = [f'{inst} {x0_rf_imm12}' for x0_rf_imm12 in
-                             x0_rf_imm_12_cross]
-
-        for inst in ('add', 'sub', 'and', 'or', 'xor', 'sll', 'srl', 'sra'):
-            i_insts[inst] = [f'{inst} {x0_rf_imm12}' for x0_rf_imm12 in
-                             x0_rf_rf_cross]
-
         if '64' in self.isa:
-            i_insts['addiw'] = [f'addiw {x0_rf_imm12}' for x0_rf_imm12 in
-                                x0_rf_imm_12_cross]
             for inst in ('addw', 'subw', 'sllw', 'srlw', 'sraw'):
                 i_insts[inst] = [f'{inst} {x0_rf_imm12}' for x0_rf_imm12 in
                                  x0_rf_rf_cross]
@@ -64,7 +51,7 @@ class uatg_decoder_illegal_instructions(IPlugin):
                     (1, 5) for rd in range(32)
                 ]
 
-        del x0_rf_rf_cross, x0_rf_imm_12_cross
+        del x0_rf_rf_cross
 
         test_dict = []
         for op in i_insts:
