@@ -22,6 +22,14 @@ class uatg_decompressor_floating_01(IPlugin):
         # enabled, the test using 'in' keyword will not return the expected
         # result.
         self.split_isa = self.isa.split('Z')
+
+        self.modes = ['machine']
+
+        if 'S' in self.isa:
+            self.modes.append('supervisor')
+        if 'S' and 'U' in self.isa:
+            self.modes.append('user')
+
         if 'C' and 'F' in self.split_isa[0]:
             return True
         else:
@@ -29,31 +37,59 @@ class uatg_decompressor_floating_01(IPlugin):
 
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
         """This function will return all the compressed instructions"""
-        asm = """#define RVTEST_FP_ENABLE()
-    LI x2, MSTATUS_FS;
-    csrrs x3, mstatus,x0;
-    or x2, x3, x2;
-    csrrw x0,mstatus,x2;"""
-        asm += "\n\n## test: floating ##\n\n"
-        asm += "###Integer Constant-Generation Instructions###"
-        asm += "###Floating Point and Stack Pointer Based Load and Store####"
-        asm += """\nLA (x2,sample_data)
-c.fsdsp f8,8(x2)
-c.fldsp f12,8(x2)
-###Floating Point Load and Store####
-LA (x10,sample_data)
-c.fsd f11,8(x10)
-LA (x12,sample_data)
-c.fld f9,8(x12)
-"""
-        # compile macros for the test
-        compile_macros = []
+        
+        return_list = []
 
-        return [{
-            'asm_code': asm,
-            'asm_sig': '',
-            'compile_macros': compile_macros
-        }]
+        for mode in self.modes:
+
+            asm = f"#define RVTEST_FP_ENABLE()\n"\
+                  f"\tLI x2, MSTATUS_FS;\n"\
+                  f"\tcsrrs x3, mstatus,x0;\n"\
+                  f"\tor x2, x3, x2;\n"\
+                  f"\tcsrrw x0,mstatus,x2;\n"\
+                  f"\n\n\t## test: floating ##\n\n"\
+                  f"\t###Integer Constant-Generation Instructions###\n"\
+                  f"\t###Floating Point and Stack Pointer Based Load and Store####\n"\
+                  f"\n\tLA (x2,sample_data)\n"\
+                  f"\tc.fsdsp f8,8(x2)\n"\
+                  f"\tc.fldsp f12,8(x2)\n"\
+                  f"\t###Floating Point Load and Store####\n"\
+                  f"\tLA (x10,sample_data)\n"\
+                  f"\tc.fsd f11,8(x10)\n"\
+                  f"\tLA (x12,sample_data)\n"\
+                  f"\tc.fld f9,8(x12)\n"\
+
+            # compile macros for the test
+            if mode != 'machine':
+                compile_macros = ['rvtest_mtrap_routine']
+            else:
+                compile_macros = []
+
+            # user can choose to generate supervisor and/or user tests in addition
+            # to machine mode tests here.
+            privileged_test_enable = True
+
+            privileged_test_dict = {
+                'enable': privileged_test_enable,
+                'mode': mode,
+                'page_size': 4096,
+                'paging_mode': 'sv39',
+                'll_pages': 64,
+            }
+
+            return_list.append({
+                'asm_code': asm,
+                'asm_sig': sig_code,
+                'compile_macros': compile_macros,
+                'privileged_test': privileged_test_dict,
+                'docstring': 'This test fills ghr register with ones',
+                'name_postfix': mode
+            })
+
+            if not privileged_test_enable:
+                return return_list
+
+        return return_list
 
     def check_log(self):
         return None

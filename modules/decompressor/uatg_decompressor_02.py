@@ -20,6 +20,14 @@ class uatg_decompressor_02(IPlugin):
     def execute(self, core_yaml, isa_yaml):
         self.isa = isa_yaml['hart0']['ISA']
         self.split_isa = self.isa.split('Z')
+
+        self.modes = ['machine']
+
+        if 'S' in self.isa:
+            self.modes.append('supervisor')
+        if 's' and 'U' in self.isa:
+            self.modes.append('user')
+
         if 'C' in self.isa:
             return True
         else:
@@ -27,93 +35,136 @@ class uatg_decompressor_02(IPlugin):
 
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
         """This function will return all the compressed_RV32 instructions"""
+        
+        return_list = []
 
-        asm = f"LI x2, MSTATUS_FS;\n" \
-              f"csrrs x3, mstatus,x0;\n" \
-              f"or x2, x3, x2;\n" \
-              f"csrrw x0,mstatus,x2;\n"
+        asm = ""
 
-        asm += f'\n\n## test: decompressor_RV32 ##\n\n'
+        for mode in self.modes:
+            
+            asm = f"LI x2, MSTATUS_FS;\n" \
+                  f"csrrs x3, mstatus,x0;\n" \
+                  f"or x2, x3, x2;\n" \
+                  f"csrrw x0,mstatus,x2;\n"
 
-        if 'RV32' and 'F' in self.split_isa[0]:
-            asm += f"###register based load and store###\n" \
-                   f"###stack pointer based load and store floating point " \
-                   f"instructions(RV32 only)###\n" \
-                   f"LA(x2,sample_data)\n" \
-                   f"c.fswsp f8,4(x2)\n" \
-                   f"c.flwsp f9,4(x2)\n\n" \
-                   f"### register based load amd store floating point " \
-                   f"instructions (RV32 only) ###\n" \
-                   f"LA(x10,sample_data)\n" \
-                   f"c.fsw f11,4(x10)\n" \
-                   f"LA(x9,sample_data)\n" \
-                   f"c.flw f12,4(x9)\n\n"
+            asm += f'\n\n## test: decompressor_RV32 ##\n\n'
 
-        if 'RV32' in self.split_isa[0]:
-            asm += f"### control transfers instructions(RV32 only) ###\n" \
-                   f"LA (x29,entry_jal)\n" \
-                   f"c.jal x29\n\n" \
-                   f"entry_jal:\n" \
-                   f"c.srai x9,5      ## x9=x9>>5\n\n"
+            if 'RV32' and 'F' in self.split_isa[0]:
+                asm += f"###register based load and store###\n" \
+                       f"###stack pointer based load and store floating point " \
+                       f"instructions(RV32 only)###\n" \
+                       f"LA(x2,sample_data)\n" \
+                       f"c.fswsp f8,4(x2)\n" \
+                       f"c.flwsp f9,4(x2)\n\n" \
+                       f"### register based load amd store floating point " \
+                       f"instructions (RV32 only) ###\n" \
+                       f"LA(x10,sample_data)\n" \
+                       f"c.fsw f11,4(x10)\n" \
+                       f"LA(x9,sample_data)\n" \
+                       f"c.flw f12,4(x9)\n\n"
 
-        asm += f"### integer register-immediate operations###\n" \
-               f"c.srli x15,1       ## x15=x15>>1\n" \
-               f"c.srai x8,4        ## x8=x8arith>>4\n" \
-               f"c.slli x5,1        ## x5=x5<<1\n" \
-               f"LA (x28,entry_jalr)\n" \
-               f"c.jalr x28\n\n" \
-               f"entry_jalr:\n" \
-               f"c.srli x10,5      ## x10=x10<<5\n\n" \
+            if 'RV32' in self.split_isa[0]:
+                asm += f"### control transfers instructions(RV32 only) ###\n" \
+                       f"LA (x29,entry_jal)\n" \
+                       f"c.jal x29\n\n" \
+                       f"entry_jal:\n" \
+                       f"c.srai x9,5      ## x9=x9>>5\n\n"
 
-        if 'F' in self.split_isa[0]:
-            asm += f"###stack pointer based load and store instructions" \
-                   f"(RV32/RV64)###\n" \
-                   f"LA (x2, sample_data)\n" \
-                   f"c.fsdsp f8,8(x2)\n" \
-                   f"c.fldsp f12,8(x2)\n\n###register based load and " \
-                   f"store instructions(RV32/RV64)###" \
-                   f"LA (x10,sample_data)\n " \
-                   f"c.fsd f11,8(x10)\n" \
-                   f"LA (x12,sample_data)\n" \
-                   f"c.fld f9,8(x12)\n\n"
+            asm += f"### integer register-immediate operations###\n" \
+                   f"c.srli x15,1       ## x15=x15>>1\n" \
+                   f"c.srai x8,4        ## x8=x8arith>>4\n" \
+                   f"c.slli x5,1        ## x5=x5<<1\n" \
+                   f"LA (x28,entry_jalr)\n" \
+                   f"c.jalr x28\n\n" \
+                   f"entry_jalr:\n" \
+                   f"c.srli x10,5      ## x10=x10<<5\n\n" \
 
-        asm += f"###Integer Constant-Generation Instructions###\n" \
-               f"c.li x1,1   ## x1=1\n" \
-               f"c.li x2,2   ## x2=2\n" \
+            if 'F' in self.split_isa[0]:
+                asm += f"###stack pointer based load and store instructions" \
+                       f"(RV32/RV64)###\n" \
+                       f"LA (x2, sample_data)\n" \
+                       f"c.fsdsp f8,8(x2)\n" \
+                       f"c.fldsp f12,8(x2)\n\n###register based load and " \
+                       f"store instructions(RV32/RV64)###" \
+                       f"LA (x10,sample_data)\n " \
+                       f"c.fsd f11,8(x10)\n" \
+                       f"LA (x12,sample_data)\n" \
+                       f"c.fld f9,8(x12)\n\n"
 
-        for loop_var in range(3, 32):
-            asm += f"c.lui x{loop_var},{loop_var}  ## x{loop_var}={loop_var}\n"
+            asm += f"###Integer Constant-Generation Instructions###\n" \
+                   f"c.li x1,1   ## x1=1\n" \
+                   f"c.li x2,2   ## x2=2\n" \
 
-        asm += f"\n##Integer Register-Register Operations##\n" \
-               f"c.mv x16,x17   ## x16=17\n" \
-               f"c.add x18,x19  ## x18=x18+x19\n" \
-               f"c.and x8,x9    ## x8=x8&x9\n" \
-               f"c.or  x9,x10   ## x9=x9|x10\n" \
-               f"c.xor x10,x11  ## x10=x10^x11\n" \
-               f"c.sub x11,x12  ## x11=x11-x12\n" \
-               f"c.addw x12,x13 ## x12=x12+x13\n" \
-               f"c.subw x13,x14 ## x13=x13+14\n" \
-               f"##control transfer instructions##\n" \
-               f"c.li x15,0             ## x15=0\n" \
-               f"c.beqz x15, entry1 \n" \
-               f"c.bnez x14,entry2 \n" \
-               f"c.j entry3\n\n" \
-               f"entry1: c.li x15,2    ##x15=2\n\n" \
-               f"entry2: c.li x14,0\n\n" \
-               f"entry3:\n" \
-               f"c.add x9,x10    ## x9=x9+x10\n" \
-               f"c.sub x10,x9    ## x10=x10-x9\n\n" \
-               f"LA (x28, entry_jr)\n" \
-               f"c.jr x28\n\n" \
-               f"entry_jr:\n" \
-               f"c.add x9,x10\n" \
-               f"c.nop\n\n" \
+            for loop_var in range(3, 32):
+                asm += f"c.lui x{loop_var},{loop_var}  ## x{loop_var}={loop_var}\n"
 
-        return [{
-            'asm_code': asm,
-            'asm_sig': '',
-            'compile_macros': []
-        }]
+            asm += f"\n##Integer Register-Register Operations##\n" \
+                   f"c.mv x16,x17   ## x16=17\n" \
+                   f"c.add x18,x19  ## x18=x18+x19\n" \
+                   f"c.and x8,x9    ## x8=x8&x9\n" \
+                   f"c.or  x9,x10   ## x9=x9|x10\n" \
+                   f"c.xor x10,x11  ## x10=x10^x11\n" \
+                   f"c.sub x11,x12  ## x11=x11-x12\n" \
+                   f"c.addw x12,x13 ## x12=x12+x13\n" \
+                   f"c.subw x13,x14 ## x13=x13+14\n" \
+                   f"##control transfer instructions##\n" \
+                   f"c.li x15,0             ## x15=0\n" \
+                   f"c.beqz x15, entry1 \n" \
+                   f"c.bnez x14,entry2 \n" \
+                   f"c.j entry3\n\n" \
+                   f"entry1: c.li x15,2    ##x15=2\n\n" \
+                   f"entry2: c.li x14,0\n\n" \
+                   f"entry3:\n" \
+                   f"c.add x9,x10    ## x9=x9+x10\n" \
+                   f"c.sub x10,x9    ## x10=x10-x9\n\n" \
+                   f"LA (x28, entry_jr)\n" \
+                   f"c.jr x28\n\n" \
+                   f"entry_jr:\n" \
+                   f"c.add x9,x10\n" \
+                   f"c.nop\n\n" \
+            
+            # trap signature bytes
+            trap_sigbytes = 24
+            trap_count = 0
+
+            # initialize the signature region
+            sig_code = 'mtrap_count:\n'
+            sig_code += ' .fill 1, 8, 0x0\n'
+            sig_code += 'mtrap_sigptr:\n'
+            sig_code += ' .fill {0},4,0xdeadbeef\n'.format(
+                int(trap_sigbytes / 4))
+
+            # compile macros for the test
+            if mode != 'machine':
+                compile_macros = ['rvtest_mtrap_routine']
+            else:
+                compile_macros = []
+
+            # user can choose to generate supervisor and/or user tests in addition
+            # to machine mode tests here.
+            privileged_test_enable = True
+
+            privileged_test_dict = {
+                'enable': privileged_test_enable,
+                'mode': mode,
+                'page_size': 4096,
+                'paging_mode': 'sv39',
+                'll_pages': 64,
+            }
+
+            return_list.append({
+                'asm_code': asm,
+                'asm_sig': sig_code,
+                'compile_macros': compile_macros,
+                'privileged_test': privileged_test_dict,
+                'docstring': 'This test fills ghr register with ones',
+                'name_postfix': mode
+            })
+
+            if not privileged_test_enable:
+                return return_list
+
+        return return_list
 
     def check_log(self):
         return None
