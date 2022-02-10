@@ -89,14 +89,7 @@ class uatg_misa_disable_compressed(IPlugin):
         test_dict = [{
             'asm_code': asm_code,
             'asm_sig': sig_code,
-            'compile_macros': compile_macros
+            'compile_macros': compile_macros,
+            'name_postfix': 'machine'
         }]
         return test_dict
-
-
-def check_log(self, log_file_path, reports_dir):
-    pass
-
-
-def generate_covergroups(self, config_file):
-    pass

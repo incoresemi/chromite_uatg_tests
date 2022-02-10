@@ -70,5 +70,6 @@ class uatg_misa_enable_unimplemented_exts(IPlugin):
         asm_code += f'\n\n\nj exit\nfail_case:{nt}nop{nt}nop\nexit:{nt}nop'
         test_dict = [{
             'asm_code': asm_code,
+            'name_postfix': 'machine'
         }]
         return test_dict

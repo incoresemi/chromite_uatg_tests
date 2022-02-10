@@ -65,13 +65,6 @@ class uatg_misa_reset_val(IPlugin):
         test_dict = [{
             'asm_code': asm_code,
             'asm_sig': sig_code,
+            'name_postfix': 'machine'
         }]
         return test_dict
-
-
-def check_log(self, log_file_path, reports_dir):
-    pass
-
-
-def generate_covergroups(self, config_file):
-    pass
