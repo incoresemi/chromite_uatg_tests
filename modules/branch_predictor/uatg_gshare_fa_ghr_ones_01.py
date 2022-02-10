@@ -101,6 +101,9 @@ class uatg_gshare_fa_ghr_ones_01(IPlugin):
                 'name_postfix': mode
             })
 
+            if not privileged_test_enable:
+                return return_list
+
         return return_list
 
     def check_log(self, log_file_path, reports_dir):
