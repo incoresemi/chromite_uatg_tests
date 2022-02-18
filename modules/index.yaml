@@ -1,159 +1,163 @@
 branch_predictor:
-  uatg_gshare_fa_btb_fill_01: True
-  uatg_gshare_fa_btb_selfmodifying_01: True
-  uatg_gshare_fa_fence_01: True
-  uatg_gshare_fa_ghr_alternating_01: True
-  uatg_gshare_fa_ghr_ones_01: True
-  uatg_gshare_fa_ghr_zeros_01: True
-  uatg_gshare_fa_mispredict_loop_01: True
-  uatg_gshare_fa_ras_push_pop_01: True
+  uatg_gshare_fa_btb_fill_01: False
+  uatg_gshare_fa_btb_selfmodifying_01: False
+  uatg_gshare_fa_fence_01: False
+  uatg_gshare_fa_ghr_alternating_01: False
+  uatg_gshare_fa_ghr_ones_01: False
+  uatg_gshare_fa_ghr_zeros_01: False
+  uatg_gshare_fa_mispredict_loop_01: False
+  uatg_gshare_fa_ras_push_pop_01: False
 
 decoder:
-  uatg_decoder_arithmetic_insts_1: True
-  uatg_decoder_arithmetic_insts_2: True
-  uatg_decoder_arithmetic_insts_3: True
-  uatg_decoder_arithmetic_insts_4: True
-  uatg_decoder_arithmetic_insts_ui: True
-  uatg_decoder_atomic_lr_sc_instructions: True
-  uatg_decoder_atomic_memory_instructions: True
-  uatg_decoder_illegal_instructions: True
-  uatg_decoder_branch_insts_1: True
-  uatg_decoder_jump_jal: True
-  uatg_decoder_jump_jalr: True
-  uatg_decoder_logical_insts_1: True
-  uatg_decoder_logical_insts_2: True
-  uatg_decoder_memory_insts_1: True
-  uatg_decoder_mext: True
-  uatg_decoder_reserved_arithmetic: True
-  uatg_decoder_reserved_auipc: True
-  uatg_decoder_reserved_fence: True
-  uatg_decoder_reserved_insts: True
-  uatg_decoder_reserved_lui: True
-  
+  uatg_decoder_arithmetic_insts_1: False
+  uatg_decoder_arithmetic_insts_2: False
+  uatg_decoder_arithmetic_insts_3: False
+  uatg_decoder_arithmetic_insts_4: False
+  uatg_decoder_arithmetic_insts_ui: False
+  uatg_decoder_atomic_lr_sc_instructions: False
+  uatg_decoder_atomic_memory_instructions: False
+  uatg_decoder_illegal_instructions: False
+  uatg_decoder_branch_insts_1: False
+  uatg_decoder_jump_jal: False
+  uatg_decoder_jump_jalr: False
+  uatg_decoder_logical_insts_1: False
+  uatg_decoder_logical_insts_2: False
+  uatg_decoder_memory_insts_1: False
+  uatg_decoder_mext: False
+  uatg_decoder_reserved_arithmetic: False
+  uatg_decoder_reserved_auipc: False
+  uatg_decoder_reserved_fence: False
+  uatg_decoder_reserved_insts: False
+  uatg_decoder_reserved_lui: False
+
 caches:
-  uatg_dcache_atomic_random: True
-  uatg_dcache_fb_hit_01: True
-  uatg_dcache_fill_01: True
-  uatg_dcache_fill_02: True
-  uatg_dcache_fill_03: True
-  uatg_dcache_fill_04: True
-  uatg_dcache_fill_05: True
-  uatg_dcache_fill_06: True
-  uatg_dcache_fill_buffer_01: True
-  uatg_dcache_fill_buffer_02: True
-  uatg_dcache_fill_random: True
-  uatg_dcache_line_thrashing: True
-  uatg_dcache_load_store_types: True
-  uatg_dcache_ram_hit_01: True
-  uatg_dcache_read_replacement: True
-  uatg_dcache_replacement_all: True
-  uatg_dcache_set_thrashing: True
-  uatg_dcache_critical_word: True
-  uatg_icache_fill_01: True
-  uatg_icache_fill_02: True
-  uatg_icache_set_thrashing_01: True
-  uatg_icache_set_thrashing_02: True # Generates 'sets' number of ASM Files
-  uatg_icache_read_replacement: True # Generates 'sets' number of ASM files
-  uatg_icache_fence_race: True
-  uatg_icache_self_modifying: True
-  uatg_icache_critical_word_first: True
+  uatg_dcache_atomic_random: False
+  uatg_dcache_fb_hit_01: False
+  uatg_dcache_fill_01: False
+  uatg_dcache_fill_02: False
+  uatg_dcache_fill_03: False
+  uatg_dcache_fill_04: False
+  uatg_dcache_fill_05: False
+  uatg_dcache_fill_06: False
+  uatg_dcache_fill_buffer_01: False
+  uatg_dcache_fill_buffer_02: False
+  uatg_dcache_fill_random: False
+  uatg_dcache_line_thrashing: False
+  uatg_dcache_load_store_types: False
+  uatg_dcache_ram_hit_01: False
+  uatg_dcache_read_replacement: False
+  uatg_dcache_replacement_all: False
+  uatg_dcache_set_thrashing: False
+  uatg_dcache_critical_word: False
+  uatg_icache_fill_01: False
+  uatg_icache_fill_02: False
+  uatg_icache_set_thrashing_01: False
+  uatg_icache_set_thrashing_02: False # Generates 'sets' number of ASM Files
+  uatg_icache_read_replacement: False # Generates 'sets' number of ASM files
+  uatg_icache_fence_race: False
+  uatg_icache_self_modifying: False
+  uatg_icache_critical_word_first: False
 
 decompressor:
-  uatg_decompressor_01: True # buggy
-  uatg_decompressor_02: True
-  uatg_decompressor_floating_01: True
-  uatg_decompressor_reserved_insts: True
+  uatg_decompressor_01: False # buggy
+  uatg_decompressor_02: False
+  uatg_decompressor_floating_01: False
+  uatg_decompressor_reserved_insts: False
 
 mbox:
-  uatg_mbox_divu_insts_01: True #test passed
-  uatg_mbox_mul_div_insts_01: True #test passed
-  uatg_mbox_mulh_insts_01: True #test passed
-  uatg_mbox_mul_dependencies_imm: True #test passed
-  uatg_mbox_mul_depend_shift_imm: True #test passed
-  uatg_mbox_mul_depend_shift_reg: True #test passed
-  uatg_mbox_mul_depend_loads: True #test passed
-  uatg_mbox_mul_depend_stores: True #test passed
-  uatg_mbox_div_by_0: True  #test passed
-  uatg_mbox_div_by_zero: True #test passed
-  uatg_mbox_div_overflow: True #test passed
-  uatg_mbox_signed_mul: True #test passed
-  uatg_mbox_signed_unsigned_mul: True #test passed
-  uatg_mbox_unsigned_mul: True #test passed
-  uatg_mbox_RAW_add_reg: True #test passed
-  uatg_mbox_RAW_shift_reg: True #test passed
-  uatg_mbox_RAW_add_imm: True #test passed
-  uatg_mbox_RAW_shift_imm: True #test passed
-  uatg_mbox_RAW_mul: True #test passed
-  uatg_mbox_RAW_div: True  #test passed
-  uatg_mbox_RAW_logic_reg: True #test passed
-  uatg_mbox_RAW_logic_imm: True #test passed
-  uatg_mbox_WAR_add_reg: True #test passed
-  uatg_mbox_WAR_add_imm: True #test passed
-  uatg_mbox_WAR_shift_reg: True #test passed
-  uatg_mbox_WAR_shift_imm: True #test passed
-  uatg_mbox_WAR_logic_reg: True #test passed
-  uatg_mbox_WAR_logic_imm: True #test passed
-  uatg_mbox_WAW_add_reg: True #test passed
-  uatg_mbox_WAW_shift_reg: True #test passed 
-  uatg_mbox_WAW_add_imm: True #test passed
-  uatg_mbox_WAW_shift_imm: True #test passed
-  uatg_mbox_WAW_logic_reg: True #test passed
-  uatg_mbox_WAW_logic_imm: True #test passed
-  uatg_mbox_WAW_mul: True #test passed
-  uatg_mbox_WAW_div: True #test passed
-  uatg_mbox_WAW_RAW: True #test passed
-  uatg_mbox_div_add_reg_RAW: True #test passed
-  uatg_mbox_div_add_imm_RAW: True #test passed
-  uatg_mbox_div_shift_reg_RAW: True #test passed
-  uatg_mbox_div_shift_imm_RAW: True #test passed
-  uatg_mbox_div_logic_reg_RAW: True #test paased
-  uatg_mbox_div_logic_imm_RAW: True #test passed
-  uatg_mbox_div_add_reg_WAR: True #test passed
-  uatg_mbox_div_add_imm_WAR: True #test passed
-  uatg_mbox_div_shift_reg_WAR: True #test passed
-  uatg_mbox_div_shift_imm_WAR: True #test passed
-  uatg_mbox_div_logic_reg_WAR: True #test passed
-  uatg_mbox_div_logic_imm_WAR: True #test passed
-  uatg_mbox_div_WAW_add_reg: True #test passed
-  uatg_mbox_div_WAW_add_imm: True #test passed
-  uatg_mbox_div_WAW_shift_reg: True #test passed
-  uatg_mbox_div_WAW_shift_imm: True #test passed
-  uatg_mbox_div_WAW_logic_reg: True #test passed
-  uatg_mbox_div_WAW_logic_imm: True #test passed
-  uatg_mbox_load_dependencies: True # not correctly
-  uatg_mbox_comp_WAR_regCA: True #test passed
-  uatg_mbox_comp_WAR_rv64: True #test passed
-  uatg_mbox_comp_WAR_reg_imm: True #test passed
-  uatg_mbox_comp_WAR_reg_reg: True #test passed
-  uatg_mbox_comp_WAR_const: True #test passed
-  uatg_mbox_comp_mul_regCA_WAR: True #test passed
-  uatg_mbox_comp_mul_reg_WAR: True #test passed
-  uatg_mbox_comp_mul_reg_regCA_WAR: True #test passed
-  uatg_mbox_comp_mul_reg_const_WAR: True #test passed
-  uatg_mbox_comp_mul_reg_imm_WAR: True #test passed
-  uatg_mbox_comp_mul_rv64_imm_WAR: True #test passed
-  uatg_mbox_comp_comp_regCA_WAR: True #test passed
-  uatg_mbox_comp_comp_reg_WAR: True #test passed
-  uatg_mbox_comp_comp_rv64_WAR: True #test passed
-  uatg_mbox_comp_comp_imm_WAR: True #test passed
-  uatg_mbox_comp_comp_rv64_imm_WAR: True #test passed
- 
+  uatg_mbox_divu_insts_01: False #test passed
+  uatg_mbox_mul_div_insts_01: False #test passed
+  uatg_mbox_mulh_insts_01: False #test passed
+  uatg_mbox_mul_dependencies_imm: False #test passed
+  uatg_mbox_mul_depend_shift_imm: False #test passed
+  uatg_mbox_mul_depend_shift_reg: False #test passed
+  uatg_mbox_mul_depend_loads: False #test passed
+  uatg_mbox_mul_depend_stores: False #test passed
+  uatg_mbox_div_by_0: False  #test passed
+  uatg_mbox_div_by_zero: False #test passed
+  uatg_mbox_div_overflow: False #test passed
+  uatg_mbox_signed_mul: False #test passed
+  uatg_mbox_signed_unsigned_mul: False #test passed
+  uatg_mbox_unsigned_mul: False #test passed
+  uatg_mbox_RAW_add_reg: False #test passed
+  uatg_mbox_RAW_shift_reg: False #test passed
+  uatg_mbox_RAW_add_imm: False #test passed
+  uatg_mbox_RAW_shift_imm: False #test passed
+  uatg_mbox_RAW_mul: False #test passed
+  uatg_mbox_RAW_div: False  #test passed
+  uatg_mbox_RAW_logic_reg: False #test passed
+  uatg_mbox_RAW_logic_imm: False #test passed
+  uatg_mbox_WAR_add_reg: False #test passed
+  uatg_mbox_WAR_add_imm: False #test passed
+  uatg_mbox_WAR_shift_reg: False #test passed
+  uatg_mbox_WAR_shift_imm: False #test passed
+  uatg_mbox_WAR_logic_reg: False #test passed
+  uatg_mbox_WAR_logic_imm: False #test passed
+  uatg_mbox_WAW_add_reg: False #test passed
+  uatg_mbox_WAW_shift_reg: False #test passed
+  uatg_mbox_WAW_add_imm: False #test passed
+  uatg_mbox_WAW_shift_imm: False #test passed
+  uatg_mbox_WAW_logic_reg: False #test passed
+  uatg_mbox_WAW_logic_imm: False #test passed
+  uatg_mbox_WAW_mul: False #test passed
+  uatg_mbox_WAW_div: False #test passed
+  uatg_mbox_WAW_RAW: False #test passed
+  uatg_mbox_div_add_reg_RAW: False #test passed
+  uatg_mbox_div_add_imm_RAW: False #test passed
+  uatg_mbox_div_shift_reg_RAW: False #test passed
+  uatg_mbox_div_shift_imm_RAW: False #test passed
+  uatg_mbox_div_logic_reg_RAW: False #test paased
+  uatg_mbox_div_logic_imm_RAW: False #test passed
+  uatg_mbox_div_add_reg_WAR: False #test passed
+  uatg_mbox_div_add_imm_WAR: False #test passed
+  uatg_mbox_div_shift_reg_WAR: False #test passed
+  uatg_mbox_div_shift_imm_WAR: False #test passed
+  uatg_mbox_div_logic_reg_WAR: False #test passed
+  uatg_mbox_div_logic_imm_WAR: False #test passed
+  uatg_mbox_div_WAW_add_reg: False #test passed
+  uatg_mbox_div_WAW_add_imm: False #test passed
+  uatg_mbox_div_WAW_shift_reg: False #test passed
+  uatg_mbox_div_WAW_shift_imm: False #test passed
+  uatg_mbox_div_WAW_logic_reg: False #test passed
+  uatg_mbox_div_WAW_logic_imm: False #test passed
+  uatg_mbox_load_dependencies: False # not correctly
+  uatg_mbox_comp_WAR_regCA: False #test passed
+  uatg_mbox_comp_WAR_rv64: False #test passed
+  uatg_mbox_comp_WAR_reg_imm: False #test passed
+  uatg_mbox_comp_WAR_reg_reg: False #test passed
+  uatg_mbox_comp_WAR_const: False #test passed
+  uatg_mbox_comp_mul_regCA_WAR: False #test passed
+  uatg_mbox_comp_mul_reg_WAR: False #test passed
+  uatg_mbox_comp_mul_reg_regCA_WAR: False #test passed
+  uatg_mbox_comp_mul_reg_const_WAR: False #test passed
+  uatg_mbox_comp_mul_reg_imm_WAR: False #test passed
+  uatg_mbox_comp_mul_rv64_imm_WAR: False #test passed
+  uatg_mbox_comp_comp_regCA_WAR: False #test passed
+  uatg_mbox_comp_comp_reg_WAR: False #test passed
+  uatg_mbox_comp_comp_rv64_WAR: False #test passed
+  uatg_mbox_comp_comp_imm_WAR: False #test passed
+  uatg_mbox_comp_comp_rv64_imm_WAR: False #test passed
+
 csrs:
-  uatg_misa_disable_A: True
-  uatg_misa_disable_C: True  # Buggy
-  uatg_misa_disable_FDQ: True # To be tested in future
-  uatg_misa_disable_IE: True # Buggy
-  uatg_misa_disable_M: True
-  uatg_misa_enable_unimplemented_exts: True
-  uatg_misa_misaligned_compressed: True
-  uatg_misa_mxl: True
-  uatg_misa_reset_val: True
-  uatg_misa_zero_bits: True
-  
+  uatg_m-deleg_low_priv_bits: True
+  uatg_m-deleg_reset_val: True
+  uatg_m-deleg_RO1: True
+  uatg_m-deleg_SN_dependency: True
+  uatg_misa_disable_A: False
+  uatg_misa_disable_C: False  # Buggy
+  uatg_misa_disable_FDQ: False # To be tested in future
+  uatg_misa_disable_IE: False # Buggy
+  uatg_misa_disable_M: False
+  uatg_misa_enable_unimplemented_exts: False
+  uatg_misa_misaligned_compressed: False
+  uatg_misa_mxl: False
+  uatg_misa_reset_val: False
+  uatg_misa_zero_bits: False
+
 regfile_bypass:
-  uatg_bypass_alu_alu: True
-  uatg_bypass_mul_load_store: True
-  uatg_bypass_mul_mul: True
-  uatg_bypass_regfiles: True
-  uatg_bypass_trap: True
-  uatg_regfiles_r1: True
+  uatg_bypass_alu_alu: False
+  uatg_bypass_mul_load_store: False
+  uatg_bypass_mul_mul: False
+  uatg_bypass_regfiles: False
+  uatg_bypass_trap: False
+  uatg_regfiles_r1: False
