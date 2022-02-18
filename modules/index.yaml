@@ -25,10 +25,7 @@ decoder:
   uatg_decoder_memory_insts_1: True
   uatg_decoder_mext: True
   uatg_decoder_reserved_arithmetic: True
-  uatg_decoder_reserved_auipc: True
   uatg_decoder_reserved_fence: True
-  uatg_decoder_reserved_insts: True
-  uatg_decoder_reserved_lui: True
   
 caches:
   uatg_dcache_atomic_random: True
