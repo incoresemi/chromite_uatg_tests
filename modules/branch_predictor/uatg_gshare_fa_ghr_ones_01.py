@@ -62,7 +62,7 @@ class uatg_gshare_fa_ghr_ones_01(IPlugin):
             # with ones for 2 more predictions
 
             asm = f"\n\taddi t0, x0, {loop_count}\n\taddi t1,x0 ,0 \n\nloop:\n"
-            asm += "\taddi t1, t1, 1\n\tblt t1, t0, loop\n"
+            asm += "\taddi t2, t1, 1\n\tblt t2, t0, loop\n"
 
             # trap signature bytes
             trap_sigbytes = 24
