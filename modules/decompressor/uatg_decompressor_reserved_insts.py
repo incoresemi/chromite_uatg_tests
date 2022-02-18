@@ -1,5 +1,5 @@
 from yapsy.IPlugin import IPlugin
-
+from typing import Dict, List, Union, Any
 
 class uatg_decompressor_illegal_instructions(IPlugin):
     """
