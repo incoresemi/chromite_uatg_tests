@@ -81,7 +81,7 @@ class uatg_gshare_fa_mispredict_loop_01(IPlugin):
 
             # compile macros for the test
             if mode != 'machine':
-                compile_macros = ['rvtest_mtrap_routine']
+                compile_macros = ['rvtest_mtrap_routine','s_u_mode_test']
             else:
                 compile_macros = []
 

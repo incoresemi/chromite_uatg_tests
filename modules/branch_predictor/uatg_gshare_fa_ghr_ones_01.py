@@ -50,7 +50,7 @@ class uatg_gshare_fa_ghr_ones_01(IPlugin):
         """
           the for loop iterates ghr_width + 2 times printing an
           assembly program which contains ghr_width + 2 branches which
-          will are TAKEN. This fills the ghr with zeros
+          will are TAKEN. This fills the ghr with ones
         """
 
         return_list = []
@@ -61,8 +61,8 @@ class uatg_gshare_fa_ghr_ones_01(IPlugin):
             # it makes sure the loop iterate 2 more times keeping the ghr filled
             # with ones for 2 more predictions
 
-            asm = f"\n\taddi t0, x0, {loop_count}\n\taddi t1,x0 ,0 \n\nloop:\n"
-            asm += "\taddi t2, t1, 1\n\tblt t2, t0, loop\n"
+            asm = f"\n\taddi t0, x0, {loop_count}\n\taddi t1, x0, 0 \n\nloop:\n"
+            asm += "\taddi t1, t1, 1\n\tblt t1, t0, loop\n\tc.nop\n"
 
             # trap signature bytes
             trap_sigbytes = 24
@@ -76,7 +76,7 @@ class uatg_gshare_fa_ghr_ones_01(IPlugin):
                 int(trap_sigbytes / 4))
             # compile macros for the test
             if mode != 'machine':
-                compile_macros = ['rvtest_mtrap_routine']
+                compile_macros = ['rvtest_mtrap_routine','s_u_mode_test']
             else:
                 compile_macros = []
 
