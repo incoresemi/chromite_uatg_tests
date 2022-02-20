@@ -23,6 +23,7 @@ decoder:
   uatg_decoder_logical_insts_1: True
   uatg_decoder_logical_insts_2: True
   uatg_decoder_memory_insts_1: True
+  uatg_decoder_memory_insts_2: True
   uatg_decoder_mext: True
   uatg_decoder_reserved_arithmetic: True
   uatg_decoder_reserved_fence: True
