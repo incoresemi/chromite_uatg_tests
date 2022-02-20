@@ -127,10 +127,9 @@ class uatg_decompressor_illegal_instructions(IPlugin):
             sig_code += f' .fill {trap_sigbytes // 4},4,0xdeadbeef\n'
 
             # compile macros for the test
+            compile_macros = ['rvtest_mtrap_routine']
             if mode != 'machine':
-                compile_macros = ['rvtest_mtrap_routine']
-            else:
-                compile_macros = []
+                compile_macros.append('s_u_mode_test')
 
             # user can choose to generate supervisor and/or user tests in addition
             # to machine mode tests here.

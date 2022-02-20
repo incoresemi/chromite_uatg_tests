@@ -25,7 +25,7 @@ class uatg_decompressor_02(IPlugin):
 
         if 'S' in self.isa:
             self.modes.append('supervisor')
-        if 's' and 'U' in self.isa:
+        if 'S' and 'U' in self.isa:
             self.modes.append('user')
 
         if 'C' in self.isa:
@@ -136,7 +136,7 @@ class uatg_decompressor_02(IPlugin):
 
             # compile macros for the test
             if mode != 'machine':
-                compile_macros = ['rvtest_mtrap_routine']
+                compile_macros = ['rvtest_mtrap_routine','s_u_mode_test'] 
             else:
                 compile_macros = []
 
