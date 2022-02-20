@@ -22,7 +22,7 @@ class uatg_decompressor_01(IPlugin):
         if 'S' in self.isa:
             self.modes.append('supervisor')
 
-        if 'S' and 'U' in self.isa:
+        if 'S' in self.isa and 'U' in self.isa:
             self.modes.append('user')   
         
         if 'C' in self.isa:

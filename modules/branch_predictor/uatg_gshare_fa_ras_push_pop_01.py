@@ -35,7 +35,7 @@ class uatg_gshare_fa_ras_push_pop_01(IPlugin):
         if 'S' in self.isa:
             self.modes.append('supervisor')
 
-        if 'S' and 'U' in self.isa:
+        if 'S' in self.isa and 'U' in self.isa:
             self.modes.append('user')
 
         # conditions to check if this test needs to be implemented or not

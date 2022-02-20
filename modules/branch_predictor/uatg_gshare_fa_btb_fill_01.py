@@ -46,7 +46,7 @@ class uatg_gshare_fa_btb_fill_01(IPlugin):
         if 'S' in self.isa:
             self.modes.append('supervisor')
 
-        if 'S' and 'U' in self.isa:
+        if 'S' in self.isa and 'U' in self.isa:
             self.modes.append('user')
 
         if _en_bpu and self._btb_depth:
