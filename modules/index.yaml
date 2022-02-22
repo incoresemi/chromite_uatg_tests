@@ -47,7 +47,6 @@ caches:
   uatg_dcache_replacement_all: False
   uatg_dcache_set_thrashing: False
   uatg_dcache_critical_word: False
-  uatg_dcache_line_boundary: True
   uatg_icache_fill_01: False
   uatg_icache_fill_02: False
   uatg_icache_set_thrashing_01: False
@@ -56,6 +55,7 @@ caches:
   uatg_icache_fence_race: False
   uatg_icache_self_modifying: False
   uatg_icache_critical_word_first: False
+  uatg_icache_line_boundary: True
 
 decompressor:
   uatg_decompressor_01: False # buggy
