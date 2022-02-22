@@ -57,7 +57,7 @@ class uatg_icache_line_boundary(IPlugin):
         for line_iter in range(self._sets * self._ways):
             # generate 4 bytes less than 1 line worth of compressed instructions
             list_inst = ['\tc.add t5, t6\n'
-            for _ in range(int(self._word_size / 2) * self._block_size - 1)]
+            for list_iter in range(int(self._word_size / 2) * self._block_size - 2)]
 
             # replace the last instruction with a 4-byte instruction such that
             # the first half stays on this line and the other half is elsewhere
