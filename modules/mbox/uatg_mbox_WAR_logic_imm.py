@@ -1,4 +1,4 @@
-import random
+from random import choice
 from typing import Dict, Any, List, Union
 
 from uatg.instruction_constants import base_reg_file, mext_instructions, \
@@ -90,9 +90,9 @@ class uatg_mbox_WAR_logic_imm(IPlugin):
             # assign the imm with range
             imm = range(1, 100)
             # imm_value get the random value from imm
-            imm_val = random.choice(imm)
+            imm_val = choice(imm)
             # rand_inst generates the logic instructions randomly
-            rand_inst = random.choice(random_list)
+            rand_inst = choice(random_list)
             # initialize the source registers rs1, rs2 and destination register rd1
             rs1, rs2, rd1 = 'x3', 'x4', 'x5'
             # depends on the mul_stages_in the mext and logic
@@ -101,25 +101,25 @@ class uatg_mbox_WAR_logic_imm(IPlugin):
 
                 code += f'{inst} {rd1},{rs1},{rs2};\n'
                 for j in range(i):
-                    rand_rs1 = random.choice(reg_file)
-                    rand_rd = random.choice(reg_file)
-                    rand_inst1 = random.choice(random_list)
+                    rand_rs1 = choice(reg_file)
+                    rand_rd = choice(reg_file)
+                    rand_inst1 = choice(random_list)
                     if rand_rd in [rand_rs1]:
-                        new_rand_rd = random.choice(
+                        new_rand_rd = choice(
                             [x for x in reg_file if x not in [rand_rs1]])
                         rand_rd = new_rand_rd
                     if rand_rs1 in [rand_rd]:
-                        new_rand_rs1 = random.choice(
+                        new_rand_rs1 = choice(
                             [x for x in reg_file if x not in [rand_rd]])
                         rand_rs1 = new_rand_rs1
                     if rand_inst in [rand_inst1, inst]:
-                        new_rand_inst = random.choice([
+                        new_rand_inst = choice([
                             x for x in random_list
                             if x not in [rand_inst1, rand_inst]
                         ])
                         rand_inst = new_rand_inst
                     if rand_inst1 in [rand_inst, inst]:
-                        new_rand_inst1 = random.choice([
+                        new_rand_inst1 = choice([
                             x for x in random_list
                             if x not in [rand_inst, rand_inst]
                         ])
@@ -156,7 +156,7 @@ class uatg_mbox_WAR_logic_imm(IPlugin):
                 'name_postfix': inst,
                 'doc_string': doc_string
             })
-        return test_dict
+        yield test_dict
 
     def check_log(self, log_file_path, reports_dir) -> bool:
         return False

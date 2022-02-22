@@ -2,7 +2,7 @@ from yapsy.IPlugin import IPlugin
 from uatg.instruction_constants import base_reg_file, mext_instructions, \
     logic_instructions
 from typing import Dict, List, Union, Any
-import random
+from random import choice
 
 
 class uatg_mbox_div_logic_imm_RAW(IPlugin):
@@ -85,9 +85,9 @@ class uatg_mbox_div_logic_imm_RAW(IPlugin):
             #assign the imm with range
             imm = range(1, 100)
             #generate the imm_val randomly  from imm
-            imm_val = random.choice(imm)
+            imm_val = choice(imm)
             #rand_inst generate logic instructions randomly
-            rand_inst = random.choice(random_list)
+            rand_inst = choice(random_list)
             #initialize the source register rs1, rs2 destination 
             #register rd1 and rd2
             rs1, rs2, rd1, rd2 = 'x3', 'x4', 'x5', 'x6'
@@ -96,29 +96,29 @@ class uatg_mbox_div_logic_imm_RAW(IPlugin):
 
                 code += f'{inst} {rd1},{rs1},{rs2};\n'
                 for j in range(i):
-                    rand_rs1 = random.choice(reg_file)
-                    rand_rd = random.choice(reg_file)
-                    rand_inst1 = random.choice(random_list)
+                    rand_rs1 = choice(reg_file)
+                    rand_rd = choice(reg_file)
+                    rand_inst1 = choice(random_list)
                     if rand_rd in [rs1, rs2, rd1, rand_rs1, rd2, swreg]:
-                        new_rand_rd = random.choice([
+                        new_rand_rd = choice([
                             x for x in reg_file
                             if x not in [rs1, rs2, rd1, rand_rs1, rd2, swreg]
                         ])
                         rand_rd = new_rand_rd
                     if rand_rs1 in [rd1, rs2, rd2, rand_rd, rs1, swreg]:
-                        new_rand_rs1 = random.choice([
+                        new_rand_rs1 = choice([
                             x for x in reg_file
                             if x not in [rd1, rs2, rd2, rand_rd, rs1, swreg]
                         ])
                         rand_rs1 = new_rand_rs1
                     if rand_inst in [rand_inst1, inst]:
-                        new_rand_inst = random.choice([
+                        new_rand_inst = choice([
                             x for x in random_list
                             if x not in [rand_inst1, inst]
                         ])
                         rand_inst = new_rand_inst
                     if rand_inst1 in [rand_inst, inst]:
-                        new_rand_inst1 = random.choice([
+                        new_rand_inst1 = choice([
                             x for x in random_list
                             if x not in [rand_inst, inst]
                         ])
@@ -132,7 +132,7 @@ class uatg_mbox_div_logic_imm_RAW(IPlugin):
             # then first choose a new signature pointer and move the
             # value to it.
             if swreg in [rd1, rs1, rs2, rd2, rand_rs1, rand_rd]:
-                newswreg = random.choice([
+                newswreg = choice([
                     x for x in reg_file
                     if x not in [rd1, rs1, rs2, rd2, rand_rs1, rand_rd]
                 ])
@@ -169,7 +169,7 @@ class uatg_mbox_div_logic_imm_RAW(IPlugin):
                 'name_postfix': inst,
                 'doc_string' : ''
             })
-        return test_dict
+        yield test_dict
 
     def check_log(self, log_file_path, reports_dir) -> bool:
         return False

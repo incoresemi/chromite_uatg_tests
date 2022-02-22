@@ -2,7 +2,7 @@ from yapsy.IPlugin import IPlugin
 from uatg.instruction_constants import mext_instructions, \
     load_store_instructions
 from typing import Dict, Any, List, Union
-import random
+from random import choice
 
 
 class uatg_mbox_mul_depend_stores(IPlugin):
@@ -80,41 +80,41 @@ class uatg_mbox_mul_depend_stores(IPlugin):
                 for rs1 in reg_file:
                     for rs2 in reg_file:
                         rs2_val = hex(random.getrandbits(self.xlen))
-                        rand_inst = random.choice(random_list)
-                        imm_val = random.choice(imm)
+                        rand_inst = choice(random_list)
+                        imm_val = choice(imm)
 
                         # if signature register needs to be used for operations
                         # then first choose a new signature pointer and move the
                         # value to it.
                         if swreg in [rd, rs1, rs2, testreg]:
-                            newswreg = random.choice([
+                            newswreg = choice([
                                 x for x in reg_file
                                 if x not in [rd, rs1, rs2, 'x0']
                             ])
                             asm_code += f'mv {newswreg}, {swreg}\n'
                             swreg = newswreg
                         if testreg in [rd, rs1, rs2, swreg]:
-                            new_testreg = random.choice([
+                            new_testreg = choice([
                                 x for x in reg_file
                                 if x not in [rd, rs1, rs2, swreg, 'x0']
                             ])
                             testreg = new_testreg
                         if rd in [swreg, testreg, rs1, rs2]:
-                            new_rd = random.choice([
+                            new_rd = choice([
                                 x for x in reg_file
                                 if x not in [swreg, testreg, rs1, rs2, 'x0']
                             ])
                             rd = new_rd
 
                         if rs2 in [swreg, testreg, rs1, rd]:
-                            new_rs2 = random.choice([
+                            new_rs2 = choice([
                                 x for x in reg_file
                                 if x not in [swreg, testreg, rs1, rd, 'x0']
                             ])
                             rs2 = new_rs2
 
                         if rs1 in [swreg, testreg, rs1, rd]:
-                            new_rs1 = random.choice([
+                            new_rs1 = choice([
                                 x for x in reg_file
                                 if x not in [swreg, testreg, rs1, rd, 'x0']
                             ])
@@ -164,7 +164,7 @@ class uatg_mbox_mul_depend_stores(IPlugin):
                     'compile_macros': compile_macros,
                     'name_postfix': inst
                 })
-        return test_dict
+        yield test_dict
 
     def check_log(self, log_file_path, reports_dir) -> bool:
         return False

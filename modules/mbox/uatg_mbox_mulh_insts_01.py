@@ -1,4 +1,4 @@
-import random
+from random import choice
 from typing import Dict, List, Union, Any
 
 from uatg.instruction_constants import base_reg_file, mext_instructions
@@ -88,7 +88,7 @@ class uatg_mbox_mulh_insts_01(IPlugin):
                             # operations then first choose a new signature
                             # pointer and move the value to it.
                             if swreg in [rd, rd1, rs1, rs2]:
-                                newswreg = random.choice([
+                                newswreg = choice([
                                     x for x in reg_file
                                     if x not in [rd, rd1, rs1, rs2, 'x0']
                                 ])
@@ -96,14 +96,14 @@ class uatg_mbox_mulh_insts_01(IPlugin):
                                 swreg = newswreg
 
                             if rd1 in [rd, swreg, rs1, rs2]:
-                                new_rd1 = random.choice([
+                                new_rd1 = choice([
                                     x for x in reg_file
                                     if x not in [rd, swreg, rs2, rs1]
                                 ])
                                 rd1 = new_rd1
 
                             if rd in [rs1, rd1, rs2, swreg]:
-                                new_rd = random.choice([
+                                new_rd = choice([
                                     x for x in reg_file
                                     if x not in [rd1, swreg, rs2, rs1]
                                 ])
@@ -156,7 +156,7 @@ class uatg_mbox_mulh_insts_01(IPlugin):
                     'name_postfix': f'{inst}_rs1_{rs1}',
                     'doc_string': doc_string
                 })
-        return test_dict
+        yield test_dict
 
     def check_log(self, log_file_path, reports_dir) -> bool:
         return False

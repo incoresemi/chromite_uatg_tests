@@ -1,4 +1,4 @@
-import random
+from random import choice
 from typing import Dict, Any, List, Union
 
 from uatg.instruction_constants import base_reg_file, mext_instructions, \
@@ -90,44 +90,44 @@ class uatg_mbox_mul_depend_shift_reg(IPlugin):
                             rs1_val = hex(random.getrandbits(self.xlen))
                             rs2_val = hex(random.getrandbits(self.xlen))
                             rs3_val = hex(random.getrandbits(self.xlen))
-                            rand_inst = random.choice(random_list)
+                            rand_inst = choice(random_list)
 
                             # if signature register needs to be used for
                             # operations then first choose a new signature
                             # pointer and move the value to it.
                             if swreg in [rd, rs1, rs2, rs3, testreg]:
-                                newswreg = random.choice([
+                                newswreg = choice([
                                     x for x in reg_file
                                     if x not in [rd, rs1, rs2, rs3, 'x0']
                                 ])
                                 asm_code += f'mv {newswreg}, {swreg}\n'
                                 swreg = newswreg
                             if testreg in [rd, rs1, rs2, rs3, swreg]:
-                                new_testreg = random.choice([
+                                new_testreg = choice([
                                     x for x in reg_file if x not in
                                     [rd, rs1, rs2, rs3, swreg, 'x0']
                                 ])
                                 testreg = new_testreg
                             if rd in [swreg, testreg, rs1, rs2, rs3]:
-                                new_rd = random.choice([
+                                new_rd = choice([
                                     x for x in reg_file if x not in
                                     [swreg, testreg, rs1, rs2, rs3, 'x0']
                                 ])
                                 rd = new_rd
                             if rs1 in [swreg, testreg, rd, rs2, rs3]:
-                                new_rs1 = random.choice([
+                                new_rs1 = choice([
                                     x for x in reg_file if x not in
                                     [swreg, testreg, rd, rs2, rs3, 'x0']
                                 ])
                                 rs1 = new_rs1
                             if rs2 in [swreg, testreg, rs1, rd, rs3]:
-                                new_rs2 = random.choice([
+                                new_rs2 = choice([
                                     x for x in reg_file if x not in
                                     [swreg, testreg, rs1, rd, rs3, 'x0']
                                 ])
                                 rs2 = new_rs2
                             if rs3 in [swreg, testreg, rs1, rs2, rd]:
-                                new_rs3 = random.choice([
+                                new_rs3 = choice([
                                     x for x in reg_file if x not in
                                     [swreg, testreg, rs1, rs2, rd, 'x0']
                                 ])
@@ -177,7 +177,7 @@ class uatg_mbox_mul_depend_shift_reg(IPlugin):
                     'name_postfix': inst,
                     'doc_string': doc_string
                 })
-        return test_dict
+        yield test_dict
 
     def check_log(self, log_file_path, reports_dir) -> bool:
         return False

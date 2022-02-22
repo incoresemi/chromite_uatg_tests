@@ -1,7 +1,7 @@
 from yapsy.IPlugin import IPlugin
 from uatg.instruction_constants import base_reg_file, mext_instructions
 from typing import Dict, List, Union, Any
-import random
+from random import choice
 
 
 class uatg_mbox_mul_div_insts_01(IPlugin):
@@ -82,7 +82,7 @@ class uatg_mbox_mul_div_insts_01(IPlugin):
                         # then first choose a new signature pointer and move the
                         # value to it.
                         if swreg in [rd, rs1, rs2]:
-                            newswreg = random.choice([
+                            newswreg = choice([
                                 x for x in reg_file
                                 if x not in [rd, rs1, rs2, 'x0']
                             ])
@@ -130,7 +130,7 @@ class uatg_mbox_mul_div_insts_01(IPlugin):
                 'name_postfix': inst,
                 'doc_string' : doc_string
             })
-        return test_dict
+        yield test_dict
 
     def check_log(self, log_file_path, reports_dir) -> bool:
         return False

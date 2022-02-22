@@ -103,7 +103,7 @@ class uatg_mbox_signed_mul(IPlugin):
             'compile_macros': compile_macros,
             'doc_string': doc_string
         })
-        return test_dict
+        yield test_dict
 
     def check_log(self, log_file_path, reports_dir) -> bool:
         return False
