@@ -51,12 +51,15 @@ class uatg_dcache_set_thrashing(IPlugin):
         (11-bit number) and thus we determine a high number such that we are
         able to change the base address of the destination register
         upon exhausting the limit in the destination address' offset.'''
+
+        return_list = []
+
         high = 0
         while high < 2048 - (self._block_size * self._word_size):
             high = high + (self._block_size * self._word_size)
         #initialise all registers to 0
         #assumes x0 is zero
-        asm_init = [f"\tmv x{i}, x0\n" for i in range(1,32)]
+        asm_init = [f"\tmv x{i}, x0\n" for i in range(1, 32)]
         # asm_data is the test data that is loaded into memory.
         # We use this to perform load operations.
         asm_data = f"\nrvtest_data:\n\t.align {self._word_size}\n"
@@ -111,16 +114,20 @@ class uatg_dcache_set_thrashing(IPlugin):
         asm_end = "\nend:\n\tnop\n\tfence.i\n"
 
         # Concatenate all pieces of asm.
-        asm = "".join(asm_init) + asm_main + asm_lab1 + asm_nop + asm_st + asm_end
+        asm = "".join(
+            asm_init) + asm_main + asm_lab1 + asm_nop + asm_st + asm_end
         compile_macros = []
 
-        return [{
+        return_list.append({
             'asm_code': asm,
             'asm_data': asm_data,
             'asm_sig': '',
             'compile_macros': compile_macros
-        }]
+        })
+        yield return_list
+
     def check_log(self, log_file_path, reports_dir):
         ''
+
     def generate_covergroups(self, config_file):
         ''

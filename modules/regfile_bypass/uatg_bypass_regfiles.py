@@ -33,6 +33,8 @@ class uatg_bypass_regfiles(IPlugin):
         """
         Checking bypass operation using signature region
         """
+        return_list = []
+
         reg_file = base_reg_file.copy()
         asm = f"\tandi {reg_file[3]},{reg_file[0]} ,0\n"
         # clearing the bits in register x3
@@ -82,12 +84,13 @@ class uatg_bypass_regfiles(IPlugin):
         sig_code += ".fill {0},4,0xdeadbeef\n".format(int(sig_bytes / 4))
 
         # return asm_code and sig_code
-        return [{
+        return_list.append({
             'asm_code': asm,
             'asm_data': '',
             'asm_sig': sig_code,
             'compile_macros': compile_macros,
             # 'name_postfix': inst
-        }]
+        })
 
+        yield return_list
     # after all the manual calculations, signature file should have value of 57

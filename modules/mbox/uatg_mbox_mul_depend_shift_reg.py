@@ -1,4 +1,4 @@
-from random import choice
+from random import choice, getrandbits
 from typing import Dict, Any, List, Union
 
 from uatg.instruction_constants import base_reg_file, mext_instructions, \
@@ -87,9 +87,9 @@ class uatg_mbox_mul_depend_shift_reg(IPlugin):
                     for rs2 in reg_file:
                         for rs3 in reg_file:
                             # for i in range(self.mul_stages_in):
-                            rs1_val = hex(random.getrandbits(self.xlen))
-                            rs2_val = hex(random.getrandbits(self.xlen))
-                            rs3_val = hex(random.getrandbits(self.xlen))
+                            rs1_val = hex(getrandbits(self.xlen))
+                            rs2_val = hex(getrandbits(self.xlen))
+                            rs3_val = hex(getrandbits(self.xlen))
                             rand_inst = choice(random_list)
 
                             # if signature register needs to be used for

@@ -38,9 +38,12 @@ class uatg_icache_critical_word_first(IPlugin):
         first to last and vice versa
         middle to last and vice versa
         """
+
+        return_list = []
+
         #initialise all registers to 0
         #assumes x0 is zero
-        asm_init = [f"\tmv x{i}, x0\n" for i in range(1,32)]
+        asm_init = [f"\tmv x{i}, x0\n" for i in range(1, 32)]
         # 0-f-10-1a-2a-20-3a-3f-4f-40-5f-5a
         # 0-f-10-1a-20-2a-3a-3f-40-4f-5a-5f
 
@@ -79,12 +82,15 @@ class uatg_icache_critical_word_first(IPlugin):
         asm += "label4032:\n\tnop\n"
 
         compile_macros = []
-        return [{
+        return_list.append({
             'asm_code': f"\t.align {self._word_size}\n" + asm,
             'asm_sig': '',
             'compile_macros': compile_macros
-        }]
+        })
+        yield return_list
+
     def check_log(self, log_file_path, reports_dir):
         ''
+
     def generate_covergroups(self, config_file):
         ''

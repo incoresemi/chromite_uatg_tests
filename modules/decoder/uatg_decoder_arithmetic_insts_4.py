@@ -130,7 +130,7 @@ class uatg_decoder_arithmetic_insts_4(IPlugin):
                 'compile_macros': compile_macros,
                 'name_postfix': inst
             })
-        return test_dict
+        yield test_dict
 
     def check_log(self, log_file_path, reports_dir) -> bool:
         return False

@@ -38,6 +38,9 @@ class uatg_dcache_fill_02(IPlugin):
         the ways in a set are touched, we visit the next set.
         The total number of iterations is parameterized based on YAML input.
         """
+
+        return_list = []
+
         asm_data = f"\nrvtest_data:\n\t.align {self._word_size}\n"
 
         # We load the memory with data twice the size of our dcache.
@@ -46,7 +49,7 @@ class uatg_dcache_fill_02(IPlugin):
             f"\t.dword 0x{random.randrange(16 ** 16):8x}\n" + f"\t.endr\n"
         #initialise all registers to 0
         #assumes x0 is zero
-        asm_init = [f"\tmv x{i}, x0\n" for i in range(1,32)]
+        asm_init = [f"\tmv x{i}, x0\n" for i in range(1, 32)]
         asm_main = f"\tfence\n\tli t0, 69\n\tli t1, {self._sets}\n\t"
         asm_main += f"li t5, {self._ways}\n\t"
         asm_main += f"li t6, {self._block_size * self._word_size}"
@@ -63,13 +66,16 @@ class uatg_dcache_fill_02(IPlugin):
         asm = "".join(asm_init) + asm_main + asm_lab1 + asm_end
         compile_macros = []
 
-        return [{
+        return_list.append({
             'asm_code': asm,
             'asm_data': asm_data,
             'asm_sig': '',
             'compile_macros': compile_macros
-        }]
+        })
+        yield return_list
+
     def check_log(self, log_file_path, reports_dir):
         ''
+
     def generate_covergroups(self, config_file):
         ''

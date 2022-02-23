@@ -67,4 +67,4 @@ class uatg_misa_reset_val(IPlugin):
             'asm_sig': sig_code,
             'name_postfix': 'machine'
         }]
-        return test_dict
+        yield test_dict

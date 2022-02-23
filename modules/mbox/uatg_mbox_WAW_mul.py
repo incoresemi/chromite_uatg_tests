@@ -1,4 +1,4 @@
-from random import choice
+from random import choice, getrandbits
 from typing import Dict, Any, List, Union
 
 from uatg.instruction_constants import base_reg_file, mext_instructions
@@ -131,10 +131,10 @@ class uatg_mbox_WAW_mul(IPlugin):
                     code += f'{rand_inst1} {rand_rd}, {rand_rs1}, {rand_rs2};\n'
                 code += f'{rand_inst} {rd1}, {rs4}, {rs3};\n\n'
             # assign the rs1_val, rs2_val, rs3_val and rs4_val
-            rs1_val = hex(random.getrandbits(self.xlen))
-            rs2_val = hex(random.getrandbits(self.xlen))
-            rs3_val = hex(random.getrandbits(self.xlen))
-            rs4_val = hex(random.getrandbits(self.xlen))
+            rs1_val = hex(getrandbits(self.xlen))
+            rs2_val = hex(getrandbits(self.xlen))
+            rs3_val = hex(getrandbits(self.xlen))
+            rs4_val = hex(getrandbits(self.xlen))
 
             # perform the  required assembly operation
 

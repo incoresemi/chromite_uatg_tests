@@ -164,7 +164,7 @@ class uatg_decoder_jump_jalr(IPlugin):
                 'name_postfix': f'rs1_{rs1}'
             })
 
-        return test_dict
+        yield test_dict
 
     def check_log(self, log_file_path, reports_dir) -> bool:
         return False

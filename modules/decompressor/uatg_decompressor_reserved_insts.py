@@ -153,7 +153,7 @@ class uatg_decompressor_illegal_instructions(IPlugin):
             })
             
             if not privileged_test_enable:
-                return return_list
+                yield return_list
 
         return test_dict
 

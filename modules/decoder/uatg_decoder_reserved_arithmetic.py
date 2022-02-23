@@ -80,4 +80,4 @@ class uatg_decoder_illegal_instructions(IPlugin):
                     'compile_macros': compile_macros,
                     'name_postfix': f"{op}"
                 })
-        return test_dict
+        yield test_dict

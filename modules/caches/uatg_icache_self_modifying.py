@@ -36,6 +36,8 @@ class uatg_icache_self_modifying(IPlugin):
         the first time to happen and branch to first instruction which failed
         the last time."""
 
+        return_list = []
+
         # t0 = starting address
         # t1 = exit address
         # t2 = exit - starting address
@@ -43,7 +45,7 @@ class uatg_icache_self_modifying(IPlugin):
         # t4 = temporary values
         #initialise all registers to 0
         #assumes x0 is zero
-        asm_init = [f"\tmv x{i}, x0\n" for i in range(1,32)]
+        asm_init = [f"\tmv x{i}, x0\n" for i in range(1, 32)]
         asm = ".option norvc\n"
         asm += "begin:\n"
         asm += "\tla t0, begin\n"
@@ -80,12 +82,15 @@ class uatg_icache_self_modifying(IPlugin):
         asm += "\tfence.i\n"
 
         compile_macros = []
-        return [{
+        return_list.append({
             'asm_code': "".join(asm_init) + asm,
             'asm_sig': '',
             'compile_macros': compile_macros
-        }]
+        })
+        yield return_list
+
     def check_log(self, log_file_path, reports_dir):
         ''
+
     def generate_covergroups(self, config_file):
         ''

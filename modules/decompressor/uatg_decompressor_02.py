@@ -162,9 +162,9 @@ class uatg_decompressor_02(IPlugin):
             })
 
             if not privileged_test_enable:
-                return return_list
+                yield return_list
 
-        return return_list
+        yield return_list
 
     def check_log(self):
         return None

@@ -1,4 +1,4 @@
-from random import choice
+from random import choice, getrandbits
 from typing import Dict, Any, List, Union
 
 from uatg.instruction_constants import base_reg_file, mext_instructions, \
@@ -89,8 +89,8 @@ class uatg_mbox_mul_dependencies_imm(IPlugin):
             for rd in reg_file:
                 for rs1 in reg_file:
                     for rs2 in reg_file:
-                        rs1_val = hex(random.getrandbits(self.xlen))
-                        rs2_val = hex(random.getrandbits(self.xlen))
+                        rs1_val = hex(getrandbits(self.xlen))
+                        rs2_val = hex(getrandbits(self.xlen))
                         rand_inst = choice(random_list)
                         imm_val = choice(imm)
 

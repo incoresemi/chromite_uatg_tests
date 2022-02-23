@@ -1,4 +1,4 @@
-from random import choice
+from random import choice, getrandbits
 from typing import Dict, List, Union, Any
 
 from uatg.instruction_constants import base_reg_file, mext_instructions
@@ -81,8 +81,8 @@ class uatg_mbox_mulh_insts_01(IPlugin):
                     for rd1 in reg_file:
                         for rs2 in reg_file:
 
-                            rs1_val = hex(random.getrandbits(self.xlen))
-                            rs2_val = hex(random.getrandbits(self.xlen))
+                            rs1_val = hex(getrandbits(self.xlen))
+                            rs2_val = hex(getrandbits(self.xlen))
 
                             # if signature register needs to be used for
                             # operations then first choose a new signature

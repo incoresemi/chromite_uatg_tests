@@ -34,6 +34,8 @@ class uatg_bypass_trap(IPlugin):
         Checking pipeline flushes and invoking 
         trap handler by creating misaligned loads
         """
+        return_list = []
+
         reg_file = base_reg_file.copy()
         asm = f"\tla {reg_file[1]} ,sample_data\n"
         asm += f"\taddi {reg_file[2]},{reg_file[0]} ,5\n"
@@ -62,10 +64,12 @@ class uatg_bypass_trap(IPlugin):
         compile_macros = []
 
         # return asm_code and sig_code
-        return [{
+        return_list.append({
             'asm_code': asm,
             # 'asm_data': '',
             'asm_sig': '',
             'compile_macros': compile_macros,
             # 'name_postfix': inst
-        }]
+        })
+
+        yield return_list

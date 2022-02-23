@@ -2,7 +2,7 @@ from yapsy.IPlugin import IPlugin
 from uatg.instruction_constants import base_reg_file, mext_instructions, \
     load_store_instructions
 from typing import Dict, Any, List, Union
-from random import choice
+from random import choice, getrandbits
 
 
 class uatg_mbox_mul_depend_loads(IPlugin):
@@ -72,7 +72,7 @@ class uatg_mbox_mul_depend_loads(IPlugin):
             for rd in reg_file:
                 for rs1 in reg_file:
                     for rs2 in reg_file:
-                        rs2_val = hex(random.getrandbits(self.xlen))
+                        rs2_val = hex(getrandbits(self.xlen))
                         rand_inst = choice(random_list)
                         imm_val = choice(imm)
 

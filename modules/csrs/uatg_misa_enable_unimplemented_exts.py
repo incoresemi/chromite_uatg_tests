@@ -72,4 +72,4 @@ class uatg_misa_enable_unimplemented_exts(IPlugin):
             'asm_code': asm_code,
             'name_postfix': 'machine'
         }]
-        return test_dict
+        yield test_dict

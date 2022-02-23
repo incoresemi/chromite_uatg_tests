@@ -34,6 +34,9 @@ class uatg_bypass_mul_mul(IPlugin):
         Branch operation happens if bypass doesn't happen correctly
         Bypassing checked for muldiv ISA alu operation
         """
+        
+        return_list = []
+
         reg_file = base_reg_file.copy()
         asm = f"\taddi {reg_file[1]} ,{reg_file[0]} ,3\n"
         asm += f"\taddi {reg_file[2]} ,{reg_file[0]} ,4\n"
@@ -60,10 +63,12 @@ class uatg_bypass_mul_mul(IPlugin):
         compile_macros = []
 
         # return asm_code and sig_code
-        return [{
+        return_list.append({
             'asm_code': asm,
             # 'asm_data': '',
             'asm_sig': '',
             'compile_macros': compile_macros,
             # 'name_postfix': inst
-        }]
+        })
+
+        yield return_list

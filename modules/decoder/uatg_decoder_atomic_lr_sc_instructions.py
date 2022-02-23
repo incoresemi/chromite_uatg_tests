@@ -103,7 +103,7 @@ class uatg_decoder_atomic_lr_sc_instructions(IPlugin):
                     'name_postfix': inst[0]+'_'+inst[1]
                 })
 
-        return test_dict
+        yield test_dict
 
     def check_log(self, log_file_path, reports_dir) -> bool:
         return False

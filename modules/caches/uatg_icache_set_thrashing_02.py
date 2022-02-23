@@ -33,11 +33,14 @@ class uatg_icache_set_thrashing_02(IPlugin):
         return _icache_en
 
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
-        """Generate asm as a list of strings that have different
-        alignments based on which set they're looking to thrash."""
+        """
+        Generate asm as a list of strings that have different
+        alignments based on which set they're looking to thrash.
+        """
+
         #initialise all registers to 0
         #assumes x0 is zero
-        asm_init = [f"\tmv x{i}, x0\n" for i in range(1,32)]
+        asm_init = [f"\tmv x{i}, x0\n" for i in range(1, 32)]
         iter = self._word_size * self._block_size
         ins_list = [f"\tli t1, {iter}\n\t.align " \
             f"{int(math.log2(self._sets))}\n" \
@@ -51,12 +54,16 @@ class uatg_icache_set_thrashing_02(IPlugin):
             f"\taddi t1, t1, -1\n\tbeqz t1, end\n\tj ins_j\nend:\n\tnop"
             for i in range(self._sets)]
         compile_macros = []
-        return [{
+        return_list = [{
             'asm_code': "".join(asm_init) + "\t.option norvc\n" + i,
             'asm_sig': '',
             'compile_macros': compile_macros
         } for i in ins_list]
+
+        yield return_list
+
     def check_log(self, log_file_path, reports_dir):
         ''
+
     def generate_covergroups(self, config_file):
         ''

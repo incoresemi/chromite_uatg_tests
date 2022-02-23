@@ -34,17 +34,19 @@ class uatg_icache_fill_02(IPlugin):
         """
         Jump from last word of the line to last word of the next line
         """
+        return_list = []
 
         # 0-f-10-1a-2a-20-3a-3f-4f-40-5f-5a
         # 0-f-10-1a-20-2a-3a-3f-40-4f-5a-5f
         #initialise all registers to 0
         #assumes x0 is zero
-        asm_init = [f"\tmv x{i}, x0\n" for i in range(1,32)]
+        asm_init = [f"\tmv x{i}, x0\n" for i in range(1, 32)]
         li = []
         for i in range(4032):
             li.append("\tnop\n")
 
-        li[0:3] = "\taddi x5,x0,2\n","label1:\n\taddi x3,x0,1\n","\tj label16\n"
+        li[0:
+           3] = "\taddi x5,x0,2\n", "label1:\n\taddi x3,x0,1\n", "\tj label16\n"
 
         for j in range(15, 4031, 16):
             li[j] = f"label{j+1}:\n\tj label{j+17}\n"
@@ -56,12 +58,18 @@ class uatg_icache_fill_02(IPlugin):
         asm += "label4032:\n\tbeq x3,x5, label1\n"
 
         compile_macros = []
-        return [{
-            'asm_code': "".join(asm_init) + f"\t.align {self._word_size}\n" + asm,
-            'asm_sig': '',
-            'compile_macros': compile_macros
-        }]
+        return_list.append({
+            'asm_code':
+                "".join(asm_init) + f"\t.align {self._word_size}\n" + asm,
+            'asm_sig':
+                '',
+            'compile_macros':
+                compile_macros
+        })
+        yield return_list
+
     def check_log(self, log_file_path, reports_dir):
         ''
+
     def generate_covergroups(self, config_file):
         ''

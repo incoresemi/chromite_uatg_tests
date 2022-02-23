@@ -73,4 +73,4 @@ class uatg_misa_disable_zero_bits(IPlugin):
             'asm_code': asm_code,
             'name_postfix': 'machine'
         }]
-        return test_dict
+        yield test_dict

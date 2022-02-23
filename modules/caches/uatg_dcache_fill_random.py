@@ -34,6 +34,8 @@ class uatg_dcache_fill_random(IPlugin):
         Used to generate asm files with random stores/loads
         Boundaries are random but compliant to instruction
         """
+        return_list = []
+
         asm_data = f"\nrvtest_data:\n\t.align {self._word_size}\n"
 
         asm_data += f"\t.rept " + \
@@ -41,7 +43,7 @@ class uatg_dcache_fill_random(IPlugin):
             f"\t.dword 0x{random.randrange(16 ** 16):8x}\n" + f"\t.endr\n"
         #initialise all registers to 0
         #assumes x0 is zero
-        asm_init = [f"\tmv x{i}, x0\n" for i in range(1,32)]   
+        asm_init = [f"\tmv x{i}, x0\n" for i in range(1, 32)]
         tests = []
         tests.extend(lsi['rv64-loads'])
         tests.extend(lsi['rv64-stores'])
@@ -72,13 +74,16 @@ class uatg_dcache_fill_random(IPlugin):
         asm = "".join(asm_init) + asm_main + asm_lab1
         compile_macros = []
 
-        return [{
+        return_list.append({
             'asm_code': asm,
             'asm_data': asm_data,
             'asm_sig': '',
             'compile_macros': compile_macros
-        }]
+        })
+        yield return_list
+
     def check_log(self, log_file_path, reports_dir):
         ''
+
     def generate_covergroups(self, config_file):
         ''

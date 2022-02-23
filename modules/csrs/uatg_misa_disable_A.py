@@ -87,4 +87,4 @@ class uatg_misa_disable_atomic(IPlugin):
             'compile_macros': compile_macros,
             'name_postfix': 'machine'
         }]
-        return test_dict
+        yield test_dict

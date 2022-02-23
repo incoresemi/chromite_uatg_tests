@@ -35,9 +35,11 @@ class uatg_icache_fence_race(IPlugin):
         Perform a fence.i, and jump to the last instruction, check
         if the instruction still exists, and if there are any races in the bus.
         """
+        return_list = []
+
         #initialise all registers to 0
         #assumes x0 is zero
-        asm_init = [f"\tmv x{i}, x0\n" for i in range(1,32)]
+        asm_init = [f"\tmv x{i}, x0\n" for i in range(1, 32)]
         ins_list = [
             "\taddi t1, x0, 1\n" for _ in range(self._instructions * self._ways)
         ]
@@ -45,12 +47,15 @@ class uatg_icache_fence_race(IPlugin):
         ins_list[-1] = "end:\n\taddi t3, x0, 3\n"
         asm = "".join(asm_init) + "".join(ins_list)
         compile_macros = []
-        return [{
+        return_list.append({
             'asm_code': f"\t.align {self._word_size}\n" + asm,
             'asm_sig': '',
             'compile_macros': compile_macros
-        }]
+        })
+        yield return_list
+
     def check_log(self, log_file_path, reports_dir):
         ''
+
     def generate_covergroups(self, config_file):
         ''

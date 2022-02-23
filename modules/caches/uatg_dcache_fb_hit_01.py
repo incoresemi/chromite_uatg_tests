@@ -33,13 +33,16 @@ class uatg_dcache_fb_hit_01(IPlugin):
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
         # asm_data is the test data that is loaded into memory. We use this to
         # perform load operations.
+
+        return_list = []
+
         asm_data = f"\nrvtest_data:\n\t.align {self._word_size}\n"
 
         data = random.randrange(1, 100)
 
         #initialise all registers to 0
         #assumes x0 is zero
-        asm_init = [f"\tmv x{i}, x0\n" for i in range(1,32)]
+        asm_init = [f"\tmv x{i}, x0\n" for i in range(1, 32)]
         # We load the memory with data twice the size of our dcache.
         asm_data += f"\t.rept " + \
             f"{self._sets * self._word_size * self._block_size}\n" + \
@@ -78,16 +81,20 @@ class uatg_dcache_fb_hit_01(IPlugin):
             asm_fb_hit += f"\tlw a1, {i}(t2)\n"
             # all these loads should lead to a hit in the fill buffer
 
-        asm = "".join(asm_init) + asm_main + asm_lab1 + asm_nop + asm_fb_miss + asm_fb_hit
+        asm = "".join(
+            asm_init) + asm_main + asm_lab1 + asm_nop + asm_fb_miss + asm_fb_hit
         compile_macros = []
 
-        return [{
+        return_list.append({
             'asm_code': asm,
             'asm_data': asm_data,
             'asm_sig': '',
             'compile_macros': compile_macros
-        }]
+        })
+        yield return_list
+
     def check_log(self, log_file_path, reports_dir):
         ''
+
     def generate_covergroups(self, config_file):
         ''

@@ -79,4 +79,4 @@ class uatg_misa_disable_mxl(IPlugin):
             'asm_code': asm_code,
             'name_postfix': 'machine'
         }]
-        return test_dict
+        yield test_dict

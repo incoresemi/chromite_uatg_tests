@@ -175,7 +175,7 @@ class uatg_decoder_branch_insts_1(IPlugin):
                         'name_postfix': f'{inst}_rs1_{rs1}_{postfix_label}'
                     })
 
-        return test_dict
+        yield test_dict
 
     def check_log(self, log_file_path, reports_dir) -> bool:
         return False

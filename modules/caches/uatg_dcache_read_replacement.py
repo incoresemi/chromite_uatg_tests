@@ -36,6 +36,9 @@ class uatg_dcache_read_replacement(IPlugin):
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
         # asm_data is the test data that is loaded into memory.
         # We use this to perform load operations.
+
+        return_list = []
+
         data = random.randrange(0, 100)
         asm_data = f"\nrvtest_data:\n\t.align {self._word_size}\n"
 
@@ -53,7 +56,7 @@ class uatg_dcache_read_replacement(IPlugin):
         asm_nop = "asm_nop:\n"
         #initialise all registers to 0
         #assumes x0 is zero
-        asm_init = [f"\tmv x{i}, x0\n" for i in range(1,32)]
+        asm_init = [f"\tmv x{i}, x0\n" for i in range(1, 32)]
         # Perform a series of NOPs to empty the fill buffer.
         for i in range(self._fb_size * 2):
             asm_nop += "\tnop\n"
@@ -122,16 +125,21 @@ class uatg_dcache_read_replacement(IPlugin):
         asm_end = "end:\n\tnop\n\tfence.i\n"
 
         # Concatenate all pieces of ASM.
-        asm = "".join(asm_init) + asm_main + asm_lab1 + asm_nop + asm_lw + asm_repl + asm_end
+        asm = "".join(
+            asm_init
+        ) + asm_main + asm_lab1 + asm_nop + asm_lw + asm_repl + asm_end
         compile_macros = []
 
-        return [{
+        return_list.append({
             'asm_code': asm,
             'asm_data': asm_data,
             'asm_sig': '',
             'compile_macros': compile_macros
-        }]
+        })
+        yield return_list
+
     def check_log(self, log_file_path, reports_dir):
         ''
+
     def generate_covergroups(self, config_file):
         ''
