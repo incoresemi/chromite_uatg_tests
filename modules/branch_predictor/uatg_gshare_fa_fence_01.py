@@ -103,7 +103,11 @@ class uatg_gshare_fa_fence_01(IPlugin):
             # user can choose to generate supervisor and/or user tests in addition
             # to machine mode tests here.
             privileged_test_enable = True
-
+            
+            if not privileged_test_enable:
+                self.modes.remove('supervisor')
+                self.modes.remove('user')
+            
             privileged_test_dict = {
                 'enable': privileged_test_enable,
                 'mode': mode,
@@ -112,7 +116,7 @@ class uatg_gshare_fa_fence_01(IPlugin):
                 'll_pages': 64,
             }
 
-            return_list.append({
+            yield ({
                 'asm_code': asm,
                 'asm_sig': sig_code,
                 'compile_macros': compile_macros,
@@ -121,10 +125,6 @@ class uatg_gshare_fa_fence_01(IPlugin):
                 'name_postfix': mode
             })
 
-            if not privileged_test_enable:
-                yield return_list
-
-        yield return_list
 
     def check_log(self, log_file_path, reports_dir):
         """

@@ -90,6 +90,10 @@ class uatg_gshare_fa_mispredict_loop_01(IPlugin):
             # to machine mode tests here.
             privileged_test_enable = True
 
+            if not privileged_test_enable:
+                self.modes.remove('supervisor')
+                self.modes.remove('user')
+
             privileged_test_dict = {
                 'enable': privileged_test_enable,
                 'mode': mode,
@@ -107,10 +111,6 @@ class uatg_gshare_fa_mispredict_loop_01(IPlugin):
                 'name_postfix': mode
             })
 
-            if not privileged_test_enable:
-                yield return_list
-
-        yield return_list
 
     def check_log(self, log_file_path, reports_dir) -> bool:
         """
