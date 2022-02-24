@@ -66,13 +66,12 @@ class uatg_mbox_mul_depend_shift_reg(IPlugin):
         if 'i' in self.isa:
             random_list += arithmetic_instructions[f'{self.isa_bit}-shift-reg']
         for inst in instruction_list:
-            asm_code = '#' * 5 + ' mul reg, reg, reg ' + '#' * 5 + '\n'
-
+            
             # initial register to use as signature pointer
             swreg = 'x2'
             testreg = 'x1'
             # initialize swreg to point to signature_start label
-            asm_code += f'RVTEST_SIGBASE({swreg}, signature_start)\n'
+            
 
             # initial offset to with respect to signature label
             offset = 0
@@ -83,6 +82,8 @@ class uatg_mbox_mul_depend_shift_reg(IPlugin):
             inst_count = 0
 
             for rd in reg_file:
+                asm_code = '#' * 5 + ' mul reg, reg, reg ' + '#' * 5 + '\n'
+                asm_code += f'RVTEST_SIGBASE({swreg}, signature_start)\n' 
                 for rs1 in reg_file:
                     for rs2 in reg_file:
                         for rs3 in reg_file:
