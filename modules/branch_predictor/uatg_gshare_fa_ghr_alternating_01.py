@@ -12,7 +12,8 @@ class uatg_gshare_fa_ghr_alternating_01(IPlugin):
     def __init__(self):
         """ The constructor for this class. """
         super().__init__()
-
+        self.modes = []
+        self.isa = 'RV32I'
         self._history_len = 8
         pass  # we do not have any variable to declare.
 
@@ -60,15 +61,12 @@ class uatg_gshare_fa_ghr_alternating_01(IPlugin):
         # The generated assembly code will use the t0 register to alternatively
         # enter and exit branches.
 
-        return_list = []
-
         for mode in self.modes:
 
             # initial section in the ASM
-            asm = ".option norvc\n"
-            asm = asm + '\taddi t0,x0,1\n'
-            asm = asm + '\taddi t1,x0,1\n\taddi t2,x0,2\n\n'
-            asm = asm + '\tbeq  t0,x0,lab0\n'
+            asm = '.option norvc\n\taddi t0,x0,1\n' \
+                  '\taddi t1,x0,1\n\taddi t2,x0,2\n\n' \
+                  '\tbeq  t0,x0,lab0\n'
 
             # the assembly program is structured in a way that
             # there are odd number of labels.
@@ -78,23 +76,18 @@ class uatg_gshare_fa_ghr_alternating_01(IPlugin):
             # loop to generate labels and branches
             for i in range(self._history_len):
                 if i % 2:
-                    asm = asm + 'lab' + str(i) + ':\n'
-                    asm = asm + '\taddi t0,t0,1\n'
-                    asm = asm + '\tbeq  t0,x0,lab' + str(i + 1) + '\n'
+                    asm += f'lab{i}:\n\taddi t0,t0,1\n\t' \
+                           f'beq  t0,x0,lab{i+1}\n'
                 else:
-                    asm = asm + 'lab' + str(i) + ':\n'
-                    asm = asm + '\taddi t0,t0,-1\n'
-                    asm = asm + '\tbeq  t0,x0,lab' + str(i + 1) + '\t\n'
+                    asm += f'lab{i}:\n\taddi t0,t0,-1\n' \
+                           f'\tbeq  t0,x0,lab{i + 1}\t\n'
 
-            asm = asm + 'lab' + str(self._history_len) + ':\n'
-            asm = asm + '\taddi t0,t0,-1\n\n'
-            asm = asm + '\taddi t1,t1,-1\n\taddi t2,t2,-1\n'
-            asm = asm + '\tbeq  t1,x0,lab0\n\taddi t0,t0,2\n'
-            asm = asm + '\tbeq  t2,x0,lab0\n'
+            asm += f'lab{self._history_len}:\n\taddi t0,t0,-1\n\n' \
+                   f'\taddi t1,t1,-1\n\taddi t2,t2,-1\n' \
+                   f'\tbeq  t1,x0,lab0\n\taddi t0,t0,2\n\tbeq  t2,x0,lab0\n'
 
             # trap signature bytes
             trap_sigbytes = 24
-            trap_count = 0
 
             # initialize the signature region
             sig_code = 'mtrap_count:\n'
@@ -105,12 +98,12 @@ class uatg_gshare_fa_ghr_alternating_01(IPlugin):
 
             # compile macros for the test
             if mode != 'machine':
-                compile_macros = ['rvtest_mtrap_routine','s_u_mode_test']
+                compile_macros = ['rvtest_mtrap_routine', 's_u_mode_test']
             else:
                 compile_macros = []
 
-            # user can choose to generate supervisor and/or user tests in addition
-            # to machine mode tests here.
+            # user can choose to generate supervisor and/or user tests in
+            # addition to machine mode tests here.
             privileged_test_enable = True
 
             if not privileged_test_enable:

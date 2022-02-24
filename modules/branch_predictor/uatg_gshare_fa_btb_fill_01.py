@@ -1,11 +1,12 @@
 # See LICENSE.incore for details
 
-from yapsy.IPlugin import IPlugin
-from ruamel.yaml import YAML
-import uatg.regex_formats as rf
-from typing import Dict, Union, Any, List
-import re
 import os
+import re
+from typing import Dict, Union, Any, List
+
+import uatg.regex_formats as rf
+from ruamel.yaml import YAML
+from yapsy.IPlugin import IPlugin
 
 
 class uatg_gshare_fa_btb_fill_01(IPlugin):
@@ -23,6 +24,8 @@ class uatg_gshare_fa_btb_fill_01(IPlugin):
         We assume that the default BTB depth is 32
         """
         super().__init__()
+        self.modes = []
+        self.isa = 'RV32I'
         self._btb_depth = 32
 
     def execute(self, core_yaml, isa_yaml):
@@ -64,8 +67,6 @@ class uatg_gshare_fa_btb_fill_01(IPlugin):
         This ASM file is written as the ASM file which will be run on the DUT.
         """
 
-        return_list = []
-
         for mode in self.modes:
 
             branch_count = int(self._btb_depth / 4)
@@ -84,8 +85,8 @@ class uatg_gshare_fa_btb_fill_01(IPlugin):
             # string with call directives
 
             for j in range((2 * branch_count) + 2, ((3 * branch_count) + 1)):
-                # for loop to iterate through the branch counts and create a string
-                # with required call directives
+                # for loop to iterate through the branch counts and create a
+                # string with required call directives
                 asm_call += f"\tcall x1,entry_{j}\n"
             asm_call += "\tj exit\n\n"
             # final directive to jump to the exit label
@@ -96,25 +97,25 @@ class uatg_gshare_fa_btb_fill_01(IPlugin):
                     # first populate the BTB with branch instructions
                     if (i % 2) == 1:
                         # conditions to return branch and loop directives
-                        asm_branch += f"entry_{i}:\n"
                         # we do this to increment/decrement control variable
-                        asm_branch += f"\tadd t1,t1,t2\n\tbeq t1, t2, entry_{i}\n\n"
+                        asm_branch += f"entry_{i}:\n" \
+                                      f"\tadd t1,t1,t2\n\tbeq t1, t2, " \
+                                      f"entry_{i}\n\n"
                         # in the loop/branch.
                     else:
-                        asm_branch += f"entry_{i}:\n"
-                        asm_branch += f"\tsub t1,t1,t2\n\tbeq t1, t2, entry_{i}\n\n"
+                        asm_branch += f"entry_{i}:\n\tsub t1,t1,t2\n\t" \
+                                      f"beq t1, t2, entry_{i}\n\n"
                 elif branch_count < i <= 2 * branch_count:
                     # populate the the next area in the BTB with Jump
                     if (i % 2) == 1:
                         # conditions checks to populate the asm string
                         # accordingly while tracking the control variable
-                        asm_jump += "entry_" + str(i) + ":\n"
-                        asm_jump += "\tsub t1,t1,t2\n\tjal x0,entry_" + \
-                                    str(i + 1) + "\n\taddi x0,x0,0\n\n"
+                        asm_jump += f"entry_{i}:\n" \
+                                    f"\tsub t1,t1,t2\n\tjal x0,entry_{i + 1}" \
+                                    f"\n\taddi x0,x0,0\n\n"
                     else:
-                        asm_jump += "entry_" + str(i) + ":\n"
-                        asm_jump += "\tadd t1,t1,t2\n\tjal x0,entry_" + \
-                                    str(i + 1) + "\n\taddi x0,x0,0\n\n"
+                        asm_jump += f"entry_{i}:\n\tadd t1,t1,t2\n\t" \
+                                    f"jal x0,entry_{i + 1}\n\taddi x0,x0,0\n\n"
 
                 else:
                     # finally populate the BTB with call and return instructions
@@ -130,7 +131,6 @@ class uatg_gshare_fa_btb_fill_01(IPlugin):
 
             # trap signature bytes
             trap_sigbytes = 24
-            trap_count = 0
 
             # initialize the signature region
             sig_code = 'mtrap_count:\n'
@@ -141,12 +141,12 @@ class uatg_gshare_fa_btb_fill_01(IPlugin):
 
             # compile macros for the test
             if mode != 'machine':
-                compile_macros = ['rvtest_mtrap_routine','s_u_mode_test']
+                compile_macros = ['rvtest_mtrap_routine', 's_u_mode_test']
             else:
                 compile_macros = []
 
-            # user can choose to generate supervisor and/or user tests in addition
-            # to machine mode tests here.
+            # user can choose to generate supervisor and/or user tests in
+            # addition to machine mode tests here.
             privileged_test_enable = True
 
             if not privileged_test_enable:

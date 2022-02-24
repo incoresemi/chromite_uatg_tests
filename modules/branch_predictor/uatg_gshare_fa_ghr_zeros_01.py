@@ -19,6 +19,8 @@ class uatg_gshare_fa_ghr_zeros_01(IPlugin):
 
     def __init__(self):
         # initializing variables
+        self.modes = []
+        self.isa = 'RV32I'
         super().__init__()
         self._history_len = 8
 
@@ -50,35 +52,30 @@ class uatg_gshare_fa_ghr_zeros_01(IPlugin):
           will are NOT TAKEN. This fills the ghr with zeros
         """
 
-        return_list = []
-
         for mode in self.modes:
 
             loop_count = self._history_len + 2
-            asm = "\n\n## test: gshare_fa_ghr_zeros_01 ##\n\n"
-            asm += "  addi t0,x0,1\n"
+            asm = "\n\n## test: gshare_fa_ghr_zeros_01 ##\n\n\taddi t0,x0,1\n"
 
             for i in range(1, loop_count):
-                asm += f"branch_{i}:\n\tbeq t0, x0, branch_{i}\n\taddi t0, t0, 1\n"
+                asm += f"branch_{i}:\n\tbeq t0, x0, branch_{i}\n\t" \
+                       f"addi t0, t0, 1\n"
 
             # trap signature bytes
             trap_sigbytes = 24
-            trap_count = 0
 
             # initialize the signature region
-            sig_code = 'mtrap_count:\n'
-            sig_code += ' .fill 1, 8, 0x0\n'
-            sig_code += 'mtrap_sigptr:\n'
-            sig_code += ' .fill {0},4,0xdeadbeef\n'.format(
-                int(trap_sigbytes / 4))
+            sig_code = 'mtrap_count:\n .fill 1, 8, 0x0\n' \
+                       'mtrap_sigptr:\n' \
+                       f' .fill {trap_sigbytes // 4},4,0xdeadbeef\n'
             # compile macros for the test
             if mode != 'machine':
-                compile_macros = ['rvtest_mtrap_routine','s_u_mode_test']
+                compile_macros = ['rvtest_mtrap_routine', 's_u_mode_test']
             else:
                 compile_macros = []
 
-            # user can choose to generate supervisor and/or user tests in addition
-            # to machine mode tests here.
+            # user can choose to generate supervisor and/or user tests in
+            # addition to machine mode tests here.
             privileged_test_enable = True
 
             if not privileged_test_enable:

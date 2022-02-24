@@ -17,6 +17,8 @@ class uatg_gshare_fa_fence_01(IPlugin):
     def __init__(self):
         """ The constructor for this class. """
         super().__init__()
+        self.modes = []
+        self.isa = 'RV32I'
         self.recurse_level = 5
         # used to specify the depth of recursion in calls
         self._btb_depth = 32
