@@ -102,7 +102,7 @@ class uatg_gshare_fa_mispredict_loop_01(IPlugin):
                 'll_pages': 64,
             }
 
-            return_list.append({
+            yield ({
                 'asm_code': asm,
                 'asm_sig': sig_code,
                 'compile_macros': compile_macros,

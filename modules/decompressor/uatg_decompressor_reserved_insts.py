@@ -1,7 +1,7 @@
 from yapsy.IPlugin import IPlugin
 from typing import Dict, List, Union, Any
 
-class uatg_decompressor_illegal_instructions(IPlugin):
+class uatg_decompressor_reserved_insts(IPlugin):
     """
         This class contains methods to generate compressed reserved instructions
          for which the core should trap.
@@ -40,7 +40,6 @@ class uatg_decompressor_illegal_instructions(IPlugin):
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
         
         reserved_insts = []
-        test_dict = []
 
         for mode in self.modes:
 
@@ -135,6 +134,10 @@ class uatg_decompressor_illegal_instructions(IPlugin):
             # to machine mode tests here.
             privileged_test_enable = True
 
+            if not privileged_test_enable:
+                self.modes.remove('supervisor')
+                self.modes.remove('user')
+
             privileged_test_dict = {
                 'enable': privileged_test_enable,
                 'mode': mode,
@@ -143,7 +146,7 @@ class uatg_decompressor_illegal_instructions(IPlugin):
                 'll_pages': 64,
             }            
 
-            test_dict.append({
+            yield ({
                 'asm_code': asm_code,
                 'asm_sig': sig_code,
                 'compile_macros': compile_macros,
@@ -151,11 +154,6 @@ class uatg_decompressor_illegal_instructions(IPlugin):
                 'docstring': 'This test fills ghr register with ones',
                 'name_postfix': f"compressed_reserved-{mode}"
             })
-            
-            if not privileged_test_enable:
-                yield return_list
-
-        return test_dict
 
     def check_log(self, log_file_path, reports_dir) -> bool:
         return False
