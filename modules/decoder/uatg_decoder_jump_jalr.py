@@ -156,7 +156,7 @@ class uatg_decoder_jump_jalr(IPlugin):
             asm_data += '.word 0xbabecafe\n'
 
             # return asm_code and sig_code
-            test_dict.append({
+            yield ({
                 'asm_code': asm_code,
                 'asm_data': asm_data,
                 'asm_sig': sig_code,
@@ -164,7 +164,7 @@ class uatg_decoder_jump_jalr(IPlugin):
                 'name_postfix': f'rs1_{rs1}'
             })
 
-        yield test_dict
+        #yield test_dict
 
     def check_log(self, log_file_path, reports_dir) -> bool:
         return False

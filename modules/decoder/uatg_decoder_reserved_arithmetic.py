@@ -74,10 +74,10 @@ class uatg_decoder_illegal_instructions(IPlugin):
                 sig_code += f' .fill {trap_sigbytes // 4},4,0xdeadbeef\n'
                 # compile macros for the test
                 compile_macros = ['rvtest_mtrap_routine']
-                test_dict.append({
+                yield ({
                     'asm_code': asm_code,
                     'asm_sig': sig_code,
                     'compile_macros': compile_macros,
                     'name_postfix': f"{op}"
                 })
-        yield test_dict
+        #yield test_dict

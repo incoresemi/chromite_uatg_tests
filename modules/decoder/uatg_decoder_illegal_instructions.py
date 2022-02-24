@@ -104,14 +104,14 @@ class uatg_decoder_illegal_instructions(IPlugin):
             asm_data += '.word 0xbabecafe\n'
             asm_data += '.word 0xbabecafe\n'
 
-            test_dict.append({
+            yield ({
                 'asm_code': asm_code,
                 'asm_data': asm_data,
                 'asm_sig': sig_code,
                 'compile_macros': compile_macros,
                 'name_postfix': f"illegals_{new_isa_string}"
             })
-        yield test_dict
+        #yield test_dict
 
     def generate_covergroups(self, config_file) -> str:
         return ''

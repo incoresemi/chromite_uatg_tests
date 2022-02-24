@@ -170,14 +170,14 @@ class uatg_decoder_memory_insts_2(IPlugin):
                 asm_data += '.word 0xbabecafe\n'
                 asm_data += '.word 0xbabecafe\n'
 
-                test_dict.append({
+                yield ({
                     'asm_code': asm_code,
                     'asm_data': asm_data,
                     'asm_sig': sig_code,
                     'compile_macros': compile_macros,
                     'name_postfix': f"{inst}_rs2_{rs2}"
                 })
-        yield test_dict
+        #yield test_dict
 
     def check_log(self, log_file_path, reports_dir) -> bool:
         return False

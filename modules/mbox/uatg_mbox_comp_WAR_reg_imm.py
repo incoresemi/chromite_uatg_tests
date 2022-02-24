@@ -185,7 +185,7 @@ class uatg_mbox_comp_WAR_reg_imm(IPlugin):
             compile_macros = []
 
             # return asm_code and sig_code
-            test_dict.append({
+            yield ({
                     'asm_code': asm_code,
                     'asm_data': '',
                     'asm_sig': sig_code,
@@ -193,7 +193,7 @@ class uatg_mbox_comp_WAR_reg_imm(IPlugin):
                     'name_postfix': inst,
                     'doc_string' : doc_string
                 })
-        yield test_dict
+        #yield test_dict
 
     def check_log(self, log_file_path, reports_dir) -> bool:
         return False
