@@ -84,28 +84,18 @@ class uatg_dcache_fill_buffer_01(IPlugin):
         # no window for an opportunistic release.
         asm_sw = "asm_sw:\n"
         for i in range(self._fb_size * 2):
-            asm_sw += f"\tsw t0, {self._block_size * self._word_size * (i + 1)}"
-            asm_sw += f"(t2)\n"
+            asm_sw += f"\tsw t0, " \
+                      f"{self._block_size * self._word_size * (i + 1)}" \
+                      f"(t2)\n"
         asm_end = "end:\n\tnop\n\tfence.i\n"
 
         # Concatenate all pieces of ASM.
         asm = "".join(
             asm_init) + asm_main + asm_lab1 + asm_nop + asm_sw + asm_end
-        compile_macros = []
 
         yield ({
             'asm_code': asm,
             'asm_data': asm_data,
             'asm_sig': '',
-            'compile_macros': compile_macros
+            'compile_macros': []
         })
-
-    def check_log(self, log_file_path, reports_dir):
-        """
-        
-        """
-
-    def generate_covergroups(self, config_file):
-        """
-
-        """

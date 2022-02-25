@@ -68,8 +68,8 @@ class uatg_misa_enable_unimplemented_exts(IPlugin):
                         f'bne x4, x3, fail_case\n'
 
         asm_code += f'\n\n\nj exit\nfail_case:{nt}nop{nt}nop\nexit:{nt}nop'
-        test_dict = [{
+        yield({
             'asm_code': asm_code,
             'name_postfix': 'machine'
-        }]
-        yield test_dict
+        })
+        

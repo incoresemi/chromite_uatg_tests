@@ -54,18 +54,10 @@ class uatg_icache_set_thrashing_02(IPlugin):
                       f"j ins_j\nend:\n\tnop"
                     for i in range(self._sets)]
         compile_macros = []
-        yield ({
-            'asm_code': "".join(asm_init) + "\t.option norvc\n" + i,
-            'asm_sig': '',
-            'compile_macros': compile_macros
-        } for i in ins_list)
+        for i in ins_list:
+            yield ({
+                'asm_code': "".join(asm_init) + "\t.option norvc\n" + i,
+                'asm_sig': '',
+                'compile_macros': compile_macros
+            })
 
-    def check_log(self, log_file_path, reports_dir):
-        """
-
-        """
-
-    def generate_covergroups(self, config_file):
-        """
-
-        """

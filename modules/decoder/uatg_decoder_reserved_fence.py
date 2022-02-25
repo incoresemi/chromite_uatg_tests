@@ -1,7 +1,7 @@
 from yapsy.IPlugin import IPlugin
 
 
-class uatg_decoder_illegal_instructions(IPlugin):
+class uatg_decoder_reserved_fence(IPlugin):
     """
         This class contains methods to generate Reserved instructions of
         RV[32|64] IMAFD for which the core should trap.
@@ -98,4 +98,3 @@ class uatg_decoder_illegal_instructions(IPlugin):
                 'compile_macros': compile_macros,
                 'name_postfix': f"fence"
             })
-        yield

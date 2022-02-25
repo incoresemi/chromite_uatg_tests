@@ -78,10 +78,10 @@ class uatg_misa_disable_IE(IPlugin):
                    f'mtrap_sigptr:\n.fill {1},4,0xdeadbeef\n'
         # compile macros for the test
         compile_macros = ['rvtest_mtrap_routine']
-        test_dict = [{
+        yield({
             'asm_code': asm_code,
             'asm_sig': sig_code,
             'compile_macros': compile_macros,
             'name_postfix': 'machine'
-        }]
-        yield test_dict
+        })
+        
