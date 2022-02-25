@@ -1,9 +1,6 @@
 from yapsy.IPlugin import IPlugin
 from uatg.instruction_constants import base_reg_file, jump_instructions
 from uatg.instruction_constants import bit_walker
-from uatg.utils import rvtest_data
-from typing import List, Dict, Any
-from random import randint
 import random
 
 
@@ -14,6 +11,7 @@ class uatg_decoder_jump_jal(IPlugin):
     """
 
     def __init__(self) -> None:
+        super().__init__()
         self.isa = 'RV64I'
         self.isa_bit = 'rv64'
         self.offset_inc = 4
@@ -46,8 +44,6 @@ class uatg_decoder_jump_jal(IPlugin):
         # through the 32 possible registers in RISC-V
 
         reg_file = base_reg_file.copy()
-
-        test_dict = []
 
         inst = jump_instructions['jal'][0]
 
@@ -161,25 +157,10 @@ class uatg_decoder_jump_jal(IPlugin):
                     postfix_label = 'backward'
 
                 # return asm_code and sig_code
-                test_dict.append({
+                yield ({
                     'asm_code': asm_code,
                     'asm_data': asm_data,
                     'asm_sig': sig_code,
                     'compile_macros': compile_macros,
                     'name_postfix': f'rd_{rd}_{postfix_label}'
                 })
-
-        return test_dict
-
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ''
-        return sv
-
-
-if __name__ == "__main__":
-    obj = uatg_decoder_jump_jal()
-    out = obj.generate_asm()
-    print(out)

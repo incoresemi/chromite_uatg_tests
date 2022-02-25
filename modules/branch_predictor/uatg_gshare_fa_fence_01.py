@@ -5,7 +5,7 @@ from ruamel.yaml import YAML
 import uatg.regex_formats as rf
 import re
 import os
-from typing import Dict, List
+from typing import Dict, Union, Any, List
 
 
 class uatg_gshare_fa_fence_01(IPlugin):
@@ -17,6 +17,8 @@ class uatg_gshare_fa_fence_01(IPlugin):
     def __init__(self):
         """ The constructor for this class. """
         super().__init__()
+        self.modes = []
+        self.isa = 'RV32I'
         self.recurse_level = 5
         # used to specify the depth of recursion in calls
         self._btb_depth = 32
@@ -37,6 +39,15 @@ class uatg_gshare_fa_fence_01(IPlugin):
         _en_bpu = _bpu_dict['instantiate']
         # States if the DUT has a branch predictor
 
+        self.isa = isa_yaml['hart0']['ISA']
+        self.modes = ['machine']
+
+        if 'S' in self.isa:
+            self.modes.append('supervisor')
+
+        if 'S' in self.isa and 'U' in self.isa:
+            self.modes.append('user')
+
         if self._btb_depth and _en_bpu:
             # check condition, if BPU exists and btb depth is valid
             return True  # return true if this test can exist.
@@ -44,7 +55,7 @@ class uatg_gshare_fa_fence_01(IPlugin):
             # return false if this test cannot.
             return False
 
-    def generate_asm(self) -> List[Dict[str, str]]:
+    def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
         """
         This method returns a string of the ASM file to be generated.
 
@@ -56,29 +67,58 @@ class uatg_gshare_fa_fence_01(IPlugin):
         # a temp variable
         # ASM will just fence the Core. We check if the fence happens properly.
 
-        recurse_level = self.recurse_level  # reuse the self variable
-        no_ops = "\taddi x31, x0, 5\n\taddi x31, x0, -5\n"  # no templates
-        asm = f"\taddi x30, x0, {recurse_level}\n"  # tempate asm directives
-        asm += "\tcall x1, lab1\n\tbeq x30, x0, end\n\tfence.i\n"
+        for mode in self.modes:
 
-        for i in range(1, recurse_level + 1):
-            # loop to iterate and generate the ASM
-            asm += "lab" + str(i) + ":\n"
-            if i == recurse_level:
-                asm += "\tfence.i\n\taddi x30,x30,-1\n"
+            recurse_level = self.recurse_level  # reuse the self variable
+            no_ops = "\taddi x31, x0, 5\n\taddi x31, x0, -5\n"  # no templates
+            asm = f"\taddi x30, x0, {recurse_level}\n"  # tempate asm directives
+            asm += "\tcall x1, lab1\n\tbeq x30, x0, end\n\tfence.i\n"
+
+            for i in range(1, recurse_level + 1):
+                # loop to iterate and generate the ASM
+                asm += "lab" + str(i) + ":\n"
+                if i == recurse_level:
+                    asm += "\tfence.i\n\taddi x30,x30,-1\n"
+                else:
+                    asm += no_ops * 3 + f"\tcall x{i+1}, lab{i+1}\n"
+                asm += no_ops * 3 + "\tret\n"
+            asm += "end:\n\tnop\n"  # concatenate
+
+            # trap signature bytes
+            trap_sigbytes = 24
+            # initialize the signature region
+            sig_code = f'mtrap_count:\n .fill 1, 8, 0x0\nmtrap_sigptr:\n ' \
+                       f'.fill {trap_sigbytes // 4},4,0xdeadbeef\n'
+            # compile macros for the test
+            if mode != 'machine':
+                compile_macros = ['rvtest_mtrap_routine', 's_u_mode_test']
             else:
-                asm += no_ops * 3 + f"\tcall x{i+1}, lab{i+1}\n"
-            asm += no_ops * 3 + "\tret\n"
-        asm += "end:\n\tnop\n"  # concatenate
+                compile_macros = []
 
-        # compile macros for the test
-        compile_macros = []
+            # user can choose to generate supervisor and/or user tests in
+            # addition to machine mode tests here.
+            privileged_test_enable = True
+            
+            if not privileged_test_enable:
+                self.modes.remove('supervisor')
+                self.modes.remove('user')
+            
+            privileged_test_dict = {
+                'enable': privileged_test_enable,
+                'mode': mode,
+                'page_size': 4096,
+                'paging_mode': 'sv39',
+                'll_pages': 64,
+            }
 
-        return [{
-            'asm_code': asm,
-            'asm_sig': '',
-            'compile_macros': compile_macros
-        }]
+            yield ({
+                'asm_code': asm,
+                'asm_sig': sig_code,
+                'compile_macros': compile_macros,
+                'privileged_test': privileged_test_dict,
+                'docstring': '',
+                'name_postfix': mode
+            })
 
     def check_log(self, log_file_path, reports_dir):
         """

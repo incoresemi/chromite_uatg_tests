@@ -1,9 +1,7 @@
 from yapsy.IPlugin import IPlugin
 from uatg.instruction_constants import base_reg_file, jump_instructions
 from uatg.instruction_constants import bit_walker
-from uatg.utils import rvtest_data
-from typing import List, Dict, Any
-from random import randint
+from typing import List, Dict, Any, Union
 import random
 
 
@@ -14,6 +12,7 @@ class uatg_decoder_jump_jalr(IPlugin):
     """
 
     def __init__(self) -> None:
+        super().__init__()
         self.isa = 'RV64I'
         self.isa_bit = 'rv64'
         self.offset_inc = 8
@@ -32,7 +31,8 @@ class uatg_decoder_jump_jalr(IPlugin):
             self.offset_inc = 8
         return True
 
-    def generate_asm(self):
+    def generate_asm(
+            self) -> List[Dict[str, Union[Union[str, List[str]], Any]]]:
         """
         This method generates Assembly Jump instructions of varied immediate 
         values. 
@@ -51,8 +51,6 @@ class uatg_decoder_jump_jalr(IPlugin):
 
         # remove x0 from source reg list
         rs1_reg_file.remove('x0')
-
-        test_dict = []
 
         inst = jump_instructions['jalr'][0]
 
@@ -88,8 +86,6 @@ class uatg_decoder_jump_jalr(IPlugin):
             for rd in reg_file:
                 for imm_val in imm:
 
-                    rs1_val = hex(random.getrandbits(self.xlen))
-
                     # if signature register needs to be used for operations
                     # then first choose a new signature pointer and move the
                     # value to it.
@@ -111,10 +107,10 @@ class uatg_decoder_jump_jalr(IPlugin):
                     # macro format
                     # TEST_JALR_OP(tempreg, rd, rs1, imm, swreg, offset,adj)
 
-                    #perform required assembly operation
+                    # perform required assembly operation
                     asm_code += f'\ninst_{count}:'
-                    asm_code += f'\n#operation: {inst}\n#rs1: {rs1}, rd: {rd}'\
-                                f', imm: {imm_val}, temp_reg: {temp_reg}'\
+                    asm_code += f'\n#operation: {inst}\n#rs1: {rs1}, rd: {rd}' \
+                                f', imm: {imm_val}, temp_reg: {temp_reg}' \
                                 f', swreg: {swreg}\n'
                     asm_code += f'TEST_JALR_OP({temp_reg}, {rd}, {rs1}, ' \
                                 f'{imm_val}, {swreg}, {offset}, 0)\n'
@@ -158,19 +154,10 @@ class uatg_decoder_jump_jalr(IPlugin):
             asm_data += '.word 0xbabecafe\n'
 
             # return asm_code and sig_code
-            test_dict.append({
+            yield ({
                 'asm_code': asm_code,
                 'asm_data': asm_data,
                 'asm_sig': sig_code,
                 'compile_macros': compile_macros,
                 'name_postfix': f'rs1_{rs1}'
             })
-
-        return test_dict
-
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ''
-        return sv

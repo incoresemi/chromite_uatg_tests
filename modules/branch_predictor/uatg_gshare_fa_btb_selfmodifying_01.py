@@ -5,7 +5,7 @@ from ruamel.yaml import YAML
 import uatg.regex_formats as rf
 import re
 import os
-from typing import Dict, List
+from typing import Dict, Union, Any, List
 
 
 class uatg_gshare_fa_btb_selfmodifying_01(IPlugin):
@@ -16,7 +16,8 @@ class uatg_gshare_fa_btb_selfmodifying_01(IPlugin):
     def __init__(self):
         """ The constructor for this class. """
         super().__init__()
-        pass  # we do not have any variable to declare.
+        self.modes = []
+        self.isa = 'RV32I'
 
     def execute(self, core_yaml, isa_yaml) -> bool:
         """
@@ -30,12 +31,22 @@ class uatg_gshare_fa_btb_selfmodifying_01(IPlugin):
         _bpu_dict = core_yaml['branch_predictor']
         _en_bpu = _bpu_dict[
             'instantiate']  # States if the DUT has a branch predictor
+
+        self.isa = isa_yaml['hart0']['ISA']
+        self.modes = ['machine']
+
+        if 'S' in self.isa:
+            self.modes.append('supervisor')
+
+        if 'S' in self.isa and 'U' in self.isa:
+            self.modes.append('user')
+
         if _en_bpu:  # check condition, if BPU exists
             return True  # return true if this test can exist.
         else:
             return False  # return false if this test cannot.
 
-    def generate_asm(self) -> List[Dict[str, str]]:
+    def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
         """
         This method returns a string of the ASM file to be generated.
 
@@ -49,25 +60,61 @@ class uatg_gshare_fa_btb_selfmodifying_01(IPlugin):
         empty the GHR, empty RAS, make rg allocate 0
         """
 
-        # ASM Syntax
-        asm = ".option norvc\n\n"
-        asm += "\taddi t3,x0,0\n\taddi t4,x0,3\n\tjal x0,first\n\n"
-        asm += "first:\n\taddi t3,t3,1\n\tbeq t3,t4,end\n\tjal x0,first" \
-               + "\n\tjal x0,fin\n\n"
-        asm += "end:\n\taddi x0,x0,0\n\taddi t0,x0,1\n\tslli t0,t0,31" \
-               + "\n\taddi t0,t0,0x3a4\n"
-        asm += "\taddi t1,x0,0x33\n\taddi t3,x0,4\n\tsw t1,0(t0)\n\t" \
-               + "fence.i\n\tjal x0,first\n\n"
-        asm = asm + "fin:\n"
+        for mode in self.modes:
 
-        # compile macros for the test
-        compile_macros = []
+            # ASM Syntax
+            asm = ".option norvc\n\n" \
+                  "\taddi t3,x0,0\n\taddi t4,x0,3\n\tjal x0,first\n\n" \
+                  "first:\n\taddi t3,t3,1\n\n" \
+                  "b_address:\n\tbeq t3,t4,end\n\n" \
+                  "j_address:\n\tjal x0,first\n\n\tjal x0,fin\n\n" \
+                  "end:\n\taddi x0,x0,0\n\taddi t0,x0,1\n" \
+                  "\tla t0, b_address\n\tla t2, j_address\n" \
+                  "\tla t5, add_instruction\n\tlw t1, 0(t5)\n" \
+                  "\taddi t3,x0,5\n\tsw t1, 0(t2)\n\tsw t1, 0(t0)\n" \
+                  "\tfence.i\n\tjal x0,first\n\nfin:\n"
 
-        return [{
-            'asm_code': asm,
-            'asm_sig': '',
-            'compile_macros': compile_macros
-        }]
+            # rvtest_data
+            asm_data = "\n.align 4\n\nadd_instruction:\n" \
+                       "\t.word 0x00000033\n"
+
+            # trap signature bytes
+            trap_sigbytes = 24
+
+            # initialize the signature region
+            sig_code = f'mtrap_count:\n .fill 1, 8, 0x0\nmtrap_sigptr:\n ' \
+                       f'.fill {trap_sigbytes // 4},4,0xdeadbeef\n'
+            # compile macros for the test
+            if mode != 'machine':
+                compile_macros = ['rvtest_mtrap_routine', 's_u_mode_test']
+            else:
+                compile_macros = []
+
+            # user can choose to generate supervisor and/or user tests in
+            # addition to machine mode tests here.
+            privileged_test_enable = True
+
+            if not privileged_test_enable:
+                self.modes.remove('supervisor')
+                self.modes.remove('user')
+
+            privileged_test_dict = {
+                'enable': privileged_test_enable,
+                'mode': mode,
+                'page_size': 4096,
+                'paging_mode': 'sv39',
+                'll_pages': 64,
+            }
+
+            yield ({
+                'asm_code': asm,
+                'asm_sig': sig_code,
+                'asm_data': asm_data,
+                'compile_macros': compile_macros,
+                'privileged_test': privileged_test_dict,
+                'docstring': '',
+                'name_postfix': mode
+            })
 
     def check_log(self, log_file_path, reports_dir):
         """

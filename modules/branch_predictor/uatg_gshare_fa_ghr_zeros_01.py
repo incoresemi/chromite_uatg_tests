@@ -4,7 +4,7 @@ from ruamel.yaml import YAML
 import uatg.regex_formats as rf
 import re
 import os
-from typing import Dict, List
+from typing import Dict, Union, Any, List
 
 
 class uatg_gshare_fa_ghr_zeros_01(IPlugin):
@@ -19,6 +19,8 @@ class uatg_gshare_fa_ghr_zeros_01(IPlugin):
 
     def __init__(self):
         # initializing variables
+        self.modes = []
+        self.isa = 'RV32I'
         super().__init__()
         self._history_len = 8
 
@@ -29,33 +31,73 @@ class uatg_gshare_fa_ghr_zeros_01(IPlugin):
         _bpu_dict = core_yaml['branch_predictor']
         self._history_len = _bpu_dict['history_len']
         _en_bpu = _bpu_dict['instantiate']
+        self.isa = isa_yaml['hart0']['ISA']
+        self.modes = ['machine']
+
+        if 'S' in self.isa:
+            self.modes.append('supervisor')
+
+        if 'S' in self.isa and 'U' in self.isa:
+            self.modes.append('user')
 
         if _en_bpu and self._history_len:
             return True
         else:
             return False
 
-    def generate_asm(self) -> List[Dict[str, str]]:
+    def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
         """
           the for loop iterates ghr_width + 2 times printing an
           assembly program which contains ghr_width + 2 branches which
           will are NOT TAKEN. This fills the ghr with zeros
         """
-        loop_count = self._history_len + 2
-        asm = "\n\n## test: gshare_fa_ghr_zeros_01 ##\n\n"
-        asm += "  addi t0,x0,1\n"
 
-        for i in range(1, loop_count):
-            asm += f"branch_{i}:\n\tbeq t0, x0, branch_{i}\n\taddi t0, t0, 1\n"
+        for mode in self.modes:
 
-        # compile macros for the test
-        compile_macros = []
+            loop_count = self._history_len + 2
+            asm = "\n\n## test: gshare_fa_ghr_zeros_01 ##\n\n\taddi t0,x0,1\n"
 
-        return [{
-            'asm_code': asm,
-            'asm_sig': '',
-            'compile_macros': compile_macros
-        }]
+            for i in range(1, loop_count):
+                asm += f"branch_{i}:\n\tbeq t0, x0, branch_{i}\n\t" \
+                       f"addi t0, t0, 1\n"
+
+            # trap signature bytes
+            trap_sigbytes = 24
+
+            # initialize the signature region
+            sig_code = 'mtrap_count:\n .fill 1, 8, 0x0\n' \
+                       'mtrap_sigptr:\n' \
+                       f' .fill {trap_sigbytes // 4},4,0xdeadbeef\n'
+            # compile macros for the test
+            if mode != 'machine':
+                compile_macros = ['rvtest_mtrap_routine', 's_u_mode_test']
+            else:
+                compile_macros = []
+
+            # user can choose to generate supervisor and/or user tests in
+            # addition to machine mode tests here.
+            privileged_test_enable = True
+
+            if not privileged_test_enable:
+                self.modes.remove('supervisor')
+                self.modes.remove('user')
+
+            privileged_test_dict = {
+                'enable': privileged_test_enable,
+                'mode': mode,
+                'page_size': 4096,
+                'paging_mode': 'sv39',
+                'll_pages': 64,
+            }
+
+            yield ({
+                'asm_code': asm,
+                'asm_sig': sig_code,
+                'compile_macros': compile_macros,
+                'privileged_test': privileged_test_dict,
+                'docstring': 'This test fills ghr register with ones',
+                'name_postfix': mode
+            })
 
     def check_log(self, log_file_path, reports_dir):
         """

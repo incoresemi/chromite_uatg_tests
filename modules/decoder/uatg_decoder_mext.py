@@ -1,8 +1,6 @@
 from yapsy.IPlugin import IPlugin
 from uatg.instruction_constants import base_reg_file, mext_instructions
-from uatg.utils import rvtest_data
-from typing import Dict, Any
-from random import randint
+from typing import Dict, List, Union, Any
 import random
 
 
@@ -35,7 +33,7 @@ class uatg_decoder_mext(IPlugin):
         else:
             return False
 
-    def generate_asm(self) -> Dict[str, str]:
+    def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
         """x
             Generates the ASM instructions for R type arithmetic instructions.
             It creates asm for the following instructions based upon ISA
@@ -43,8 +41,6 @@ class uatg_decoder_mext(IPlugin):
         """
         # rd, rs1, rs2 iterate through all the 32 register combinations for
         # every instruction in arithmetic_instructions['rv32-add-reg']
-
-        test_dict = []
 
         reg_file = base_reg_file.copy()
 
@@ -91,8 +87,11 @@ class uatg_decoder_mext(IPlugin):
 
                         # perform the  required assembly operation
                         asm_code += f'\ninst_{inst_count}:'
-                        asm_code += f'\n#operation: {inst}, rs1={rs1}, rs2={rs2}, rd={rd}\n'
-                        asm_code += f'TEST_RR_OP({inst}, {rd}, {rs1}, {rs2}, 0, {rs1_val}, {rs2_val}, {swreg}, {offset}, x0)\n'
+                        asm_code += f'\n#operation: {inst}, rs1={rs1}, rs2=' \
+                                    f'{rs2}, rd={rd}\n'
+                        asm_code += f'TEST_RR_OP({inst}, {rd}, {rs1}, {rs2}, ' \
+                                    f'0, {rs1_val}, {rs2_val}, {swreg}, ' \
+                                    f'{offset}, x0)\n'
 
                         # adjust the offset. reset to 0 if it crosses 2048 and
                         # increment the current signature pointer with the
@@ -119,18 +118,10 @@ class uatg_decoder_mext(IPlugin):
             compile_macros = []
 
             # return asm_code and sig_code
-            test_dict.append({
+            yield ({
                 'asm_code': asm_code,
                 'asm_data': '',
                 'asm_sig': sig_code,
                 'compile_macros': compile_macros,
                 'name_postfix': inst
             })
-        return test_dict
-
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv

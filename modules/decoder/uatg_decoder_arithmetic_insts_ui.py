@@ -1,9 +1,7 @@
 from yapsy.IPlugin import IPlugin
 from uatg.instruction_constants import base_reg_file, arithmetic_instructions, \
     bit_walker
-from uatg.utils import rvtest_data
-from typing import Dict
-from random import randint
+from typing import Dict, List, Union, Any
 import random
 
 
@@ -33,15 +31,13 @@ class uatg_decoder_arithmetic_insts_ui(IPlugin):
             self.offset_inc = 8
         return True
 
-    def generate_asm(self) -> Dict[str, str]:
+    def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
         """
             Generates the ASM instructions for R type arithmetic instructions.
             It creates asm for the following instructions (based upon input isa)
                 auipc, lui
         """
         reg_file = base_reg_file.copy()
-
-        test_dict = []
 
         inst_count = 0
 
@@ -63,12 +59,12 @@ class uatg_decoder_arithmetic_insts_ui(IPlugin):
 
             # Bit walking through 11 bits for immediate field
             imm = [
-                val for i in range(1, 4)
-                for val in bit_walker(bit_width=20, n_ones=i, invert=False, signed=False)
+                val for i in range(1, 4) for val in bit_walker(
+                    bit_width=20, n_ones=i, invert=False, signed=False)
             ]
             imm = imm + [
-                val for i in range(1, 4)
-                for val in bit_walker(bit_width=20, n_ones=i, invert=True, signed=False)
+                val for i in range(1, 4) for val in bit_walker(
+                    bit_width=20, n_ones=i, invert=True, signed=False)
             ]
             for rd in reg_file:
                 for imm_val in imm:
@@ -84,11 +80,14 @@ class uatg_decoder_arithmetic_insts_ui(IPlugin):
 
                     # perform the  required assembly operation
                     asm_code += f'\ninst_{inst_count}:'
-                    asm_code += f'\n#operation: {inst}, imm={imm_val}, rd={rd}\n'
+                    asm_code += f'\n#operation: {inst}, imm={imm_val}, ' \
+                                f'rd={rd}\n'
                     if 'auipc' in inst:
-                        asm_code += f'TEST_AUIPC({inst}, {rd}, 0, {imm_val}, {swreg}, {offset}, x0)\n'
+                        asm_code += f'TEST_AUIPC({inst}, {rd}, 0, {imm_val}, ' \
+                                    f'{swreg}, {offset}, x0)\n'
                     elif 'lui' in inst:
-                        asm_code += f'TEST_CASE(x0, {rd}, 0, {swreg}, {offset}, lui {rd}, {imm_val})\n'
+                        asm_code += f'TEST_CASE(x0, {rd}, 0, {swreg}, ' \
+                                    f'{offset}, lui {rd}, {imm_val})\n'
 
                     # adjust the offset. reset to 0 if it crosses 2048 and
                     # increment the current signature pointer with the
@@ -116,18 +115,10 @@ class uatg_decoder_arithmetic_insts_ui(IPlugin):
 
             # return asm_code and sig_code
 
-            test_dict.append({
+            yield ({
                 'asm_code': asm_code,
                 'asm_data': '',
                 'asm_sig': sig_code,
                 'compile_macros': compile_macros,
                 'name_postfix': inst
             })
-        return test_dict
-
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv

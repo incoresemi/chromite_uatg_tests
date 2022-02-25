@@ -5,7 +5,7 @@ from ruamel.yaml import YAML
 import uatg.regex_formats as rf
 import re
 import os
-from typing import Dict, List
+from typing import Dict, Union, Any, List
 
 
 class uatg_gshare_fa_ras_push_pop_01(IPlugin):
@@ -20,6 +20,8 @@ class uatg_gshare_fa_ras_push_pop_01(IPlugin):
         # initializing variables
         super().__init__()
         self.recurse_level = 5
+        self.modes = []
+        self.isa = 'RV32I'
 
     def execute(self, core_yaml, isa_yaml) -> bool:
         # Function to check whether to generate/validate this test or not
@@ -28,39 +30,83 @@ class uatg_gshare_fa_ras_push_pop_01(IPlugin):
         _bpu_dict = core_yaml['branch_predictor']
         _en_ras = _bpu_dict['ras_depth']
         _en_bpu = _bpu_dict['instantiate']
+
+        self.isa = isa_yaml['hart0']['ISA']
+        self.modes = ['machine']
+
+        if 'S' in self.isa:
+            self.modes.append('supervisor')
+
+        if 'S' in self.isa and 'U' in self.isa:
+            self.modes.append('user')
+
         # conditions to check if this test needs to be implemented or not
         if _en_ras and _en_bpu:
             return True
         else:
             return False
 
-    def generate_asm(self) -> List[Dict[str, str]]:
-        # reg x30 is used as looping variable. reg x31 used as a temp variable
+    def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
 
-        recurse_level = self.recurse_level
-        # number of times call-ret instructions to be implemented in assembly
-        no_ops = '\taddi x31, x0, 5\n\taddi x31, x0, -5\n'
-        asm = f'\taddi x30, x0, {recurse_level}\n'
-        # going into the first call
-        asm += '\tcall x1, lab1\n\tbeq x30, x0, end\n'
-        # recursively going into calls
-        for i in range(1, recurse_level + 1):
-            asm += f'lab{i} :\n'
-            if i == recurse_level:
-                asm += '\taddi x30, x30, -1\n'
+        for mode in self.modes:
+
+            # reg x30 is used as looping variable. reg x31 used as a temp
+            # variable
+
+            recurse_level = self.recurse_level
+            # number of times call-ret instructions to be implemented in
+            # assembly
+            no_ops = '\taddi x31, x0, 5\n\taddi x31, x0, -5\n'
+            asm = f'\taddi x30, x0, {recurse_level}\n'
+            # going into the first call
+            asm += '\tcall x1, lab1\n\tbeq x30, x0, end\n'
+            # recursively going into calls
+            for i in range(1, recurse_level + 1):
+                asm += f'lab{i} :\n'
+                if i == recurse_level:
+                    asm += '\taddi x30, x30, -1\n'
+                else:
+                    asm += no_ops * 3 + f'\tcall x{i+1}, lab{i+1}\n'
+                asm += no_ops * 3 + '\tret\n'
+                # getting out recursively using rets
+            asm += 'end:\n\tnop\n'
+
+            # trap signature bytes
+            trap_sigbytes = 24
+
+            # initialize the signature region
+            sig_code = f'mtrap_count:\n .fill 1, 8, 0x0\nmtrap_sigptr:\n ' \
+                       f'.fill {trap_sigbytes // 4},4,0xdeadbeef\n'
+            # compile macros for the test
+            if mode != 'machine':
+                compile_macros = ['rvtest_mtrap_routine', 's_u_mode_test']
             else:
-                asm += no_ops * 3 + f'\tcall x{i+1}, lab{i+1}\n'
-            asm += no_ops * 3 + '\tret\n'
-            # getting out recursively using rets
-        asm += 'end:\n\tnop\n'
-        # compile macros for the test
-        compile_macros = []
+                compile_macros = []
 
-        return [{
-            'asm_code': asm,
-            'asm_sig': '',
-            'compile_macros': compile_macros
-        }]
+            # user can choose to generate supervisor and/or user tests in
+            # addition to machine mode tests here.
+            privileged_test_enable = True
+
+            if not privileged_test_enable:
+                self.modes.remove('supervisor')
+                self.modes.remove('user')
+
+            privileged_test_dict = {
+                'enable': privileged_test_enable,
+                'mode': mode,
+                'page_size': 4096,
+                'paging_mode': 'sv39',
+                'll_pages': 64,
+            }
+
+            yield ({
+                'asm_code': asm,
+                'asm_sig': sig_code,
+                'compile_macros': compile_macros,
+                'privileged_test': privileged_test_dict,
+                'docstring': 'This test fills ghr register with ones',
+                'name_postfix': mode
+            })
 
     def check_log(self, log_file_path, reports_dir) -> bool:
         """

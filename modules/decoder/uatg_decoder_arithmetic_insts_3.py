@@ -1,10 +1,9 @@
-from yapsy.IPlugin import IPlugin
+import random
+from typing import Dict, List, Union, Any
+
 from uatg.instruction_constants import base_reg_file, arithmetic_instructions, \
     bit_walker
-from uatg.utils import rvtest_data
-from typing import Dict
-from random import randint
-import random
+from yapsy.IPlugin import IPlugin
 
 
 class uatg_decoder_arithmetic_insts_3(IPlugin):
@@ -33,7 +32,7 @@ class uatg_decoder_arithmetic_insts_3(IPlugin):
             self.offset_inc = 8
         return True
 
-    def generate_asm(self) -> Dict[str, str]:
+    def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
         """
             Generates the ASM instructions for R type arithmetic instructions.
             It creates asm for the following instructions (based upon input isa)
@@ -41,11 +40,10 @@ class uatg_decoder_arithmetic_insts_3(IPlugin):
         """
         reg_file = base_reg_file.copy()
 
-        test_dict = []
-
         for inst in arithmetic_instructions[f'{self.isa_bit}-add-imm']:
 
-            asm_code = '\n\n' + '#' * 5 + ' inst reg, reg, imm_val ' + '#' * 5 + '\n'
+            asm_code = '\n\n' + '#' * 5 + ' inst reg, reg, imm_val ' + \
+                       '#' * 5 + '\n'
 
             # initial register to use as signature pointer
             swreg = 'x31'
@@ -84,8 +82,11 @@ class uatg_decoder_arithmetic_insts_3(IPlugin):
                             swreg = newswreg
 
                         # perform the  required assembly operation
-                        asm_code += f'\n#operation: {inst}, rs1={rs1}, rs1_val={rs1_val}, imm={imm_val}, rd={rd}\n'
-                        asm_code += f'TEST_IMM_OP({inst}, {rd}, {rs1}, 0, {rs1_val}, {imm_val}, {swreg}, {offset}, x0)\n'
+                        asm_code += f'\n#operation: {inst}, rs1={rs1}, rs1_' \
+                                    f'val={rs1_val}, imm={imm_val}, rd={rd}\n'
+                        asm_code += f'TEST_IMM_OP({inst}, {rd}, {rs1}, 0, ' \
+                                    f'{rs1_val}, {imm_val}, {swreg}, ' \
+                                    f'{offset}, x0)\n'
 
                         # adjust the offset. reset to 0 if it crosses 2048 and
                         # increment the current signature pointer with the
@@ -111,18 +112,10 @@ class uatg_decoder_arithmetic_insts_3(IPlugin):
 
             # return asm_code and sig_code
 
-            test_dict.append({
+            yield ({
                 'asm_code': asm_code,
                 'asm_data': '',
                 'asm_sig': sig_code,
                 'compile_macros': compile_macros,
                 'name_postfix': inst
             })
-        return test_dict
-
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv

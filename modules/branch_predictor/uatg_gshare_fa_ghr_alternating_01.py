@@ -4,7 +4,7 @@ from ruamel.yaml import YAML
 import uatg.regex_formats as rf
 import re
 import os
-from typing import Dict, List
+from typing import Dict, Union, Any, List
 
 
 class uatg_gshare_fa_ghr_alternating_01(IPlugin):
@@ -12,7 +12,8 @@ class uatg_gshare_fa_ghr_alternating_01(IPlugin):
     def __init__(self):
         """ The constructor for this class. """
         super().__init__()
-
+        self.modes = []
+        self.isa = 'RV32I'
         self._history_len = 8
         pass  # we do not have any variable to declare.
 
@@ -31,13 +32,22 @@ class uatg_gshare_fa_ghr_alternating_01(IPlugin):
         self._history_len = _bpu_dict['history_len']
         # states the length of the history register
 
+        self.isa = isa_yaml['hart0']['ISA']
+        self.modes = ['machine']
+
+        if 'S' in self.isa:
+            self.modes.append('supervisor')
+
+        if 'S' in self.isa and 'U' in self.isa:
+            self.modes.append('user')
+
         if _en_bpu and self._history_len:
             # check condition, if BPU exists and history len is valid
             return True  # return true if this test can exist.
         else:
             return False  # return false if this test cannot.
 
-    def generate_asm(self) -> List[Dict[str, str]]:
+    def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
         """
         This method returns a string of the ASM file to be generated.
 
@@ -51,42 +61,68 @@ class uatg_gshare_fa_ghr_alternating_01(IPlugin):
         # The generated assembly code will use the t0 register to alternatively
         # enter and exit branches.
 
-        # initial section in the ASM
-        asm = ".option norvc\n"
-        asm = asm + '\taddi t0,x0,1\n'
-        asm = asm + '\taddi t1,x0,1\n\taddi t2,x0,2\n\n'
-        asm = asm + '\tbeq  t0,x0,lab0\n'
+        for mode in self.modes:
 
-        # the assembly program is structured in a way that
-        # there are odd number of labels.
-        if self._history_len % 2:
-            self._history_len = self._history_len + 1
+            # initial section in the ASM
+            asm = '.option norvc\n\taddi t0,x0,1\n' \
+                  '\taddi t1,x0,1\n\taddi t2,x0,2\n\n' \
+                  '\tbeq  t0,x0,lab0\n'
 
-        # loop to generate labels and branches
-        for i in range(self._history_len):
-            if i % 2:
-                asm = asm + 'lab' + str(i) + ':\n'
-                asm = asm + '\taddi t0,t0,1\n'
-                asm = asm + '\tbeq  t0,x0,lab' + str(i + 1) + '\n'
+            # the assembly program is structured in a way that
+            # there are odd number of labels.
+            if self._history_len % 2:
+                self._history_len = self._history_len + 1
+
+            # loop to generate labels and branches
+            for i in range(self._history_len):
+                if i % 2:
+                    asm += f'lab{i}:\n\taddi t0,t0,1\n\t' \
+                           f'beq  t0,x0,lab{i+1}\n'
+                else:
+                    asm += f'lab{i}:\n\taddi t0,t0,-1\n' \
+                           f'\tbeq  t0,x0,lab{i + 1}\t\n'
+
+            asm += f'lab{self._history_len}:\n\taddi t0,t0,-1\n\n' \
+                   f'\taddi t1,t1,-1\n\taddi t2,t2,-1\n' \
+                   f'\tbeq  t1,x0,lab0\n\taddi t0,t0,2\n\tbeq  t2,x0,lab0\n'
+
+            # trap signature bytes
+            trap_sigbytes = 24
+
+            # initialize the signature region
+            sig_code = f'mtrap_count:\n .fill 1, 8, 0x0\nmtrap_sigptr:\n ' \
+                       f'.fill {trap_sigbytes // 4},4,0xdeadbeef\n'
+
+            # compile macros for the test
+            if mode != 'machine':
+                compile_macros = ['rvtest_mtrap_routine', 's_u_mode_test']
             else:
-                asm = asm + 'lab' + str(i) + ':\n'
-                asm = asm + '\taddi t0,t0,-1\n'
-                asm = asm + '\tbeq  t0,x0,lab' + str(i + 1) + '\t\n'
+                compile_macros = []
 
-        asm = asm + 'lab' + str(self._history_len) + ':\n'
-        asm = asm + '\taddi t0,t0,-1\n\n'
-        asm = asm + '\taddi t1,t1,-1\n\taddi t2,t2,-1\n'
-        asm = asm + '\tbeq  t1,x0,lab0\n\taddi t0,t0,2\n'
-        asm = asm + '\tbeq  t2,x0,lab0\n'
+            # user can choose to generate supervisor and/or user tests in
+            # addition to machine mode tests here.
+            privileged_test_enable = True
 
-        # compile macros for the test
-        compile_macros = []
+            if not privileged_test_enable:
+                self.modes.remove('supervisor')
+                self.modes.remove('user')
 
-        return [{
-            'asm_code': asm,
-            'asm_sig': '',
-            'compile_macros': compile_macros
-        }]
+            privileged_test_dict = {
+                'enable': privileged_test_enable,
+                'mode': mode,
+                'page_size': 4096,
+                'paging_mode': 'sv39',
+                'll_pages': 64,
+            }
+
+            yield ({
+                'asm_code': asm,
+                'asm_sig': sig_code,
+                'compile_macros': compile_macros,
+                'privileged_test': privileged_test_dict,
+                'docstring': '',
+                'name_postfix': mode
+            })
 
     def check_log(self, log_file_path, reports_dir):
         """
