@@ -1,7 +1,8 @@
-from yapsy.IPlugin import IPlugin
-from uatg.instruction_constants import base_reg_file, mext_instructions
-from typing import Dict, List, Union, Any
 from random import choice, getrandbits
+from typing import Dict, List, Union, Any
+
+from uatg.instruction_constants import base_reg_file, mext_instructions
+from yapsy.IPlugin import IPlugin
 
 
 class uatg_mbox_divu_insts_01(IPlugin):
@@ -43,9 +44,8 @@ class uatg_mbox_divu_insts_01(IPlugin):
         # rd, rs1, rs2 iterate through all the 32 register combinations for
         # every instruction in m_extension_instructions
 
-        test_dict = []
-       
-        doc_string = 'Test generates the operation of div, divu, divuw instructions'
+        doc_string = 'Test generates the operation of div, divu, divuw ' \
+                     'instructions'
 
         reg_file = base_reg_file.copy()
 
@@ -170,13 +170,5 @@ class uatg_mbox_divu_insts_01(IPlugin):
                     'asm_sig': sig_code,
                     'compile_macros': compile_macros,
                     'name_postfix': f'{inst}_rs1_{rs1}',
-                    'doc_string' : doc_string
+                    'doc_string': doc_string
                 })
-        #yield test_dict
-
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv

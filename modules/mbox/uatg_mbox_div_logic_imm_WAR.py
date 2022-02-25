@@ -55,8 +55,6 @@ class uatg_mbox_div_logic_imm_WAR(IPlugin):
                 andi x2, x5, imm_val) 
         """
 
-        test_dict = []
-
         doc_string = 'Test evaluates the write after read dependency with ' \
                      'mextension instructions(producer) and logical (' \
                      'consumer) instructions '
@@ -184,11 +182,5 @@ class uatg_mbox_div_logic_imm_WAR(IPlugin):
                 'name_postfix': inst,
                 'doc_string': doc_string
             })
-        #yield test_dict
 
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv
+    

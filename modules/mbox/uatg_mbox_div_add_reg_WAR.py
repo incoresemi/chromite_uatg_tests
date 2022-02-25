@@ -54,8 +54,6 @@ class uatg_mbox_div_add_reg_WAR(IPlugin):
                 add x2, x5, imm_val) 
         """
 
-        test_dict = []
-
         doc_string = 'Test evaluates the write after read dependency with ' \
                      'mextension instructions(producer) and arithmetic (' \
                      'consumer) instructions '
@@ -89,7 +87,7 @@ class uatg_mbox_div_add_reg_WAR(IPlugin):
             code = ''
             # rand_inst generates the arithmetic instructions randomly
             rand_inst = choice(random_list)
-            # initialize the source registers rs1, rs2, rs3 and rs4 
+            # initialize the source registers rs1, rs2, rs3 and rs4
             # destination register rd1
             rs1, rs2, rd1, rs3, rs4 = 'x3', 'x4', 'x5', 'x6', 'x7'
             rand_rs1, rand_rs2, rand_rd = 'x0', 'x0', 'x0'
@@ -104,8 +102,8 @@ class uatg_mbox_div_add_reg_WAR(IPlugin):
                     rand_rd = choice(reg_file)
                     rand_inst1 = choice(random_list)
                     if rand_rd in [
-                        rs1, rs2, rs3, rs4, testreg, rd1, rand_rs1,
-                        rand_rs2, swreg
+                            rs1, rs2, rs3, rs4, testreg, rd1, rand_rs1,
+                            rand_rs2, swreg
                     ]:
                         new_rand_rd = choice([
                             x for x in reg_file if x not in [
@@ -115,8 +113,8 @@ class uatg_mbox_div_add_reg_WAR(IPlugin):
                         ])
                         rand_rd = new_rand_rd
                     if rand_rs1 in [
-                        rd1, rs2, rs3, rs4, testreg, rand_rd, rand_rs2, rs1,
-                        swreg
+                            rd1, rs2, rs3, rs4, testreg, rand_rd, rand_rs2, rs1,
+                            swreg
                     ]:
                         new_rand_rs1 = choice([
                             x for x in reg_file if x not in [
@@ -126,8 +124,8 @@ class uatg_mbox_div_add_reg_WAR(IPlugin):
                         ])
                         rand_rs1 = new_rand_rs1
                     if rand_rs2 in [
-                        rs1, rd1, rand_rs1, rand_rd, rs2, rs3, rs4, testreg,
-                        swreg
+                            rs1, rd1, rand_rs1, rand_rd, rs2, rs3, rs4, testreg,
+                            swreg
                     ]:
                         new_rand_rs2 = choice([
                             x for x in reg_file if x not in [
@@ -159,8 +157,8 @@ class uatg_mbox_div_add_reg_WAR(IPlugin):
             # then first choose a new signature pointer and move the
             # value to it.
             if swreg in [
-                rd1, rs1, rs2, rs3, rs4, rand_rs1, rand_rs2, rand_rd,
-                testreg
+                    rd1, rs1, rs2, rs3, rs4, rand_rs1, rand_rs2, rand_rd,
+                    testreg
             ]:
                 newswreg = choice([
                     x for x in reg_file if x not in [
@@ -210,11 +208,5 @@ class uatg_mbox_div_add_reg_WAR(IPlugin):
                 'name_postfix': inst,
                 'doc_string': doc_string
             })
-        #yield test_dict
 
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv
+    

@@ -40,8 +40,6 @@ class uatg_mbox_RAW_shift_reg(IPlugin):
             self) -> List[Dict[str, Union[Union[str, List[Any]], Any]]]:
         """    """
 
-        test_dict = []
-
         reg_file = [
             register for register in base_reg_file
             if register not in ('x0', 'x1', 'x2', 'x3', 'x4', 'x5', 'x6')
@@ -140,11 +138,5 @@ class uatg_mbox_RAW_shift_reg(IPlugin):
                 'compile_macros': compile_macros,
                 'name_postfix': inst
             })
-        #yield test_dict
 
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv
+    

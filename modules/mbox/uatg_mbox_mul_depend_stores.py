@@ -45,8 +45,6 @@ class uatg_mbox_mul_depend_stores(IPlugin):
         # rd, rs1, rs2 iterate through all the 32 register combinations for all
         # instruction in m_extension_instructions and arithmetic instructions
 
-        test_dict = []
-
         reg_file = ['x' + str(reg_no) for reg_no in range(15)]
         reg_file.remove('x0')
 
@@ -164,11 +162,5 @@ class uatg_mbox_mul_depend_stores(IPlugin):
                     'compile_macros': compile_macros,
                     'name_postfix': inst
                 })
-        #yield test_dict
 
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv
+    

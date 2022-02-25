@@ -39,8 +39,6 @@ class uatg_mbox_mul_depend_loads(IPlugin):
             self) -> List[Dict[str, Union[Union[str, List[Any]], Any]]]:
         """    """
 
-        test_dict = []
-
         reg_file = [register for register in base_reg_file if register != 'x0']
 
         instruction_list = []
@@ -149,11 +147,5 @@ class uatg_mbox_mul_depend_loads(IPlugin):
                     'compile_macros': compile_macros,
                     'name_postfix': inst
                 })
-        #yield test_dict
 
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv
+    

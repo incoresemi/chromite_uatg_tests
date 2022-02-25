@@ -42,8 +42,6 @@ class uatg_mbox_mulh_insts_01(IPlugin):
         # rd, rs1, rs2 iterate through all the 32 register combinations for
         # every instruction in m_extension_instructions
 
-        test_dict = []
-
         doc_string = 'Test evaluates the multiplier instructions  mulh, ' \
                      'mulhu, mulhsu '
 
@@ -156,11 +154,5 @@ class uatg_mbox_mulh_insts_01(IPlugin):
                     'name_postfix': f'{inst}_rs1_{rs1}',
                     'doc_string': doc_string
                 })
-        #yield test_dict
 
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv
+    

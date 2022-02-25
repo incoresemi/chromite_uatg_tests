@@ -55,8 +55,6 @@ class uatg_mbox_div_add_imm_WAR(IPlugin):
                 addi x2, x5, imm_val) 
         """
 
-        test_dict = []
-
         doc_string = 'Test evaluates the write after read dependency with ' \
                      'mextension instructions(producer) and arithmetic (' \
                      'consumer) instructions '
@@ -94,7 +92,7 @@ class uatg_mbox_div_add_imm_WAR(IPlugin):
             imm_val = choice(imm)
             # rand_inst generates the arithmetic instructions randomly
             rand_inst = choice(random_list)
-            # initialize the source registers rs1, rs2 
+            # initialize the source registers rs1, rs2
             # destination register rd1
             rs1, rs2, rd1 = 'x3', 'x4', 'x5'
             rand_rs1, rand_rd = 'x0', 'x0'
@@ -186,11 +184,5 @@ class uatg_mbox_div_add_imm_WAR(IPlugin):
                 'name_postfix': inst,
                 'doc_string': doc_string
             })
-        #yield test_dict
 
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv
+    

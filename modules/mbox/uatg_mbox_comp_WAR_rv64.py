@@ -48,12 +48,10 @@ class uatg_mbox_comp_WAR_rv64(IPlugin):
          instructions based upon ISA mul[w], mulh, mulhsu, mulhu 
          with compressed instructions c.addw, c.subw. 
         """
-        # compressed instructions for CA format has limit to use the 
+        # compressed instructions for CA format has limit to use the
         # registers it will support only the x8 to x15.
-        # Test to validate the mextension instructions with compressed 
+        # Test to validate the mextension instructions with compressed
         # (rv64-regCA) instructions.
-        test_dict = []
-
         doc_string = 'Test evaluates write after read dependency with ' \
                      'compressed (consumer) instruction and multiplication ' \
                      '(producer) instruction'
@@ -98,8 +96,8 @@ class uatg_mbox_comp_WAR_rv64(IPlugin):
 
                     if rand_rd in [rs1, rs2, rd1, rand_rs1, rand_rs2, rs3]:
                         new_rand_rd = choice([
-                            x for x in reg_file
-                            if x not in [rs1, rs2, rd1, rand_rs1, rand_rs2, rs3]
+                            x for x in reg_file if x not in
+                            [rs1, rs2, rd1, rand_rs1, rand_rs2, rs3]
                         ])
                         rand_rd = new_rand_rd
                     if rand_rs1 in [rd1, rs2, rs3, rand_rd, rand_rs2, rs1]:
@@ -137,10 +135,8 @@ class uatg_mbox_comp_WAR_rv64(IPlugin):
             # then first choose a new signature pointer and move the
             # value to it.
             if swreg in [rd1, rs1, rs2, rs3]:
-                newswreg = choice([
-                    x for x in reg_file
-                    if x not in [rd1, rs1, rs2, rs3]
-                ])
+                newswreg = choice(
+                    [x for x in reg_file if x not in [rd1, rs1, rs2, rs3]])
                 asm_code += f'mv {newswreg}, {swreg}\n'
                 swreg = newswreg
 
@@ -156,7 +152,7 @@ class uatg_mbox_comp_WAR_rv64(IPlugin):
             # current offset value
             if offset + self.offset_inc >= 2048:
                 asm_code += f'addi {swreg}, {swreg}, {offset}\n'
-                
+
             # keep track of the total number of signature bytes used
             # so far.
             sig_bytes = sig_bytes + self.offset_inc
@@ -179,11 +175,5 @@ class uatg_mbox_comp_WAR_rv64(IPlugin):
                 'name_postfix': inst,
                 'doc_string': doc_string
             })
-        #yield test_dict
 
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv
+    

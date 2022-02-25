@@ -1,8 +1,9 @@
-from yapsy.IPlugin import IPlugin
+from random import choice
+from typing import Dict, Any, List, Union
+
 from uatg.instruction_constants import base_reg_file, mext_instructions, \
     logic_instructions
-from typing import Dict, Any, List, Union
-from random import choice
+from yapsy.IPlugin import IPlugin
 
 
 class uatg_mbox_div_WAW_logic_imm(IPlugin):
@@ -54,9 +55,9 @@ class uatg_mbox_div_WAW_logic_imm(IPlugin):
  
         """
 
-        test_dict = []
-
-        doc_string = 'Test evaluates the write after write dependency with mextension instructions(producer) and arithmetic (consumer) instructions'
+        doc_string = 'Test evaluates the write after write dependency with ' \
+                     'mextension instructions(producer) and arithmetic ' \
+                     '(consumer) instructions'
 
         reg_file = [
             register for register in base_reg_file
@@ -81,19 +82,19 @@ class uatg_mbox_div_WAW_logic_imm(IPlugin):
             sig_bytes = 0
 
             inst_count = 0
-            #assign the imm with range
+            # assign the imm with range
             imm = range(100)
             # imm_value get the random value from imm
             imm_val = choice(imm)
             code = ''
             # rand_inst generates the logic instructions randomly
             rand_inst = choice(random_list)
-            # initialize the source registers rs1, rs2, rs3 and rs4 
-            #destination register rd1
+            # initialize the source registers rs1, rs2, rs3 and rs4
+            # destination register rd1
             rs1, rs2, rd1, rs3, rs4 = 'x3', 'x4', 'x5', 'x6', 'x7'
             rand_rs1, rand_rs2, rand_rd = 'x0', 'x0', 'x0'
-            # depends on the div_stages_in the mext and arithmetic 
-            #instructions generated
+            # depends on the div_stages_in the mext and arithmetic
+            # instructions generated
             for i in range(self.div_stages):
                 code += f'{inst} {rd1},{rs1},{rs2};\n'
                 for j in range(i):
@@ -102,7 +103,7 @@ class uatg_mbox_div_WAW_logic_imm(IPlugin):
                     rand_rd = choice(reg_file)
                     rand_inst1 = choice(random_list)
                     if rand_rd in [
-                            rs1, rs2, rd1, rand_rs1, rand_rs2, swreg, testreg
+                        rs1, rs2, rd1, rand_rs1, rand_rs2, swreg, testreg
                     ]:
                         new_rand_rd = choice([
                             x for x in reg_file if x not in [
@@ -112,8 +113,8 @@ class uatg_mbox_div_WAW_logic_imm(IPlugin):
                         ])
                         rand_rd = new_rand_rd
                     if rand_rs1 in [
-                            rd1, rs2, rs3, rs4, rand_rd, rand_rs2, rs1, swreg,
-                            testreg
+                        rd1, rs2, rs3, rs4, rand_rd, rand_rs2, rs1, swreg,
+                        testreg
                     ]:
                         new_rand_rs1 = choice([
                             x for x in reg_file if x not in [
@@ -123,8 +124,8 @@ class uatg_mbox_div_WAW_logic_imm(IPlugin):
                         ])
                         rand_rs1 = new_rand_rs1
                     if rand_rs2 in [
-                            rs1, rd1, rand_rs1, rand_rd, rs2, rs3, rs4, swreg,
-                            testreg
+                        rs1, rd1, rand_rs1, rand_rd, rs2, rs3, rs4, swreg,
+                        testreg
                     ]:
                         new_rand_rs2 = choice([
                             x for x in reg_file if x not in [
@@ -147,7 +148,7 @@ class uatg_mbox_div_WAW_logic_imm(IPlugin):
                         rand_inst1 = new_rand_inst1
                     code += f'{rand_inst1} {rand_rd}, {rand_rs1}, {imm_val};\n'
                 code += f'{rand_inst} {rd1}, {rs3}, {imm_val};\n\n'
-            #assign the rs1_val, rs2_val, rs3_val and rs4_val
+            # assign the rs1_val, rs2_val, rs3_val and rs4_val
             rs1_val = '0x48'
             rs2_val = '0x6'
             rs3_val = '0x18'
@@ -157,8 +158,8 @@ class uatg_mbox_div_WAW_logic_imm(IPlugin):
             # then first choose a new signature pointer and move the
             # value to it.
             if swreg in [
-                    rd1, rs1, rs2, rs3, rs4, rand_rs1, rand_rs2, rand_rd,
-                    testreg
+                rd1, rs1, rs2, rs3, rs4, rand_rs1, rand_rs2, rand_rd,
+                testreg
             ]:
                 newswreg = choice([
                     x for x in reg_file if x not in [
@@ -200,11 +201,3 @@ class uatg_mbox_div_WAW_logic_imm(IPlugin):
                 'name_postfix': inst,
                 'doc_string': doc_string
             })
-        #yield test_dict
-
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv

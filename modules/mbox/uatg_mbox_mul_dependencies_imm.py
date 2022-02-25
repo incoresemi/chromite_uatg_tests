@@ -52,8 +52,6 @@ class uatg_mbox_mul_dependencies_imm(IPlugin):
 
         """
 
-        test_dict = []
-
         doc_string = 'Test evaluates the read after write dependency with ' \
                      'addi, addiw instructions and mul, mulh, mulhsu, ' \
                      'mulw instructions '
@@ -171,11 +169,5 @@ class uatg_mbox_mul_dependencies_imm(IPlugin):
                     'name_postfix': inst,
                     'doc_string': doc_string
                 })
-        #yield test_dict
 
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv
+    

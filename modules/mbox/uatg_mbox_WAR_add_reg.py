@@ -52,8 +52,6 @@ class uatg_mbox_WAR_add_reg(IPlugin):
                sub x1, x6, x7)
         """
 
-        test_dict = []
-
         doc_string = 'Test evaluates the write after read dependency with ' \
                      'mextension(producer) instructions and arithmetic(' \
                      'consumer) instructions '
@@ -160,11 +158,5 @@ class uatg_mbox_WAR_add_reg(IPlugin):
                 'name_postfix': inst,
                 'doc_string': doc_string
             })
-        #yield test_dict
 
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv
+    

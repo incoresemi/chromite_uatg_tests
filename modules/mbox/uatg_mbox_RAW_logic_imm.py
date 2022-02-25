@@ -50,8 +50,6 @@ class uatg_mbox_RAW_logic_imm(IPlugin):
               andi x3, x6, imm_val)
         """
 
-        test_dict = []
-
         doc_string = 'Test evaluates the read after write dependency with ' \
                      'arithmetic (consumer) insructions and multiplication (' \
                      'producer) instructions '
@@ -90,7 +88,7 @@ class uatg_mbox_RAW_logic_imm(IPlugin):
             rand_inst = choice(random_list)
             # imm_value get the random value from imm
             imm_val = choice(imm)
-            # initialize the source registers rs1, rs2 and 
+            # initialize the source registers rs1, rs2 and
             # destination register rd1, rd2
             rs1, rs2, rd1, rd2 = 'x3', 'x4', 'x5', 'x6'
             # depends on the mul_stages_in the mext and logic
@@ -157,11 +155,5 @@ class uatg_mbox_RAW_logic_imm(IPlugin):
                 'name_postfix': inst,
                 'doc_string': doc_string
             })
-        #yield test_dict
 
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv
+    

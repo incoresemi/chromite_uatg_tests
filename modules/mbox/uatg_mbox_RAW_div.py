@@ -49,8 +49,6 @@ class uatg_mbox_RAW_div(IPlugin):
               div x3, x6, x1)
         """
 
-        test_dict = []
-
         doc_string = 'Test evaluates the read after write dependency with ' \
                      'multiplication(producer) instructions and ' \
                      'multiplication(consumer) instructions '
@@ -87,7 +85,7 @@ class uatg_mbox_RAW_div(IPlugin):
             # rand_inst generates the mext instructions(div, divu, rem, remu)
             # randomly
             rand_inst = choice(random_list)
-            # initialize the source registers rs1, rs2 and 
+            # initialize the source registers rs1, rs2 and
             # destination register rd1, rd2
             rs1, rs2, rd1, rd2 = 'x3', 'x4', 'x5', 'x6'
             # depends on the mul_stages_in the mext and multiplication
@@ -160,11 +158,5 @@ class uatg_mbox_RAW_div(IPlugin):
                 'name_postfix': inst,
                 'doc_string': doc_string
             })
-        #yield test_dict
 
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv
+    

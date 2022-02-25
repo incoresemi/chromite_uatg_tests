@@ -51,8 +51,6 @@ class uatg_mbox_RAW_logic_reg(IPlugin):
 
         """
 
-        test_dict = []
-
         doc_string = 'Test evaluates the read after write dependency with ' \
                      'multiplication (producer) instructions arithmetic (' \
                      'consumer) instructions '
@@ -87,11 +85,11 @@ class uatg_mbox_RAW_logic_reg(IPlugin):
             code = ''
             # rand_inst generates the logic instructions randomly
             rand_inst = choice(random_list)
-            # initialize the source registers rs1, rs2 and 
-            #destination register rd1, rd2
+            # initialize the source registers rs1, rs2 and
+            # destination register rd1, rd2
             rs1, rs2, rd1, rd2 = 'x3', 'x4', 'x5', 'x6'
             # depends on the mul_stages_in the mext and logic
-            #instructions generated
+            # instructions generated
 
             for i in range(self.mul_stages_in):
 
@@ -131,7 +129,7 @@ class uatg_mbox_RAW_logic_reg(IPlugin):
                         rand_inst1 = new_rand_inst1
                     code += f'{rand_inst1} {rand_rd}, {rand_rs1}, {rand_rs2};\n'
                 code += f'{rand_inst} {rd2}, {rd1}, {rs2};\n\n'
-            #assign the rs1_val and rs2_val
+            # assign the rs1_val and rs2_val
             rs1_val = '0x0000000000000012'
             rs2_val = '0x0000000000000021'
 
@@ -161,11 +159,5 @@ class uatg_mbox_RAW_logic_reg(IPlugin):
                 'name_postfix': inst,
                 'doc_string': doc_string
             })
-        #yield test_dict
 
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv
+    

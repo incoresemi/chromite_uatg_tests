@@ -1,5 +1,4 @@
 from random import choice
-from tkinter import W
 from typing import Dict, Any, List, Union
 
 from uatg.instruction_constants import base_reg_file, mext_instructions, \
@@ -52,8 +51,6 @@ class uatg_mbox_WAR_shift_imm(IPlugin):
           (i.e mulh x4, x3, x1
                slli x1, x5, imm_val)
         """
-
-        test_dict = []
 
         doc_string = 'Test evaluates the write after read dependency with ' \
                      'mextension(producer) instructions and arithmetic(' \
@@ -157,11 +154,5 @@ class uatg_mbox_WAR_shift_imm(IPlugin):
                 'name_postfix': inst,
                 'doc_string': doc_string
             })
-        #yield test_dict
 
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv
+    

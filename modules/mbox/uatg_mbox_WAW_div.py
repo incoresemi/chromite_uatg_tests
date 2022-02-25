@@ -50,8 +50,6 @@ class uatg_mbox_WAW_div(IPlugin):
                div x6, x3, x2)
         """
 
-        test_dict = []
-
         doc_string = 'Test evaluates the write after write dependency with ' \
                      'mextension(producer) instructions and arithmetic(' \
                      'consumer) instructions '
@@ -160,11 +158,5 @@ class uatg_mbox_WAW_div(IPlugin):
                 'name_postfix': inst,
                 'doc_string': doc_string
             })
-        #yield test_dict
 
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv
+    

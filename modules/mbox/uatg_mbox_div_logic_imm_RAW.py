@@ -1,8 +1,9 @@
-from yapsy.IPlugin import IPlugin
+from random import choice
+from typing import Dict, List, Union, Any
+
 from uatg.instruction_constants import base_reg_file, mext_instructions, \
     logic_instructions
-from typing import Dict, List, Union, Any
-from random import choice
+from yapsy.IPlugin import IPlugin
 
 
 class uatg_mbox_div_logic_imm_RAW(IPlugin):
@@ -53,8 +54,6 @@ class uatg_mbox_div_logic_imm_RAW(IPlugin):
                 andi x5, x4, imm_val) 
         """
 
-        test_dict = []
-
         reg_file = [
             register for register in base_reg_file
             if register not in ('x0', 'x3', 'x4', 'x5', 'x6')
@@ -82,14 +81,14 @@ class uatg_mbox_div_logic_imm_RAW(IPlugin):
             inst_count = 0
 
             code = ''
-            #assign the imm with range
+            # assign the imm with range
             imm = range(1, 100)
-            #generate the imm_val randomly  from imm
+            # generate the imm_val randomly  from imm
             imm_val = choice(imm)
-            #rand_inst generate logic instructions randomly
+            # rand_inst generate logic instructions randomly
             rand_inst = choice(random_list)
-            #initialize the source register rs1, rs2 destination 
-            #register rd1 and rd2
+            # initialize the source register rs1, rs2 destination
+            # register rd1 and rd2
             rs1, rs2, rd1, rd2 = 'x3', 'x4', 'x5', 'x6'
             rand_rs1, rand_rd = 'x0', 'x0'
             for i in range(self.div_stages):
@@ -125,7 +124,7 @@ class uatg_mbox_div_logic_imm_RAW(IPlugin):
                         rand_inst1 = new_rand_inst1
                     code += f'{rand_inst1} {rand_rd}, {rand_rs1}, {imm_val};\n'
                 code += f'{rand_inst} {rd2}, {rd1}, {imm_val};\n\n'
-            #initialize rs1 and rs2 values
+            # initialize rs1 and rs2 values
             rs1_val = '0x48'
             rs2_val = '0x6'
             # if signature register needs to be used for operations
@@ -167,13 +166,5 @@ class uatg_mbox_div_logic_imm_RAW(IPlugin):
                 'asm_sig': sig_code,
                 'compile_macros': compile_macros,
                 'name_postfix': inst,
-                'doc_string' : ''
+                'doc_string': ''
             })
-        #yield test_dict
-
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv

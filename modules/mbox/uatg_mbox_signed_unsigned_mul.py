@@ -37,8 +37,6 @@ class uatg_mbox_signed_unsigned_mul(IPlugin):
             It creates asm for signed multiplicand unsigned multipier
             multiplication using mulhsu instruction
         """
-        test_dict = []
-
         doc_string = 'Test evaluates the signed multiplicand unsigned ' \
                      'multiplier using mulhsu instructions '
 
@@ -105,11 +103,5 @@ class uatg_mbox_signed_unsigned_mul(IPlugin):
             'compile_macros': compile_macros,
             'doc_string': doc_string
         })
-        #yield test_dict
 
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv
+    

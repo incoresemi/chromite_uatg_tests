@@ -48,12 +48,11 @@ class uatg_mbox_comp_mul_reg_regCA_WAR(IPlugin):
          instructions based upon ISA mul[w], mulh, mulhsu, mulhu 
          with compressed instructions(reg-regCA) 
         """
-        # compressed instructions for CA format has limit to use 
+        # compressed instructions for CA format has limit to use
         # the registers it will support only the x8 to x15.
-        # Test to validate the mextension instructions with 
+        # Test to validate the mextension instructions with
         # compressed (reg-regCA) instructions.
 
-        test_dict = []
         doc_string = 'Test evaluates write after read dependency with ' \
                      'compressed (producer) instruction and multiplication (' \
                      'consumer) instruction '
@@ -100,8 +99,9 @@ class uatg_mbox_comp_mul_reg_regCA_WAR(IPlugin):
 
                     if rand_rd in [rs1, rs2, rd1, rand_rs1, rand_rs2, rs3]:
                         new_rand_rd = choice([
-                            x for x in reg_file
-                            if x not in [rs1, rs2, rd1, rand_rs1, rand_rs2, rs3]
+                            x for x in reg_file if x not in [rs1, rs2, rd1, 
+                                                             rand_rs1,
+                                                             rand_rs2, rs3]
                         ])
                         rand_rd = new_rand_rd
                     if rand_rs1 in [rd1, rs2, rs3, rand_rd, rand_rs2, rs1]:
@@ -139,10 +139,8 @@ class uatg_mbox_comp_mul_reg_regCA_WAR(IPlugin):
             # then first choose a new signature pointer and move the
             # value to it.
             if swreg in [rd1, rs1, rs2, rs3]:
-                newswreg = choice([
-                    x for x in reg_file
-                    if x not in [rd1, rs1, rs2, rs3]
-                ])
+                newswreg = choice(
+                    [x for x in reg_file if x not in [rd1, rs1, rs2, rs3]])
                 asm_code += f'mv {newswreg}, {swreg}\n'
                 swreg = newswreg
 
@@ -181,11 +179,3 @@ class uatg_mbox_comp_mul_reg_regCA_WAR(IPlugin):
                 'name_postfix': inst,
                 'doc_string': doc_string
             })
-        #yield test_dict
-
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv

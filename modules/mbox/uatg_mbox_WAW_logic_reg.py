@@ -50,8 +50,6 @@ class uatg_mbox_WAW_logic_reg(IPlugin):
                and x6, x3, x1)
         """
 
-        test_dict = []
-
         doc_string = 'Test evaluates the write after write dependency with ' \
                      'mextension(producer) instructions and logic(consumer) ' \
                      'instructions '
@@ -86,10 +84,10 @@ class uatg_mbox_WAW_logic_reg(IPlugin):
 
             code = ''
             rand_inst = choice(random_list)
-            # initialize the source registers rs1, rs2, rs3 and rs4 
+            # initialize the source registers rs1, rs2, rs3 and rs4
             # destination register rd1
             rs1, rs2, rs3, rs4, rd1 = 'x3', 'x4', 'x6', 'x7', 'x5'
-            # depends on the mul_stages_in the mext and logic 
+            # depends on the mul_stages_in the mext and logic
             # instructions generated
             for i in range(self.mul_stages_in):
 
@@ -161,11 +159,5 @@ class uatg_mbox_WAW_logic_reg(IPlugin):
                 'name_postfix': inst,
                 'doc_string': doc_string
             })
-        #yield test_dict
 
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv
+    

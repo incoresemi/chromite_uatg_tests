@@ -41,8 +41,6 @@ class uatg_mbox_mul_div_insts_01(IPlugin):
         # rd, rs1, rs2 iterate through all the 32 register combinations for
         # every instruction in m_extension_instructions
 
-        test_dict = []
-      
         doc_string = 'Test evaluates the multiplier and divider instructions '
         reg_file = base_reg_file.copy()
 
@@ -128,13 +126,7 @@ class uatg_mbox_mul_div_insts_01(IPlugin):
                 'asm_sig': sig_code,
                 'compile_macros': compile_macros,
                 'name_postfix': inst,
-                'doc_string' : doc_string
+                'doc_string': doc_string
             })
-        #yield test_dict
 
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv
+    

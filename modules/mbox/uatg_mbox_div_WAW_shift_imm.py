@@ -54,9 +54,9 @@ class uatg_mbox_div_WAW_shift_imm(IPlugin):
 
         """
 
-        test_dict = []
-
-        doc_string = 'Test evaluates the write after write dependency with mextension instructions(producer) and arithmetic (consumer) instructions'
+        doc_string = 'Test evaluates the write after write dependency with ' \
+                     'mextension instructions(producer) and arithmetic ' \
+                     '(consumer) instructions'
 
         reg_file = [
             register for register in base_reg_file
@@ -81,19 +81,19 @@ class uatg_mbox_div_WAW_shift_imm(IPlugin):
             sig_bytes = 0
 
             inst_count = 0
-            #assign the imm with range
+            # assign the imm with range
             imm = range(10)
             # imm_value get the random value from imm
             imm_val = choice(imm)
             code = ''
             # rand_inst generates the arithmetic instructions randomly
             rand_inst = choice(random_list)
-            # initialize the source registers rs1, rs2, rs3 and rs4 
-            #destination register rd1
+            # initialize the source registers rs1, rs2, rs3 and rs4
+            # destination register rd1
             rs1, rs2, rd1, rs3, rs4 = 'x3', 'x4', 'x5', 'x6', 'x7'
             rand_rs1, rand_rs2, rand_rd = 'x0', 'x0', 'x0'
-            # depends on the div_stages_in the mext and arithmetic 
-            #instructions generated
+            # depends on the div_stages_in the mext and arithmetic
+            # instructions generated
             for i in range(self.div_stages):
                 code += f'{inst} {rd1},{rs1},{rs2};\n'
                 for j in range(i):
@@ -147,7 +147,7 @@ class uatg_mbox_div_WAW_shift_imm(IPlugin):
                         rand_inst1 = new_rand_inst1
                     code += f'{rand_inst1} {rand_rd}, {rand_rs1}, {imm_val};\n'
                 code += f'{rand_inst} {rd1}, {rs3}, {imm_val};\n\n'
-            #assign the rs1_val, rs2_val, rs3_val and rs4_val
+            # assign the rs1_val, rs2_val, rs3_val and rs4_val
             rs1_val = '0x48'
             rs2_val = '0x6'
             rs3_val = '0x18'
@@ -198,13 +198,7 @@ class uatg_mbox_div_WAW_shift_imm(IPlugin):
                 'asm_sig': sig_code,
                 'compile_macros': compile_macros,
                 'name_postfix': inst,
-                'doc_string' : doc_string
+                'doc_string': doc_string
             })
-        #yield test_dict
 
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv
+    

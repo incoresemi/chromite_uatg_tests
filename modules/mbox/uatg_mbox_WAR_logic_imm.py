@@ -52,8 +52,6 @@ class uatg_mbox_WAR_logic_imm(IPlugin):
               andi x1,x5,imm_val)
         """
 
-        test_dict = []
-
         doc_string = 'Test evaluates the write after read dependency with ' \
                      'mextension instructions(producer) and logic ' \
                      'instructions(consumer) '
@@ -93,7 +91,8 @@ class uatg_mbox_WAR_logic_imm(IPlugin):
             imm_val = choice(imm)
             # rand_inst generates the logic instructions randomly
             rand_inst = choice(random_list)
-            # initialize the source registers rs1, rs2 and destination register rd1
+            # initialize the source registers rs1, rs2 and destination register
+            # rd1
             rs1, rs2, rd1 = 'x3', 'x4', 'x5'
             # depends on the mul_stages_in the mext and logic
             # instructions generated
@@ -156,11 +155,5 @@ class uatg_mbox_WAR_logic_imm(IPlugin):
                 'name_postfix': inst,
                 'doc_string': doc_string
             })
-        #yield test_dict
 
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv
+    
