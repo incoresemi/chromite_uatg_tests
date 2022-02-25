@@ -1,9 +1,10 @@
 # See LICENSE.incore for details
 
-from yapsy.IPlugin import IPlugin
-from typing import Dict, Union, Any, List
-from uatg.instruction_constants import load_store_instructions as lsi
 import random
+from typing import Dict, Union, Any, List
+
+from uatg.instruction_constants import load_store_instructions as lsi
+from yapsy.IPlugin import IPlugin
 
 
 class uatg_dcache_fill_random(IPlugin):
@@ -14,6 +15,8 @@ class uatg_dcache_fill_random(IPlugin):
         self._word_size = 8
         self._block_size = 8
         self._ways = 4
+        self._ISA = 'RV32I'
+        self._XLEN = 32
 
     def execute(self, core_yaml, isa_yaml):
         _dcache_dict = core_yaml['dcache_configuration']
@@ -34,14 +37,15 @@ class uatg_dcache_fill_random(IPlugin):
         Used to generate asm files with random stores/loads
         Boundaries are random but compliant to instruction
         """
+
         asm_data = f"\nrvtest_data:\n\t.align {self._word_size}\n"
 
         asm_data += f"\t.rept " + \
-            f"{self._sets * self._word_size * self._block_size}\n" + \
-            f"\t.dword 0x{random.randrange(16 ** 16):8x}\n" + f"\t.endr\n"
-        #initialise all registers to 0
-        #assumes x0 is zero
-        asm_init = [f"\tmv x{i}, x0\n" for i in range(1,32)]   
+                    f"{self._sets * self._word_size * self._block_size}\n" + \
+                    f"\t.dword 0x{random.randrange(16 ** 16):8x}\n\t.endr\n"
+        # initialise all registers to 0
+        # assumes x0 is zero
+        asm_init = [f"\tmv x{i}, x0\n" for i in range(1, 32)]
         tests = []
         tests.extend(lsi['rv64-loads'])
         tests.extend(lsi['rv64-stores'])
@@ -72,13 +76,19 @@ class uatg_dcache_fill_random(IPlugin):
         asm = "".join(asm_init) + asm_main + asm_lab1
         compile_macros = []
 
-        return [{
+        yield ({
             'asm_code': asm,
             'asm_data': asm_data,
             'asm_sig': '',
             'compile_macros': compile_macros
-        }]
+        })
+
     def check_log(self, log_file_path, reports_dir):
-        ''
+        """
+        
+        """
+
     def generate_covergroups(self, config_file):
-        ''
+        """
+
+        """

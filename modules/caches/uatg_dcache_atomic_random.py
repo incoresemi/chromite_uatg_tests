@@ -1,15 +1,18 @@
 # See LICENSE.incore for details
 
-from yapsy.IPlugin import IPlugin
-from typing import Dict, Union, Any, List
-from uatg.instruction_constants import atomic_mem_ops as inst_dict
 import random
+from typing import Dict, Union, Any, List
+
+from uatg.instruction_constants import atomic_mem_ops as inst_dict
+from yapsy.IPlugin import IPlugin
 
 
 class uatg_dcache_atomic_random(IPlugin):
 
     def __init__(self):
         super().__init__()
+        self._XLEN = 32
+        self._ISA = 'RV32I'
         self._sets = 64
         self._word_size = 8
         self._block_size = 8
@@ -34,17 +37,19 @@ class uatg_dcache_atomic_random(IPlugin):
         Used to generate asm files with random atomic operations
         Boundaries are random but compliant to instruction
         """
+
         asm_data = f"\nrvtest_data:\n\t.align {self._word_size}\n"
 
-        asm_data += f"\t.rept " + \
-            f"{self._sets * self._word_size * self._block_size}\n" + \
-            f"\t.dword 0x{random.randrange(16 ** 16):8x}\n" + f"\t.endr\n"
-        
-        #initialise all registers to 0
-        #assumes x0 is zero
-        asm_init = [f"\tmv x{i}, x0\n" for i in range(1,32)]
-        
-        inst_list = inst_dict['rv64-mem-ops'] if self._XLEN == 64 else inst_dict['rv32-mem-ops']
+        asm_data += f"\t.rept " \
+                    f"{self._sets * self._word_size * self._block_size}\n" \
+                    f"\t.dword 0x{random.randrange(16 ** 16):8x}\n\t.endr\n"
+
+        # initialise all registers to 0
+        # assumes x0 is zero
+        asm_init = [f"\tmv x{i}, x0\n" for i in range(1, 32)]
+
+        inst_list = inst_dict[
+            'rv64-mem-ops'] if self._XLEN == 64 else inst_dict['rv32-mem-ops']
 
         asm_main = "\tfence\n\tli t0, 69\n\tli t1, 1"
         asm_main += f"\n\tli t3, {self._sets * self._ways}"
@@ -70,13 +75,19 @@ class uatg_dcache_atomic_random(IPlugin):
         asm = "".join(asm_init) + asm_main + asm_lab1
         compile_macros = []
 
-        return [{
+        yield ({
             'asm_code': asm,
             'asm_data': asm_data,
             'asm_sig': '',
             'compile_macros': compile_macros
-        }]
+        })
+
     def check_log(self, log_file_path, reports_dir):
-        ''
+        """
+
+        """
+
     def generate_covergroups(self, config_file):
-        ''
+        """
+
+        """

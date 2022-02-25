@@ -41,8 +41,6 @@ class uatg_decoder_branch_insts_1(IPlugin):
         rs1_reg_file = base_reg_file.copy()
         rs2_reg_file = base_reg_file.copy()
 
-        test_dict = []
-
         for inst in branch_instructions['branch']:
 
             jump_label = ['1b', '3f']
@@ -167,19 +165,10 @@ class uatg_decoder_branch_insts_1(IPlugin):
 
                     # return asm_code and sig_code
 
-                    test_dict.append({
+                    yield ({
                         'asm_code': asm_code,
                         'asm_data': asm_data,
                         'asm_sig': sig_code,
                         'compile_macros': compile_macros,
                         'name_postfix': f'{inst}_rs1_{rs1}_{postfix_label}'
                     })
-
-        return test_dict
-
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv

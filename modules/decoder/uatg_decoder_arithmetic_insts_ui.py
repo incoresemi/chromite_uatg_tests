@@ -39,8 +39,6 @@ class uatg_decoder_arithmetic_insts_ui(IPlugin):
         """
         reg_file = base_reg_file.copy()
 
-        test_dict = []
-
         inst_count = 0
 
         for inst in arithmetic_instructions[f'{self.isa_bit}-ui']:
@@ -61,14 +59,12 @@ class uatg_decoder_arithmetic_insts_ui(IPlugin):
 
             # Bit walking through 11 bits for immediate field
             imm = [
-                val for i in range(1, 4)
-                for val in bit_walker(bit_width=20, n_ones=i, invert=False,
-                                      signed=False)
+                val for i in range(1, 4) for val in bit_walker(
+                    bit_width=20, n_ones=i, invert=False, signed=False)
             ]
             imm = imm + [
-                val for i in range(1, 4)
-                for val in bit_walker(bit_width=20, n_ones=i, invert=True,
-                                      signed=False)
+                val for i in range(1, 4) for val in bit_walker(
+                    bit_width=20, n_ones=i, invert=True, signed=False)
             ]
             for rd in reg_file:
                 for imm_val in imm:
@@ -119,18 +115,10 @@ class uatg_decoder_arithmetic_insts_ui(IPlugin):
 
             # return asm_code and sig_code
 
-            test_dict.append({
+            yield ({
                 'asm_code': asm_code,
                 'asm_data': '',
                 'asm_sig': sig_code,
                 'compile_macros': compile_macros,
                 'name_postfix': inst
             })
-        return test_dict
-
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv

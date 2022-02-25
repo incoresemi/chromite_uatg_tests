@@ -1,4 +1,4 @@
-import random
+from random import choice
 from typing import Dict, Any, List, Union
 
 from uatg.instruction_constants import mext_instructions, \
@@ -50,12 +50,10 @@ class uatg_mbox_comp_mul_rv64_imm_WAR(IPlugin):
          (i.e addiw x3, imm_val
               mul x3, x1, x5)
         """
-        # compressed instructions for CI format has no limit to use 
+        # compressed instructions for CI format has no limit to use
         # the registers it will support x0 to x31 registers.
-        # Test to validate the mextension instructions with compressed 
+        # Test to validate the mextension instructions with compressed
         # (rv64-imm) instructions.
-
-        test_dict = []
 
         doc_string = 'Test evaluates write after read dependency with ' \
                      'compressed(producer) instruction and multiplication (' \
@@ -91,9 +89,9 @@ class uatg_mbox_comp_mul_rv64_imm_WAR(IPlugin):
             # assign the imm with range
             imm = range(1, 10)
             # imm_value get the random value from imm
-            imm_val = random.choice(imm)
+            imm_val = choice(imm)
             # rand_inst generates the mext instructions randomly
-            rand_inst = random.choice(random_list)
+            rand_inst = choice(random_list)
             # depends on the mul_stages_in the mext and compressed
             # instructions generated
             # initialize the source and destination register
@@ -101,37 +99,37 @@ class uatg_mbox_comp_mul_rv64_imm_WAR(IPlugin):
             for i in range(self.mul_stages_in):
                 code += f'{inst} {rd1},{imm_val};\n'
                 for j in range(i):
-                    rand_rs1 = random.choice(reg_file)
-                    rand_rs2 = random.choice(reg_file)
-                    rand_rd = random.choice(reg_file)
-                    rand_inst1 = random.choice(random_list)
+                    rand_rs1 = choice(reg_file)
+                    rand_rs2 = choice(reg_file)
+                    rand_rd = choice(reg_file)
+                    rand_inst1 = choice(random_list)
 
                     if rand_rd in [rs1, rs2, rd1, rand_rs1, rand_rs2, rs3]:
-                        new_rand_rd = random.choice([
-                            x for x in reg_file
-                            if x not in [rs1, rs2, rd1, rand_rs1, rand_rs2, rs3]
+                        new_rand_rd = choice([
+                            x for x in reg_file if x not in
+                            [rs1, rs2, rd1, rand_rs1, rand_rs2, rs3]
                         ])
                         rand_rd = new_rand_rd
                     if rand_rs1 in [rd1, rs2, rs3, rand_rd, rand_rs2, rs1]:
-                        new_rand_rs1 = random.choice([
+                        new_rand_rs1 = choice([
                             x for x in reg_file
                             if x not in [rd1, rs2, rs3, rand_rd, rand_rs2, rs1]
                         ])
                         rand_rs1 = new_rand_rs1
                     if rand_rs2 in [rs1, rd1, rs3, rand_rs1, rand_rd, rs2]:
-                        new_rand_rs2 = random.choice([
+                        new_rand_rs2 = choice([
                             x for x in reg_file
                             if x not in [rs1, rd1, rs3, rand_rs1, rand_rd, rs2]
                         ])
                         rand_rs2 = new_rand_rs2
                     if rand_inst in [rand_inst1, inst]:
-                        new_rand_inst = random.choice([
+                        new_rand_inst = choice([
                             x for x in random_list
                             if x not in [rand_inst1, rand_inst]
                         ])
                         rand_inst = new_rand_inst
                     if rand_inst1 in [rand_inst, inst]:
-                        new_rand_inst1 = random.choice([
+                        new_rand_inst1 = choice([
                             x for x in random_list
                             if x not in [rand_inst, rand_inst]
                         ])
@@ -147,30 +145,23 @@ class uatg_mbox_comp_mul_rv64_imm_WAR(IPlugin):
             # then first choose a new signature pointer and move the
             # value to it.
             if swreg in [rd1, rs1, rs2, rs3]:
-                newswreg = random.choice([
-                    x for x in reg_file
-                    if x not in [rd1, rs1, rs2, rs3]
-                ])
+                newswreg = choice(
+                    [x for x in reg_file if x not in [rd1, rs1, rs2, rs3]])
                 asm_code += f'mv {newswreg}, {swreg}\n'
                 swreg = newswreg
 
             # perform the  required assembly operation
 
             asm_code += f'\ninst_{inst_count}:\n'
-            # asm_code += f'\n#operation: {inst} rs1={rs1}, rs2={rs2}, rd={rd}\n'
-
-            asm_code += f'MBOX_COMPRESSED_RR_OP({rand_inst}, {inst}, {rs1}, {rs2}, {rs3}, {rd1}, 0, {rs1_val}, {rs2_val}, {rs3_val}, {swreg}, {offset}, {code})'
+            asm_code += f'MBOX_COMPRESSED_RR_OP({rand_inst}, {inst}, {rs1},' \
+                        f' {rs2}, {rs3}, {rd1}, 0, {rs1_val}, {rs2_val},' \
+                        f' {rs3_val}, {swreg}, {offset}, {code})'
 
             # adjust the offset. reset to 0 if it crosses 2048 and
             # increment the current signature pointer with the
             # current offset value
             if offset + self.offset_inc >= 2048:
                 asm_code += f'addi {swreg}, {swreg}, {offset}\n'
-                offset = 0
-
-            # increment offset by the amount of bytes updated in
-            # signature by each test-macro.
-            offset = offset + self.offset_inc
 
             # keep track of the total number of signature bytes used
             # so far.
@@ -186,7 +177,7 @@ class uatg_mbox_comp_mul_rv64_imm_WAR(IPlugin):
             compile_macros = []
 
             # return asm_code and sig_code
-            test_dict.append({
+            yield ({
                 'asm_code': asm_code,
                 'asm_data': '',
                 'asm_sig': sig_code,
@@ -194,11 +185,5 @@ class uatg_mbox_comp_mul_rv64_imm_WAR(IPlugin):
                 'name_postfix': inst,
                 'doc_string': doc_string
             })
-        return test_dict
 
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv
+    

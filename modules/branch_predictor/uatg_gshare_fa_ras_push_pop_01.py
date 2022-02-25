@@ -20,6 +20,8 @@ class uatg_gshare_fa_ras_push_pop_01(IPlugin):
         # initializing variables
         super().__init__()
         self.recurse_level = 5
+        self.modes = []
+        self.isa = 'RV32I'
 
     def execute(self, core_yaml, isa_yaml) -> bool:
         # Function to check whether to generate/validate this test or not
@@ -46,14 +48,14 @@ class uatg_gshare_fa_ras_push_pop_01(IPlugin):
 
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
 
-        return_list = []
-
         for mode in self.modes:
 
-            # reg x30 is used as looping variable. reg x31 used as a temp variable
+            # reg x30 is used as looping variable. reg x31 used as a temp
+            # variable
 
             recurse_level = self.recurse_level
-            # number of times call-ret instructions to be implemented in assembly
+            # number of times call-ret instructions to be implemented in
+            # assembly
             no_ops = '\taddi x31, x0, 5\n\taddi x31, x0, -5\n'
             asm = f'\taddi x30, x0, {recurse_level}\n'
             # going into the first call
@@ -71,23 +73,23 @@ class uatg_gshare_fa_ras_push_pop_01(IPlugin):
 
             # trap signature bytes
             trap_sigbytes = 24
-            trap_count = 0
 
             # initialize the signature region
-            sig_code = 'mtrap_count:\n'
-            sig_code += ' .fill 1, 8, 0x0\n'
-            sig_code += 'mtrap_sigptr:\n'
-            sig_code += ' .fill {0},4,0xdeadbeef\n'.format(
-                int(trap_sigbytes / 4))
+            sig_code = f'mtrap_count:\n .fill 1, 8, 0x0\nmtrap_sigptr:\n ' \
+                       f'.fill {trap_sigbytes // 4},4,0xdeadbeef\n'
             # compile macros for the test
             if mode != 'machine':
-                compile_macros = ['rvtest_mtrap_routine','s_u_mode_test']
+                compile_macros = ['rvtest_mtrap_routine', 's_u_mode_test']
             else:
                 compile_macros = []
 
-            # user can choose to generate supervisor and/or user tests in addition
-            # to machine mode tests here.
+            # user can choose to generate supervisor and/or user tests in
+            # addition to machine mode tests here.
             privileged_test_enable = True
+
+            if not privileged_test_enable:
+                self.modes.remove('supervisor')
+                self.modes.remove('user')
 
             privileged_test_dict = {
                 'enable': privileged_test_enable,
@@ -97,7 +99,7 @@ class uatg_gshare_fa_ras_push_pop_01(IPlugin):
                 'll_pages': 64,
             }
 
-            return_list.append({
+            yield ({
                 'asm_code': asm,
                 'asm_sig': sig_code,
                 'compile_macros': compile_macros,
@@ -105,11 +107,6 @@ class uatg_gshare_fa_ras_push_pop_01(IPlugin):
                 'docstring': 'This test fills ghr register with ones',
                 'name_postfix': mode
             })
-
-            if not privileged_test_enable:
-                return return_list
-
-        return return_list
 
     def check_log(self, log_file_path, reports_dir) -> bool:
         """

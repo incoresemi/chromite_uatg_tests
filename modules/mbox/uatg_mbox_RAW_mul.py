@@ -1,7 +1,7 @@
 from yapsy.IPlugin import IPlugin
 from uatg.instruction_constants import base_reg_file, mext_instructions
 from typing import Dict, Any, List, Union
-import random
+from random import choice
 
 
 class uatg_mbox_mul_RAW_mul_mul(IPlugin):
@@ -38,8 +38,6 @@ class uatg_mbox_mul_RAW_mul_mul(IPlugin):
             self) -> List[Dict[str, Union[Union[str, List[Any]], Any]]]:
         """    """
 
-        test_dict = []
-
         reg_file = [
             register for register in base_reg_file
             if register not in ('x0', 'x1', 'x2', 'x3', 'x4', 'x5', 'x6')
@@ -68,7 +66,7 @@ class uatg_mbox_mul_RAW_mul_mul(IPlugin):
             inst_count = 0
 
             code = ''
-            rand_inst = random.choice(random_list)
+            rand_inst = choice(random_list)
 
             rs1, rs2, rd1, rd2 = 'x3', 'x4', 'x5', 'x6'
 
@@ -76,34 +74,34 @@ class uatg_mbox_mul_RAW_mul_mul(IPlugin):
 
                 code += f'{inst} {rd1},{rs1},{rs2};\n'
                 for j in range(i):
-                    rand_rs1 = random.choice(reg_file)
-                    rand_rs2 = random.choice(reg_file)
-                    rand_rd = random.choice(reg_file)
-                    rand_inst1 = random.choice(random_list)
+                    rand_rs1 = choice(reg_file)
+                    rand_rs2 = choice(reg_file)
+                    rand_rd = choice(reg_file)
+                    rand_inst1 = choice(random_list)
                     if rand_rd in [rs1, rs2, rd1, rand_rs1, rand_rs2, rd2]:
-                        new_rand_rd = random.choice([
+                        new_rand_rd = choice([
                             x for x in reg_file
                             if x not in [rand_rs1, rand_rs2]
                         ])
                         rand_rd = new_rand_rd
                     if rand_rs1 in [rand_rd, rand_rs2]:
-                        new_rand_rs1 = random.choice([
+                        new_rand_rs1 = choice([
                             x for x in reg_file if x not in [rand_rd, rand_rs2]
                         ])
                         rand_rs1 = new_rand_rs1
                     if rand_rs2 in [rand_rs1, rand_rd]:
-                        new_rand_rs2 = random.choice([
+                        new_rand_rs2 = choice([
                             x for x in reg_file if x not in [rand_rs1, rand_rd]
                         ])
                         rand_rs2 = new_rand_rs2
                     if rand_inst in [rand_inst1, inst]:
-                        new_rand_inst = random.choice([
+                        new_rand_inst = choice([
                             x for x in random_list
                             if x not in [rand_inst1, rand_inst]
                         ])
                         rand_inst = new_rand_inst
                     if rand_inst1 in [rand_inst, inst]:
-                        new_rand_inst1 = random.choice([
+                        new_rand_inst1 = choice([
                             x for x in random_list
                             if x not in [rand_inst, rand_inst]
                         ])
@@ -131,18 +129,12 @@ class uatg_mbox_mul_RAW_mul_mul(IPlugin):
             compile_macros = []
 
             # return asm_code and sig_code
-            test_dict.append({
+            yield ({
                 'asm_code': asm_code,
                 'asm_data': '',
                 'asm_sig': sig_code,
                 'compile_macros': compile_macros,
                 'name_postfix': inst
             })
-        return test_dict
 
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv
+    

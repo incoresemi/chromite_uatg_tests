@@ -1,9 +1,9 @@
 # See LICENSE.incore for details
 
-from yapsy.IPlugin import IPlugin
-
-from typing import Dict, Union, Any, List
 import random
+from typing import Dict, Union, Any, List
+
+from yapsy.IPlugin import IPlugin
 
 
 class uatg_icache_fill(IPlugin):
@@ -14,6 +14,8 @@ class uatg_icache_fill(IPlugin):
         self._word_size = 8
         self._block_size = 8
         self._ways = 4
+        self._ISA = 'RV32I'
+        self._XLEN = 32
 
     def execute(self, core_yaml, isa_yaml) -> bool:
         _icache_dict = core_yaml['icache_configuration']
@@ -33,14 +35,15 @@ class uatg_icache_fill(IPlugin):
         """
         Filling icache by using only jump from one line to another
         """
+
         asm_data = f"\nrvtest_data:\n\t.align {self._word_size}\n"
-        #initialise all registers to 0
-        #assumes x0 is zero
-        asm_init = [f"\tmv x{i}, x0\n" for i in range(1,32)]
+        # initialise all registers to 0
+        # assumes x0 is zero
+        asm_init = [f"\tmv x{i}, x0\n" for i in range(1, 32)]
         # We load the memory with data twice the size of our icache.
         asm_data += f"\t.rept " + \
-            f"{self._sets * self._word_size * self._block_size}\n" + \
-            f"\t.dword 0x{random.randrange(16 ** 16):8x}\n" + f"\t.endr\n"
+                    f"{self._sets * self._word_size * self._block_size}\n" + \
+                    f"\t.dword 0x{random.randrange(16 ** 16):8x}\n\t.endr\n"
 
         nop = "\taddi x0, x0, 0\n"
 
@@ -57,13 +60,19 @@ class uatg_icache_fill(IPlugin):
 
         compile_macros = []
 
-        return [{
+        yield ({
             'asm_code': "".join(asm_init) + asm,
             'asm_data': asm_data,
             'asm_sig': '',
             'compile_macros': compile_macros
-        }]
+        })
+
     def check_log(self, log_file_path, reports_dir):
-        ''
+        """
+        
+        """
+
     def generate_covergroups(self, config_file):
-        ''
+        """
+
+        """

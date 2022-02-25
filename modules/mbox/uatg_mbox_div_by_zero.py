@@ -37,8 +37,6 @@ class uatg_mbox_div_by_zero(IPlugin):
         """
             It creates asm for divided by zero operation using div instruction 
         """
-        test_dict = []
-
         doc_string = 'Test evaluate the divided by zero operation using div ' \
                      'instruction'
 
@@ -172,7 +170,7 @@ class uatg_mbox_div_by_zero(IPlugin):
                 name = f'reg-{rs2}'
 
             # return asm_code and sig_code
-            test_dict.append({
+            yield ({
                 'asm_code': asm_code,
                 'asm_data': '',
                 'asm_sig': sig_code,
@@ -180,11 +178,5 @@ class uatg_mbox_div_by_zero(IPlugin):
                 'name_postfix': name,
                 'doc_string': doc_string
             })
-        return test_dict
 
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv
+    

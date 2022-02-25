@@ -1,8 +1,9 @@
-from yapsy.IPlugin import IPlugin
+import random
+from typing import Dict, List, Union, Any
+
 from uatg.instruction_constants import base_reg_file, arithmetic_instructions, \
     bit_walker
-from typing import Dict, List, Union, Any
-import random
+from yapsy.IPlugin import IPlugin
 
 
 class uatg_decoder_arithmetic_insts_3(IPlugin):
@@ -38,8 +39,6 @@ class uatg_decoder_arithmetic_insts_3(IPlugin):
                 addi', 'addiw', 'addid
         """
         reg_file = base_reg_file.copy()
-
-        test_dict = []
 
         for inst in arithmetic_instructions[f'{self.isa_bit}-add-imm']:
 
@@ -113,18 +112,10 @@ class uatg_decoder_arithmetic_insts_3(IPlugin):
 
             # return asm_code and sig_code
 
-            test_dict.append({
+            yield ({
                 'asm_code': asm_code,
                 'asm_data': '',
                 'asm_sig': sig_code,
                 'compile_macros': compile_macros,
                 'name_postfix': inst
             })
-        return test_dict
-
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv

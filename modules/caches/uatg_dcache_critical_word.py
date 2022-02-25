@@ -1,10 +1,10 @@
 # See LICENSE.incore for details
 # Co-authored-by: Vishweswaran K <vishwa.kans07@gmail.com>
 
-from yapsy.IPlugin import IPlugin
-
-from typing import Dict, Union, Any, List
 import random
+from typing import Dict, Union, Any, List
+
+from yapsy.IPlugin import IPlugin
 
 
 class uatg_dcache_critical_word(IPlugin):
@@ -16,6 +16,8 @@ class uatg_dcache_critical_word(IPlugin):
         self._block_size = 8
         self._ways = 4
         self._fb_size = 9
+        self._ISA = 'RV32I'
+        self._XLEN = 32
 
     def execute(self, core_yaml, isa_yaml) -> bool:
         _dcache_dict = core_yaml['dcache_configuration']
@@ -48,11 +50,11 @@ class uatg_dcache_critical_word(IPlugin):
 
         # We load the memory with data twice the size of our dcache.
         asm_data += f"\t.rept " + \
-            f"{self._sets * self._word_size * self._block_size}\n" + \
-            f"\t.dword 0x{random.randrange(16 ** 16):8x}\n" + f"\t.endr\n"
-        #initialise all registers to 0
-        #assumes x0 is zero
-        asm_init = [f"\tmv x{i}, x0\n" for i in range(1,32)]
+                    f"{self._sets * self._word_size * self._block_size}\n" + \
+                    f"\t.dword 0x{random.randrange(16 ** 16):8x}\n\t.endr\n"
+        # initialise all registers to 0
+        # assumes x0 is zero
+        asm_init = [f"\tmv x{i}, x0\n" for i in range(1, 32)]
         asm_main = "\tfence\n\tli t1, 8000\n\tli t2, 0x9999999999999999\n" \
                    "\tli t4, 0x1111\n"
         asm_fence = "\tfence\n"
@@ -77,16 +79,22 @@ class uatg_dcache_critical_word(IPlugin):
 
         # Concatenate all pieces of asm.
         asm = "".join(asm_init) + asm_main + asm_fence + \
-            asm_critical1 + asm_critical2 + asm_critical3 + asm_end
+              asm_critical1 + asm_critical2 + asm_critical3 + asm_end
         compile_macros = []
 
-        return [{
+        yield ({
             'asm_code': asm,
             'asm_data': asm_data,
             'asm_sig': '',
             'compile_macros': compile_macros
-        }]
+        })
+
     def check_log(self, log_file_path, reports_dir):
-        ''
+        """
+
+        """
+
     def generate_covergroups(self, config_file):
-        ''
+        """
+
+        """

@@ -33,13 +33,11 @@ class uatg_decoder_atomic_memory_instructions(IPlugin):
             return True
         else:
             return False
-    
+
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
         """
           Generates the assembly file for Atomic memory instructions
         """
-
-        test_dict = []
 
         reg_file = base_reg_file.copy()
 
@@ -50,7 +48,7 @@ class uatg_decoder_atomic_memory_instructions(IPlugin):
 
         for inst in instruction_list:
 
-            asm_code = '#'* 5 + f'{inst} rd,rs2,(rs1) ' + '#' * 5 + '\n'
+            asm_code = '#' * 5 + f'{inst} rd,rs2,(rs1) ' + '#' * 5 + '\n'
 
             inst_count = 0
 
@@ -62,14 +60,15 @@ class uatg_decoder_atomic_memory_instructions(IPlugin):
                         asm_code += f'\ninst_{inst_count}:'
                         asm_code += f'\n\tla {rs1}, rvtest_data'
 
-                        asm_code += f'\n\t#operation: {inst}, rs1={rs1}, rs2={rs2}, rd={rd}\n'
+                        asm_code += f'\n\t#operation: {inst}, rs1={rs1}, ' \
+                                    f'rs2={rs2}, rd={rd}\n'
 
                         asm_code += f'\t{inst} {rd}, {rs2}, ({rs1})\n'
 
                         inst_count += 1
 
             compile_macros = []
-            
+
             sig_code = ''
 
             asm_data = '\nrvtest_data:\n'
@@ -78,18 +77,10 @@ class uatg_decoder_atomic_memory_instructions(IPlugin):
             asm_data += '.word 0xbabecafe\n'
             asm_data += '.word 0xbabecafe\n'
 
-            test_dict.append({'asm_code': asm_code,
-                              'asm_data': asm_data,
-                              'asm_sig': sig_code,
-                              'compile_macros': compile_macros,
-                              'name_postfix': inst
-                              })
-
-        return test_dict
-
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv
+            yield ({
+                'asm_code': asm_code,
+                'asm_data': asm_data,
+                'asm_sig': sig_code,
+                'compile_macros': compile_macros,
+                'name_postfix': inst
+            })

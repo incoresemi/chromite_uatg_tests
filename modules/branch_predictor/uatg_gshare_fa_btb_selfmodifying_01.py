@@ -16,7 +16,8 @@ class uatg_gshare_fa_btb_selfmodifying_01(IPlugin):
     def __init__(self):
         """ The constructor for this class. """
         super().__init__()
-        pass  # we do not have any variable to declare.
+        self.modes = []
+        self.isa = 'RV32I'
 
     def execute(self, core_yaml, isa_yaml) -> bool:
         """
@@ -58,47 +59,44 @@ class uatg_gshare_fa_btb_selfmodifying_01(IPlugin):
         instruction again. fence will also invalidate the BTB entries,
         empty the GHR, empty RAS, make rg allocate 0
         """
-        return_list = []
 
         for mode in self.modes:
 
             # ASM Syntax
-            asm = ".option norvc\n\n"
-            asm += "\taddi t3,x0,0\n\taddi t4,x0,3\n\tjal x0,first\n\n"
-            asm += "first:\n\taddi t3,t3,1\n\n"
-            asm += "b_address:\n\tbeq t3,t4,end\n\n"
-            asm += "j_address:\n\tjal x0,first\n"
-            asm += "\n\tjal x0,fin\n\n"
-            asm += "end:\n\taddi x0,x0,0\n\taddi t0,x0,1\n"
-            asm += "\tla t0, b_address\n\tla t2, j_address\n"
-            asm += "\tla t5, add_instruction\n\tlw t1, 0(t5)\n"
-            asm += "\taddi t3,x0,5\n\tsw t1, 0(t2)\n\tsw t1, 0(t0)\n"
-            asm += "\tfence.i\n\tjal x0,first\n\n"
-            asm = asm + "fin:\n"
+            asm = ".option norvc\n\n" \
+                  "\taddi t3,x0,0\n\taddi t4,x0,3\n\tjal x0,first\n\n" \
+                  "first:\n\taddi t3,t3,1\n\n" \
+                  "b_address:\n\tbeq t3,t4,end\n\n" \
+                  "j_address:\n\tjal x0,first\n\n\tjal x0,fin\n\n" \
+                  "end:\n\taddi x0,x0,0\n\taddi t0,x0,1\n" \
+                  "\tla t0, b_address\n\tla t2, j_address\n" \
+                  "\tla t5, add_instruction\n\tlw t1, 0(t5)\n" \
+                  "\taddi t3,x0,5\n\tsw t1, 0(t2)\n\tsw t1, 0(t0)\n" \
+                  "\tfence.i\n\tjal x0,first\n\nfin:\n"
 
             # rvtest_data
-            asm_data = "\n.align 4\n\nadd_instruction:\n"
-            asm_data += "\t.word 0x00000033\n"
+            asm_data = "\n.align 4\n\nadd_instruction:\n" \
+                       "\t.word 0x00000033\n"
 
             # trap signature bytes
             trap_sigbytes = 24
-            trap_count = 0
 
             # initialize the signature region
-            sig_code = 'mtrap_count:\n'
-            sig_code += ' .fill 1, 8, 0x0\n'
-            sig_code += 'mtrap_sigptr:\n'
-            sig_code += ' .fill {0},4,0xdeadbeef\n'.format(
-                int(trap_sigbytes / 4))
+            sig_code = f'mtrap_count:\n .fill 1, 8, 0x0\nmtrap_sigptr:\n ' \
+                       f'.fill {trap_sigbytes // 4},4,0xdeadbeef\n'
             # compile macros for the test
             if mode != 'machine':
-                compile_macros = ['rvtest_mtrap_routine','s_u_mode_test']
+                compile_macros = ['rvtest_mtrap_routine', 's_u_mode_test']
             else:
                 compile_macros = []
 
-            # user can choose to generate supervisor and/or user tests in addition
-            # to machine mode tests here.
+            # user can choose to generate supervisor and/or user tests in
+            # addition to machine mode tests here.
             privileged_test_enable = True
+
+            if not privileged_test_enable:
+                self.modes.remove('supervisor')
+                self.modes.remove('user')
 
             privileged_test_dict = {
                 'enable': privileged_test_enable,
@@ -108,7 +106,7 @@ class uatg_gshare_fa_btb_selfmodifying_01(IPlugin):
                 'll_pages': 64,
             }
 
-            return_list.append({
+            yield ({
                 'asm_code': asm,
                 'asm_sig': sig_code,
                 'asm_data': asm_data,
@@ -117,11 +115,6 @@ class uatg_gshare_fa_btb_selfmodifying_01(IPlugin):
                 'docstring': '',
                 'name_postfix': mode
             })
-
-            if not privileged_test_enable:
-                return return_list
-
-        return return_list
 
     def check_log(self, log_file_path, reports_dir):
         """

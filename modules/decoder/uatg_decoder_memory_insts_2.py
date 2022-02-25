@@ -31,20 +31,18 @@ class uatg_decoder_memory_insts_2(IPlugin):
             self.offset_inc = 8
         return True
 
-    def generate_asm(self) -> List[Dict[str,
-                                        Union[Union[str, List[str]], Any]]]:
+    def generate_asm(
+            self) -> List[Dict[str, Union[Union[str, List[str]], Any]]]:
         """
             Generates the ASM instructions for I type store instructions.
             It creates asm for the following instructions (based upon input isa)
                 sb, sh, sw, sd
         """
-        #rd_reg_file = base_reg_file.copy()
+        # rd_reg_file = base_reg_file.copy()
         rs_reg_file = base_reg_file.copy()
 
         # remove 'x0' as base address
         rs_reg_file.remove('x0')
-
-        test_dict = []
 
         for inst in load_store_instructions[f'{self.isa_bit}-stores']:
             for rs2 in rs_reg_file:
@@ -78,7 +76,7 @@ class uatg_decoder_memory_insts_2(IPlugin):
                     for val in bit_walker(bit_width=12, n_ones=i, invert=True)
                 ]
 
-                random_rs2 = random.randint(0,9999)
+                random_rs2 = random.randint(0, 9999)
 
                 count = 0
                 trap_sigbytes = 0
@@ -170,18 +168,10 @@ class uatg_decoder_memory_insts_2(IPlugin):
                 asm_data += '.word 0xbabecafe\n'
                 asm_data += '.word 0xbabecafe\n'
 
-                test_dict.append({
+                yield ({
                     'asm_code': asm_code,
                     'asm_data': asm_data,
                     'asm_sig': sig_code,
                     'compile_macros': compile_macros,
                     'name_postfix': f"{inst}_rs2_{rs2}"
                 })
-        return test_dict
-
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv

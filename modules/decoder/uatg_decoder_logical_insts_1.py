@@ -30,8 +30,8 @@ class uatg_decoder_logical_insts_1(IPlugin):
             self.offset_inc = 8
         return True
 
-    def generate_asm(self) -> List[Dict[str,
-                                        Union[Union[str, List[Any]], Any]]]:
+    def generate_asm(
+            self) -> List[Dict[str, Union[Union[str, List[Any]], Any]]]:
         """
             Generates the ASM instructions for logical register instructions.
             It creates asm for the following instructions based upon ISA
@@ -44,7 +44,7 @@ class uatg_decoder_logical_insts_1(IPlugin):
         # every instruction in logical_instructions['logic-reg']
 
         reg_file = base_reg_file.copy()
-        test_dict = []
+
         for inst in logic_instructions['logic-reg']:
 
             asm_code = '#' * 5 + ' add/sub reg, reg, reg ' + '#' * 5 + '\n'
@@ -110,18 +110,10 @@ class uatg_decoder_logical_insts_1(IPlugin):
             compile_macros = []
 
             # return asm_code and sig_code
-            test_dict.append({
+            yield ({
                 'asm_code': asm_code,
                 'asm_data': '',
                 'asm_sig': sig_code,
                 'compile_macros': compile_macros,
                 'name_postfix': inst
             })
-        return test_dict
-
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv

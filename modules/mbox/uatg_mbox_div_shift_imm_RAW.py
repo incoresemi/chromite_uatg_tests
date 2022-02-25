@@ -1,8 +1,9 @@
-from yapsy.IPlugin import IPlugin
+from random import choice
+from typing import Dict, Any, List, Union
+
 from uatg.instruction_constants import base_reg_file, mext_instructions, \
     arithmetic_instructions
-from typing import Dict, Any, List, Union
-import random
+from yapsy.IPlugin import IPlugin
 
 
 class uatg_mbox_div_shift_imm_RAW(IPlugin):
@@ -54,8 +55,9 @@ class uatg_mbox_div_shift_imm_RAW(IPlugin):
 
         """
 
-        test_dict = []
-        doc_string = 'Test evaluates the read after write dependency with mextension instructions(producer) and arithmetic (consumer) instructions'
+        doc_string = 'Test evaluates the read after write dependency with ' \
+                     'mextension instructions(producer) and arithmetic' \
+                     ' (consumer) instructions'
 
         reg_file = [
             register for register in base_reg_file
@@ -84,59 +86,59 @@ class uatg_mbox_div_shift_imm_RAW(IPlugin):
             inst_count = 0
 
             code = ''
-            #assign the imm with range
+            # assign the imm with range
             imm = range(1, 10)
-            #generate the imm_val randomly  from imm
-            imm_val = random.choice(imm)
-            #rand_inst generate arithmetic instructions randomly
-            rand_inst = random.choice(random_list)
-            #initialize the source register rs1, rs2 destination 
-            #register rd1 and rd2
+            # generate the imm_val randomly  from imm
+            imm_val = choice(imm)
+            # rand_inst generate arithmetic instructions randomly
+            rand_inst = choice(random_list)
+            # initialize the source register rs1, rs2 destination
+            # register rd1 and rd2
             rs1, rs2, rd1, rd2 = 'x3', 'x4', 'x5', 'x6'
             rand_rs1, rand_rd = 'x0', 'x0'
-            #depends on the div_stages the mext and arithmetic 
-            #instructions are generated
+            # depends on the div_stages the mext and arithmetic
+            # instructions are generated
             for i in range(self.div_stages):
 
                 code += f'{inst} {rd1},{rs1},{rs2};\n'
                 for j in range(i):
-                    rand_rs1 = random.choice(reg_file)
-                    rand_rd = random.choice(reg_file)
-                    rand_inst1 = random.choice(random_list)
+                    rand_rs1 = choice(reg_file)
+                    rand_rd = choice(reg_file)
+                    rand_inst1 = choice(random_list)
                     if rand_rd in [rs1, rs2, rd1, rand_rs1, rd2, swreg]:
-                        new_rand_rd = random.choice([
+                        new_rand_rd = choice([
                             x for x in reg_file
                             if x not in [rs1, rs2, rd1, rand_rs1, rd2, swreg]
                         ])
                         rand_rd = new_rand_rd
                     if rand_rs1 in [rd1, rs2, rd2, rand_rd, rs1, swreg]:
-                        new_rand_rs1 = random.choice([
+                        new_rand_rs1 = choice([
                             x for x in reg_file
                             if x not in [rd1, rs2, rd2, rand_rd, rs1, swreg]
                         ])
                         rand_rs1 = new_rand_rs1
                     if rand_inst in [rand_inst1, inst]:
-                        new_rand_inst = random.choice([
+                        new_rand_inst = choice([
                             x for x in random_list
                             if x not in [rand_inst1, rand_inst]
                         ])
                         rand_inst = new_rand_inst
                     if rand_inst1 in [rand_inst, inst]:
-                        new_rand_inst1 = random.choice([
+                        new_rand_inst1 = choice([
                             x for x in random_list
                             if x not in [rand_inst, rand_inst]
                         ])
                         rand_inst1 = new_rand_inst1
                     code += f'{rand_inst1} {rand_rd}, {rand_rs1}, {imm_val};\n'
                 code += f'{rand_inst} {rd2}, {rd1}, {imm_val};\n\n'
-            #initialize rs1 and rs2 values
+            # initialize rs1 and rs2 values
             rs1_val = '0x48'
             rs2_val = '0x6'
             # if signature register needs to be used for operations
             # then first choose a new signature pointer and move the
             # value to it.
             if swreg in [rd1, rs1, rs2, rd2, rand_rs1, rand_rd]:
-                newswreg = random.choice([
+                newswreg = choice([
                     x for x in reg_file
                     if x not in [rd1, rs1, rs2, rd2, rand_rs1, rand_rd]
                 ])
@@ -165,19 +167,11 @@ class uatg_mbox_div_shift_imm_RAW(IPlugin):
             compile_macros = []
 
             # return asm_code and sig_code
-            test_dict.append({
+            yield ({
                 'asm_code': asm_code,
                 'asm_data': '',
                 'asm_sig': sig_code,
                 'compile_macros': compile_macros,
                 'name_postfix': inst,
-                'doc_string' : doc_string
+                'doc_string': doc_string
             })
-        return test_dict
-
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv

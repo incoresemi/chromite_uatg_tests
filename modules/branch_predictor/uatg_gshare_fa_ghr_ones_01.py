@@ -23,6 +23,8 @@ class uatg_gshare_fa_ghr_ones_01(IPlugin):
         # initializing variables
         super().__init__()
         self._history_len = 8
+        self.modes = []
+        self.isa = 'RV32I'
         self.isa = 'RV64I'
 
     def execute(self, core_yaml, isa_yaml):
@@ -53,8 +55,6 @@ class uatg_gshare_fa_ghr_ones_01(IPlugin):
           will are TAKEN. This fills the ghr with ones
         """
 
-        return_list = []
-
         for mode in self.modes:
 
             loop_count = self._history_len + 2  # here, 2 is added arbitrarily.
@@ -66,23 +66,24 @@ class uatg_gshare_fa_ghr_ones_01(IPlugin):
 
             # trap signature bytes
             trap_sigbytes = 24
-            trap_count = 0
 
             # initialize the signature region
-            sig_code = 'mtrap_count:\n'
-            sig_code += ' .fill 1, 8, 0x0\n'
-            sig_code += 'mtrap_sigptr:\n'
-            sig_code += ' .fill {0},4,0xdeadbeef\n'.format(
-                int(trap_sigbytes / 4))
+            sig_code = 'mtrap_count:\n .fill 1, 8, 0x0\n' \
+                       'mtrap_sigptr:\n' \
+                       f' .fill {trap_sigbytes // 4},4,0xdeadbeef\n'
             # compile macros for the test
             if mode != 'machine':
-                compile_macros = ['rvtest_mtrap_routine','s_u_mode_test']
+                compile_macros = ['rvtest_mtrap_routine', 's_u_mode_test']
             else:
                 compile_macros = []
 
-            # user can choose to generate supervisor and/or user tests in addition
-            # to machine mode tests here.
+            # user can choose to generate supervisor and/or user tests in
+            # addition to machine mode tests here.
             privileged_test_enable = True
+
+            if not privileged_test_enable:
+                self.modes.remove('supervisor')
+                self.modes.remove('user')
 
             privileged_test_dict = {
                 'enable': privileged_test_enable,
@@ -92,7 +93,7 @@ class uatg_gshare_fa_ghr_ones_01(IPlugin):
                 'll_pages': 64,
             }
 
-            return_list.append({
+            yield ({
                 'asm_code': asm,
                 'asm_sig': sig_code,
                 'compile_macros': compile_macros,
@@ -100,11 +101,6 @@ class uatg_gshare_fa_ghr_ones_01(IPlugin):
                 'docstring': 'This test fills ghr register with ones',
                 'name_postfix': mode
             })
-
-            if not privileged_test_enable:
-                return return_list
-
-        return return_list
 
     def check_log(self, log_file_path, reports_dir):
         """

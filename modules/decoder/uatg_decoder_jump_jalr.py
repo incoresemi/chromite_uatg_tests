@@ -31,8 +31,8 @@ class uatg_decoder_jump_jalr(IPlugin):
             self.offset_inc = 8
         return True
 
-    def generate_asm(self) -> List[Dict[str,
-                                        Union[Union[str, List[str]], Any]]]:
+    def generate_asm(
+            self) -> List[Dict[str, Union[Union[str, List[str]], Any]]]:
         """
         This method generates Assembly Jump instructions of varied immediate 
         values. 
@@ -51,8 +51,6 @@ class uatg_decoder_jump_jalr(IPlugin):
 
         # remove x0 from source reg list
         rs1_reg_file.remove('x0')
-
-        test_dict = []
 
         inst = jump_instructions['jalr'][0]
 
@@ -156,19 +154,10 @@ class uatg_decoder_jump_jalr(IPlugin):
             asm_data += '.word 0xbabecafe\n'
 
             # return asm_code and sig_code
-            test_dict.append({
+            yield ({
                 'asm_code': asm_code,
                 'asm_data': asm_data,
                 'asm_sig': sig_code,
                 'compile_macros': compile_macros,
                 'name_postfix': f'rs1_{rs1}'
             })
-
-        return test_dict
-
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ''
-        return sv

@@ -41,10 +41,10 @@ class uatg_misa_disable_FDQ(IPlugin):
         if 'misa' in isa_yaml['hart0'].keys():
             self.reset_val = isa_yaml['hart0']['misa']['reset-val']
             if self.xlen == 32 and isa_yaml['hart0']['misa']['rv32'][
-                'accessible']:
+                    'accessible']:
                 self.csr = isa_yaml['hart0']['misa']['rv32']
             elif self.xlen == 64 and isa_yaml['hart0']['misa']['rv64'][
-                'accessible']:
+                    'accessible']:
                 self.csr = isa_yaml['hart0']['misa']['rv64']
             else:
                 return False
@@ -114,10 +114,10 @@ class uatg_misa_disable_FDQ(IPlugin):
                    f'mtrap_sigptr:\n.fill {1},4,0xdeadbeef\n'
         # compile macros for the test
         compile_macros = ['rvtest_mtrap_routine']
-        test_dict = [{
+        yield({
             'asm_code': asm_code,
             'asm_sig': sig_code,
             'compile_macros': compile_macros,
             'name_postfix': 'machine'
-        }]
-        return test_dict
+        })
+        

@@ -36,8 +36,6 @@ class uatg_mbox_signed_mul(IPlugin):
         """
             It creates asm for signed multiplication using mulh instruction 
         """
-        test_dict = []
-
         doc_string = 'Test evaluates the signed multiplication using mulh ' \
                      'instruction'
 
@@ -68,7 +66,7 @@ class uatg_mbox_signed_mul(IPlugin):
         elif 'RV64' in self.isa:
             rs1_val = '0xfdb97531eca86420'
             rs2_val = '0xfeca86420db97531'
- 
+
         # perform the  required assembly operation
         asm_code += f'\n#operation: mulh, rs1={rs1}, rs2={rs2}, rd={rd}\n'
 
@@ -96,18 +94,12 @@ class uatg_mbox_signed_mul(IPlugin):
         compile_macros = []
 
         # return asm_code and sig_code
-        test_dict.append({
+        yield ({
             'asm_code': asm_code,
             'asm_data': '',
             'asm_sig': sig_code,
             'compile_macros': compile_macros,
             'doc_string': doc_string
         })
-        return test_dict
 
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv
+    

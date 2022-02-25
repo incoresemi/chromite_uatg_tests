@@ -31,8 +31,8 @@ class uatg_decoder_memory_insts_1(IPlugin):
             self.offset_inc = 8
         return True
 
-    def generate_asm(self) -> List[Dict[str,
-                                        Union[Union[str, List[str]], Any]]]:
+    def generate_asm(
+            self) -> List[Dict[str, Union[Union[str, List[str]], Any]]]:
         """
             Generates the ASM instructions for I type load instructions.
             It creates asm for the following instructions (based upon input isa)
@@ -43,8 +43,6 @@ class uatg_decoder_memory_insts_1(IPlugin):
 
         # remove 'x0' as base address
         rs_reg_file.remove('x0')
-
-        test_dict = []
 
         for inst in load_store_instructions[f'{self.isa_bit}-loads']:
             for rd in rd_reg_file:
@@ -167,18 +165,10 @@ class uatg_decoder_memory_insts_1(IPlugin):
                 asm_data += '.word 0xbabecafe\n'
                 asm_data += '.word 0xbabecafe\n'
 
-                test_dict.append({
+                yield ({
                     'asm_code': asm_code,
                     'asm_data': asm_data,
                     'asm_sig': sig_code,
                     'compile_macros': compile_macros,
                     'name_postfix': f"{inst}_rd_{rd}"
                 })
-        return test_dict
-
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv

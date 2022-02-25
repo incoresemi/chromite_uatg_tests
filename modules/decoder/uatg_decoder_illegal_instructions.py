@@ -36,7 +36,7 @@ class uatg_decoder_illegal_instructions(IPlugin):
             This will be a negative test case for the decoder module.
         """
         # right now the illegal generator supports only
-        # RVxxIMAFD. Hence, we filter the ISA string to 
+        # RVxxIMAFD. Hence, we filter the ISA string to
         # remove the unsupported extensions.
         # right now we remove C,S,U and Z extensions
 
@@ -51,7 +51,6 @@ class uatg_decoder_illegal_instructions(IPlugin):
         illegal_list = illegal_generator(new_isa_string)
 
         # define test_list
-        test_dict = []
 
         # split the illegal instruction list using a lambda function
         f = lambda lst, n: [lst[i:i + n] for i in range(0, len(lst), n)]
@@ -86,11 +85,8 @@ class uatg_decoder_illegal_instructions(IPlugin):
                 count = count + 1
 
             # initialize the signature region
-            sig_code = 'mtrap_count:\n'
-            sig_code += ' .fill 1, 8, 0x0\n'
-            sig_code += 'mtrap_sigptr:\n'
-            sig_code += ' .fill {0},4,0xdeadbeef\n'.format(
-                int(trap_sigbytes / 4))
+            sig_code = f'mtrap_count:\n .fill 1, 8, 0x0\nmtrap_sigptr:\n ' \
+                       f'.fill {trap_sigbytes // 4},4,0xdeadbeef\n'
 
             # compile macros for the test
             compile_macros = ['rvtest_mtrap_routine']
@@ -98,23 +94,13 @@ class uatg_decoder_illegal_instructions(IPlugin):
             asm_code = f'## inst_count: {count}, trap_count: {trap_count}' + \
                        asm_code
 
-            asm_data = '\nrvtest_data:\n'
-            asm_data += '.word 0xbabecafe\n'
-            asm_data += '.word 0xbabecafe\n'
-            asm_data += '.word 0xbabecafe\n'
-            asm_data += '.word 0xbabecafe\n'
+            asm_data = '\nrvtest_data:\n.word 0xbabecafe\n.word 0xbabecafe' \
+                       '\n.word 0xbabecafe\n.word 0xbabecafe\n'
 
-            test_dict.append({
+            yield ({
                 'asm_code': asm_code,
                 'asm_data': asm_data,
                 'asm_sig': sig_code,
                 'compile_macros': compile_macros,
                 'name_postfix': f"illegals_{new_isa_string}"
             })
-        return test_dict
-
-    def generate_covergroups(self, config_file) -> str:
-        return ''
-
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False

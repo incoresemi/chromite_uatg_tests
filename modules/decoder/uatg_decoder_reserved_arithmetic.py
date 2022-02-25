@@ -1,7 +1,7 @@
 from yapsy.IPlugin import IPlugin
 
 
-class uatg_decoder_illegal_instructions(IPlugin):
+class uatg_decoder_reserved_arithmetic(IPlugin):
     """
         This class contains methods to generate Reserved instructions of
         RV[32|64] IMAFD for which the core should trap.
@@ -32,14 +32,16 @@ class uatg_decoder_illegal_instructions(IPlugin):
         reg_file = ['x' + str(i) for i in range(0, 32)]
 
         # contains the format x0, x0-31, x0-31
-        x0_rf_rf_cross = [f'x0, {rs1}, {rs2}' for rs1 in reg_file
-                          for rs2 in reg_file]
+        x0_rf_rf_cross = [
+            f'x0, {rs1}, {rs2}' for rs1 in reg_file for rs2 in reg_file
+        ]
         i_insts = {}
 
         if '64' in self.isa:
             for inst in ('addw', 'subw', 'sllw', 'srlw', 'sraw'):
-                i_insts[inst] = [f'{inst} {x0_rf_imm12}' for x0_rf_imm12 in
-                                 x0_rf_rf_cross]
+                i_insts[inst] = [
+                    f'{inst} {x0_rf_imm12}' for x0_rf_imm12 in x0_rf_rf_cross
+                ]
             for inst in ('slliw', 'srliw', 'sraiw'):
                 # SLLIW, SRLIW, SRAIW encodings with imm[5] ≠ 0 are reserved
                 i_insts[inst] = [
@@ -53,9 +55,8 @@ class uatg_decoder_illegal_instructions(IPlugin):
 
         del x0_rf_rf_cross
 
-        test_dict = []
         for op in i_insts:
-            offset = 2 ** 14
+            offset = 2**14
             ranges = range(0, len(i_insts[op]), offset)
             for begin in ranges:
                 asm_code = f'.align 4\n\n\n'
@@ -74,10 +75,9 @@ class uatg_decoder_illegal_instructions(IPlugin):
                 sig_code += f' .fill {trap_sigbytes // 4},4,0xdeadbeef\n'
                 # compile macros for the test
                 compile_macros = ['rvtest_mtrap_routine']
-                test_dict.append({
+                yield ({
                     'asm_code': asm_code,
                     'asm_sig': sig_code,
                     'compile_macros': compile_macros,
                     'name_postfix': f"{op}"
                 })
-        return test_dict

@@ -1,4 +1,4 @@
-import random
+from random import choice, getrandbits
 from typing import Dict, List, Any, Union
 
 from uatg.instruction_constants import arithmetic_instructions, \
@@ -50,8 +50,6 @@ class uatg_mbox_mul_depend_shift_imm(IPlugin):
           (i.e mulh x4, x3, x1
                slli x1, x4, x6)
         """
-        test_dict = []
-
         doc_string = 'Test evaluates the read after write dependency with ' \
                      'mextension(producer) instructions and arithmetic(' \
                      'consumer) instructions '
@@ -87,41 +85,41 @@ class uatg_mbox_mul_depend_shift_imm(IPlugin):
             for rd in reg_file:
                 for rs1 in reg_file:
                     for rs2 in reg_file:
-                        rs1_val = hex(random.getrandbits(self.xlen))
-                        rs2_val = hex(random.getrandbits(self.xlen))
-                        rand_inst = random.choice(random_list)
-                        imm_val = random.choice(imm)
+                        rs1_val = hex(getrandbits(self.xlen))
+                        rs2_val = hex(getrandbits(self.xlen))
+                        rand_inst = choice(random_list)
+                        imm_val = choice(imm)
 
                         # if signature register needs to be used for operations
                         # then first choose a new signature pointer and move the
                         # value to it.
                         if swreg in [rd, rs1, rs2, testreg]:
-                            newswreg = random.choice([
+                            newswreg = choice([
                                 x for x in reg_file
                                 if x not in [rd, rs1, rs2, 'x0']
                             ])
                             asm_code += f'mv {newswreg}, {swreg}\n'
                             swreg = newswreg
                         if testreg in [rd, rs1, rs2, swreg]:
-                            new_testreg = random.choice([
+                            new_testreg = choice([
                                 x for x in reg_file
                                 if x not in [rd, rs1, rs2, swreg, 'x0']
                             ])
                             testreg = new_testreg
                         if rd in [swreg, testreg, rs1, rs2]:
-                            new_rd = random.choice([
+                            new_rd = choice([
                                 x for x in reg_file
                                 if x not in [swreg, testreg, rs1, rs2, 'x0']
                             ])
                             rd = new_rd
                         if rs1 in [swreg, testreg, rd, rs2]:
-                            new_rs1 = random.choice([
+                            new_rs1 = choice([
                                 x for x in reg_file
                                 if x not in [swreg, testreg, rd, rs2, 'x0']
                             ])
                             rs1 = new_rs1
                         if rs2 in [swreg, testreg, rs1, rd]:
-                            new_rs2 = random.choice([
+                            new_rs2 = choice([
                                 x for x in reg_file
                                 if x not in [swreg, testreg, rs1, rd, 'x0']
                             ])
@@ -160,7 +158,7 @@ class uatg_mbox_mul_depend_shift_imm(IPlugin):
                 compile_macros = []
 
                 # return asm_code and sig_code
-                test_dict.append({
+                yield ({
                     'asm_code': asm_code,
                     'asm_data': '',
                     'asm_sig': sig_code,
@@ -168,11 +166,5 @@ class uatg_mbox_mul_depend_shift_imm(IPlugin):
                     'name_postfix': inst,
                     'doc_string': doc_string
                 })
-        return test_dict
 
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv
+    

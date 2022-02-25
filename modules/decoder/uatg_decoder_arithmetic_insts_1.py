@@ -39,8 +39,6 @@ class uatg_decoder_arithmetic_insts_1(IPlugin):
         # rd, rs1, rs2 iterate through all the 32 register combinations for
         # every instruction in arithmetic_instructions['rv32-add-reg']
 
-        test_dict = []
-
         reg_file = base_reg_file.copy()
 
         for inst in arithmetic_instructions[f'{self.isa_bit}-add-reg']:
@@ -112,18 +110,10 @@ class uatg_decoder_arithmetic_insts_1(IPlugin):
             compile_macros = []
 
             # return asm_code and sig_code
-            test_dict.append({
+            yield ({
                 'asm_code': asm_code,
                 'asm_data': '',
                 'asm_sig': sig_code,
                 'compile_macros': compile_macros,
                 'name_postfix': inst
             })
-        return test_dict
-
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv

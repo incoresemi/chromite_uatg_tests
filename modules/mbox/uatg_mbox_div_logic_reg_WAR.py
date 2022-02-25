@@ -1,4 +1,4 @@
-import random
+from random import choice
 from typing import Dict, List, Union, Any
 
 from uatg.instruction_constants import base_reg_file, mext_instructions, \
@@ -54,8 +54,6 @@ class uatg_mbox_div_logic_reg_WAR(IPlugin):
             and x2, x5, x6 )
  
         """
-        test_dict = []
-
         doc_string = 'Test evaluates the write after read dependency with ' \
                      'mextension instructions(producer) and logical (' \
                      'consumer) instructions '
@@ -87,8 +85,8 @@ class uatg_mbox_div_logic_reg_WAR(IPlugin):
 
             code = ''
             # rand_inst generates the logic instructions randomly
-            rand_inst = random.choice(random_list)
-            # initialize the source registers rs1, rs2, rs3 and rs4 
+            rand_inst = choice(random_list)
+            # initialize the source registers rs1, rs2, rs3 and rs4
             # destination register rd1
             rs1, rs2, rd1, rs3, rs4 = 'x3', 'x4', 'x5', 'x6', 'x7'
             rand_rs1, rand_rs2, rand_rd = 'x0', 'x0', 'x0'
@@ -97,14 +95,14 @@ class uatg_mbox_div_logic_reg_WAR(IPlugin):
             for i in range(self.div_stages):
                 code += f'{inst} {rd1},{rs1},{rs2};\n'
                 for j in range(i):
-                    rand_rs1 = random.choice(reg_file)
-                    rand_rs2 = random.choice(reg_file)
-                    rand_rd = random.choice(reg_file)
-                    rand_inst1 = random.choice(random_list)
+                    rand_rs1 = choice(reg_file)
+                    rand_rs2 = choice(reg_file)
+                    rand_rd = choice(reg_file)
+                    rand_inst1 = choice(random_list)
                     if rand_rd in [
-                        rs1, rs2, rd1, rand_rs1, rand_rs2, swreg, testreg
+                            rs1, rs2, rd1, rand_rs1, rand_rs2, swreg, testreg
                     ]:
-                        new_rand_rd = random.choice([
+                        new_rand_rd = choice([
                             x for x in reg_file if x not in [
                                 rs1, rs2, rs3, rs4, rd1, rand_rs1, rand_rs2,
                                 swreg, testreg
@@ -112,10 +110,10 @@ class uatg_mbox_div_logic_reg_WAR(IPlugin):
                         ])
                         rand_rd = new_rand_rd
                     if rand_rs1 in [
-                        rd1, rs2, rs3, rs4, rand_rd, rand_rs2, rs1, swreg,
-                        testreg
+                            rd1, rs2, rs3, rs4, rand_rd, rand_rs2, rs1, swreg,
+                            testreg
                     ]:
-                        new_rand_rs1 = random.choice([
+                        new_rand_rs1 = choice([
                             x for x in reg_file if x not in [
                                 rd1, rs2, rs3, rs4, rand_rd, rand_rs2, rs1,
                                 swreg, testreg
@@ -123,10 +121,10 @@ class uatg_mbox_div_logic_reg_WAR(IPlugin):
                         ])
                         rand_rs1 = new_rand_rs1
                     if rand_rs2 in [
-                        rs1, rd1, rand_rs1, rand_rd, rs2, rs3, rs4, swreg,
-                        testreg
+                            rs1, rd1, rand_rs1, rand_rd, rs2, rs3, rs4, swreg,
+                            testreg
                     ]:
-                        new_rand_rs2 = random.choice([
+                        new_rand_rs2 = choice([
                             x for x in reg_file if x not in [
                                 rs1, rd1, rand_rs1, rand_rd, rs2, rs3, rs4,
                                 swreg, testreg
@@ -134,13 +132,13 @@ class uatg_mbox_div_logic_reg_WAR(IPlugin):
                         ])
                         rand_rs2 = new_rand_rs2
                     if rand_inst in [rand_inst1, inst]:
-                        new_rand_inst = random.choice([
+                        new_rand_inst = choice([
                             x for x in random_list
                             if x not in [rand_inst1, inst]
                         ])
                         rand_inst = new_rand_inst
                     if rand_inst1 in [rand_inst, inst]:
-                        new_rand_inst1 = random.choice([
+                        new_rand_inst1 = choice([
                             x for x in random_list
                             if x not in [rand_inst, inst]
                         ])
@@ -157,10 +155,10 @@ class uatg_mbox_div_logic_reg_WAR(IPlugin):
             # then first choose a new signature pointer and move the
             # value to it.
             if swreg in [
-                rd1, rs1, rs2, rs3, rs4, rand_rs1, rand_rs2, rand_rd,
-                testreg
+                    rd1, rs1, rs2, rs3, rs4, rand_rs1, rand_rs2, rand_rd,
+                    testreg
             ]:
-                newswreg = random.choice([
+                newswreg = choice([
                     x for x in reg_file if x not in [
                         rd1, rs1, rs2, rs3, rs4, rand_rs1, rand_rs2, rand_rd,
                         testreg
@@ -191,7 +189,7 @@ class uatg_mbox_div_logic_reg_WAR(IPlugin):
             compile_macros = []
 
             # return asm_code and sig_code
-            test_dict.append({
+            yield ({
                 'asm_code': asm_code,
                 'asm_data': '',
                 'asm_sig': sig_code,
@@ -199,11 +197,5 @@ class uatg_mbox_div_logic_reg_WAR(IPlugin):
                 'name_postfix': inst,
                 'doc_string': doc_string
             })
-        return test_dict
 
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ""
-        return sv
+    
