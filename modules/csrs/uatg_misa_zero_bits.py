@@ -36,10 +36,10 @@ class uatg_misa_disable_zero_bits(IPlugin):
         if 'misa' in isa_yaml['hart0'].keys():
             self.reset_val = isa_yaml['hart0']['misa']['reset-val']
             if self.xlen == 32 and isa_yaml['hart0']['misa']['rv32'][
-                'accessible']:
+                    'accessible']:
                 self.csr = isa_yaml['hart0']['misa']['rv32']
             elif self.xlen == 64 and isa_yaml['hart0']['misa']['rv64'][
-                'accessible']:
+                    'accessible']:
                 self.csr = isa_yaml['hart0']['misa']['rv64']
             else:
                 return False

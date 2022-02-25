@@ -90,11 +90,8 @@ class uatg_gshare_fa_ghr_alternating_01(IPlugin):
             trap_sigbytes = 24
 
             # initialize the signature region
-            sig_code = 'mtrap_count:\n'
-            sig_code += ' .fill 1, 8, 0x0\n'
-            sig_code += 'mtrap_sigptr:\n'
-            sig_code += ' .fill {0},4,0xdeadbeef\n'.format(
-                int(trap_sigbytes / 4))
+            sig_code = f'mtrap_count:\n .fill 1, 8, 0x0\nmtrap_sigptr:\n ' \
+                       f'.fill {trap_sigbytes // 4},4,0xdeadbeef\n'
 
             # compile macros for the test
             if mode != 'machine':

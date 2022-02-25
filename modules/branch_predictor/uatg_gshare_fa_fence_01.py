@@ -67,8 +67,6 @@ class uatg_gshare_fa_fence_01(IPlugin):
         # a temp variable
         # ASM will just fence the Core. We check if the fence happens properly.
 
-        return_list = []
-
         for mode in self.modes:
 
             recurse_level = self.recurse_level  # reuse the self variable
@@ -88,22 +86,17 @@ class uatg_gshare_fa_fence_01(IPlugin):
 
             # trap signature bytes
             trap_sigbytes = 24
-            trap_count = 0
-
             # initialize the signature region
-            sig_code = 'mtrap_count:\n'
-            sig_code += ' .fill 1, 8, 0x0\n'
-            sig_code += 'mtrap_sigptr:\n'
-            sig_code += ' .fill {0},4,0xdeadbeef\n'.format(
-                int(trap_sigbytes / 4))
+            sig_code = f'mtrap_count:\n .fill 1, 8, 0x0\nmtrap_sigptr:\n ' \
+                       f'.fill {trap_sigbytes // 4},4,0xdeadbeef\n'
             # compile macros for the test
             if mode != 'machine':
-                compile_macros = ['rvtest_mtrap_routine','s_u_mode_test']
+                compile_macros = ['rvtest_mtrap_routine', 's_u_mode_test']
             else:
                 compile_macros = []
 
-            # user can choose to generate supervisor and/or user tests in addition
-            # to machine mode tests here.
+            # user can choose to generate supervisor and/or user tests in
+            # addition to machine mode tests here.
             privileged_test_enable = True
             
             if not privileged_test_enable:
@@ -126,7 +119,6 @@ class uatg_gshare_fa_fence_01(IPlugin):
                 'docstring': '',
                 'name_postfix': mode
             })
-
 
     def check_log(self, log_file_path, reports_dir):
         """
