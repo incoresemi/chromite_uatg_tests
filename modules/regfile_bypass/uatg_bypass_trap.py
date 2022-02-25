@@ -3,9 +3,10 @@
 # Co-authored-by: Sushanth Mullangi B <sushanthmullangi123@gmail.com>
 # Co-authored-by: Nivedita Nadiger <nanivedita@gmail.com>
 
-from yapsy.IPlugin import IPlugin
-from uatg.instruction_constants import base_reg_file
 from typing import Dict, List, Union, Any
+
+from uatg.instruction_constants import base_reg_file
+from yapsy.IPlugin import IPlugin
 
 
 class uatg_bypass_trap(IPlugin):
@@ -34,11 +35,10 @@ class uatg_bypass_trap(IPlugin):
         Checking pipeline flushes and invoking 
         trap handler by creating misaligned loads
         """
-        return_list = []
 
         reg_file = base_reg_file.copy()
-        asm = f"\tla {reg_file[1]} ,sample_data\n"
-        asm += f"\taddi {reg_file[2]},{reg_file[0]} ,5\n"
+        asm = f"\tla {reg_file[1]} ,sample_data\n\taddi " \
+              f"{reg_file[2]},{reg_file[0]} ,5\n"
         # initializing register x2
         asm += f"\taddi {reg_file[3]},{reg_file[0]} ,7\n"
         # initializing register x3
@@ -54,22 +54,12 @@ class uatg_bypass_trap(IPlugin):
         # 5 bits if the trap wasn't taken.
         # if the misaligned trap is taken,
         # then it'll have the reset  values (expected)
-        asm += f"\tbnez {reg_file[31]}, flag\n"
-        asm += f"\tj end\n"
-        asm += f"flag:\n\taddi {reg_file[7]} ,{reg_file[0]} ,10\n"
-        asm += "end:\n\tfence.i\n"
-        
-
-        # compile macros for the test
-        compile_macros = []
+        asm += f"\tbnez {reg_file[31]}, flag\n\tj end\nflag:\n\t" \
+               f"addi {reg_file[7]} ,{reg_file[0]} ,10\nend:\n\tfence.i\n"
 
         # return asm_code and sig_code
-        return_list.append({
+        yield ({
             'asm_code': asm,
-            # 'asm_data': '',
             'asm_sig': '',
-            'compile_macros': compile_macros,
-            # 'name_postfix': inst
+            'compile_macros': []
         })
-
-        yield return_list

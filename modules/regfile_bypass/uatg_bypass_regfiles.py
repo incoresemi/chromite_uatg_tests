@@ -3,9 +3,10 @@
 # Co-authored-by: Sushanth Mullangi B <sushanthmullangi123@gmail.com>
 # Co-authored-by: Nivedita Nadiger <nanivedita@gmail.com>
 
-from yapsy.IPlugin import IPlugin
-from uatg.instruction_constants import base_reg_file
 from typing import Dict, List, Union, Any
+
+from uatg.instruction_constants import base_reg_file
+from yapsy.IPlugin import IPlugin
 
 
 class uatg_bypass_regfiles(IPlugin):
@@ -33,7 +34,6 @@ class uatg_bypass_regfiles(IPlugin):
         """
         Checking bypass operation using signature region
         """
-        return_list = []
 
         reg_file = base_reg_file.copy()
         asm = f"\tandi {reg_file[3]},{reg_file[0]} ,0\n"
@@ -81,10 +81,10 @@ class uatg_bypass_regfiles(IPlugin):
 
         # asm code to populate the signature region
         sig_code = "signature_start:\n"
-        sig_code += ".fill {0},4,0xdeadbeef\n".format(int(sig_bytes / 4))
+        sig_code += f".fill {sig_bytes // 4},4,0xdeadbeef\n"
 
         # return asm_code and sig_code
-        return_list.append({
+        yield ({
             'asm_code': asm,
             'asm_data': '',
             'asm_sig': sig_code,
@@ -92,5 +92,4 @@ class uatg_bypass_regfiles(IPlugin):
             # 'name_postfix': inst
         })
 
-        yield return_list
     # after all the manual calculations, signature file should have value of 57

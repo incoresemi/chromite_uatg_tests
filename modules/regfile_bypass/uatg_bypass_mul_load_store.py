@@ -35,15 +35,12 @@ class uatg_bypass_mul_load_store(IPlugin):
         Bypassing checked for muldiv ISA alu operation
         Bypassing checked for load/store instructions as well
         """
-        return_list = []
 
         reg_file = base_reg_file.copy()
-        asm = f"\tla {reg_file[1]} ,sample_data\n"
-        asm += f"\taddi {reg_file[2]} ,{reg_file[0]} ,5\n"
-        asm += f"\taddi {reg_file[3]} ,{reg_file[0]} ,7\n"
-        asm += f"\taddi {reg_file[4]} ,{reg_file[0]} ,1\n"
-
-        asm += f"\tmul {reg_file[4]} ,{reg_file[2]} ,{reg_file[3]}\n"
+        asm = f"\tla {reg_file[1]} ,sample_data\n\taddi {reg_file[2]} ," \
+              f"{reg_file[0]} ,5\n\taddi {reg_file[3]} ,{reg_file[0]} ,7\n\t" \
+              f"addi {reg_file[4]} ,{reg_file[0]} ,1\n\t" \
+              f"mul {reg_file[4]} ,{reg_file[2]} ,{reg_file[3]}\n"
         # a multi-cycle instruction
         asm += f"\tsw {reg_file[4]} ,4({reg_file[1]})\n"
         # store the product into memory
@@ -54,8 +51,7 @@ class uatg_bypass_mul_load_store(IPlugin):
         # store the product(5*7) to verify in the next step
 
         asm += f"\tbeq {reg_file[5]} ,{reg_file[6]} ,flag\n"
-        asm += "\tj end\n"
-        asm += f"flag:\n\taddi {reg_file[7]} ,{reg_file[0]} ,10\n"
+        asm += "\tj end\nflag:\n\taddi {reg_file[7]} ,{reg_file[0]} ,10\n"
         asm += "end:\n\tfence.i\n"
         # if this branch is taken then it implies that
         # bypassing hasn't happened properly
@@ -64,12 +60,10 @@ class uatg_bypass_mul_load_store(IPlugin):
         compile_macros = []
 
         # return asm_code and sig_code
-        return_list.append({
+        yield({
             'asm_code': asm,
             # 'asm_data': '',
             'asm_sig': '',
             'compile_macros': compile_macros,
             # 'name_postfix': inst
         })
-
-        yield return_list

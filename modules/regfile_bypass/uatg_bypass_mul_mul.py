@@ -3,9 +3,10 @@
 # Co-authored-by: Sushanth Mullangi B <sushanthmullangi123@gmail.com>
 # Co-authored-by: Nivedita Nadiger <nanivedita@gmail.com>
 
-from yapsy.IPlugin import IPlugin
-from uatg.instruction_constants import base_reg_file
 from typing import Dict, List, Union, Any
+
+from uatg.instruction_constants import base_reg_file
+from yapsy.IPlugin import IPlugin
 
 
 class uatg_bypass_mul_mul(IPlugin):
@@ -34,13 +35,11 @@ class uatg_bypass_mul_mul(IPlugin):
         Branch operation happens if bypass doesn't happen correctly
         Bypassing checked for muldiv ISA alu operation
         """
-        
-        return_list = []
 
         reg_file = base_reg_file.copy()
-        asm = f"\taddi {reg_file[1]} ,{reg_file[0]} ,3\n"
-        asm += f"\taddi {reg_file[2]} ,{reg_file[0]} ,4\n"
-        asm += f"\tmul {reg_file[3]} ,{reg_file[1]} ,{reg_file[2]}\n"
+        asm = f"\taddi {reg_file[1]} ,{reg_file[0]} ,3\n\t" \
+              f"addi {reg_file[2]} ,{reg_file[0]} ,4\n\t" \
+              f"mul {reg_file[3]} ,{reg_file[1]} ,{reg_file[2]}\n"
         # 1st mul instruction
         # reg3 should have 12
 
@@ -52,10 +51,8 @@ class uatg_bypass_mul_mul(IPlugin):
         asm += f"\taddi {reg_file[5]} ,{reg_file[0]} ,36\n"
         # storing the final op to compare with value in reg4
 
-        asm += f"\tbeq {reg_file[5]} ,{reg_file[4]} ,flag\n"
-        asm += "\tj end\n"
-        asm += f"flag:\n\taddi {reg_file[7]} ,{reg_file[0]} ,10\n"
-        asm += "end:\n\tfence.i\n"
+        asm += f"\tbeq {reg_file[5]} ,{reg_file[4]} ,flag\n\tj end\nflag:\n\t" \
+               f"addi {reg_file[7]} ,{reg_file[0]} ,10\nend:\n\tfence.i\n"
         # if this branch is taken then it implies that
         # bypassing HASN' happened properly
 
@@ -63,12 +60,10 @@ class uatg_bypass_mul_mul(IPlugin):
         compile_macros = []
 
         # return asm_code and sig_code
-        return_list.append({
+        yield ({
             'asm_code': asm,
             # 'asm_data': '',
             'asm_sig': '',
             'compile_macros': compile_macros,
             # 'name_postfix': inst
         })
-
-        yield return_list
