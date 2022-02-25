@@ -1,7 +1,8 @@
 # See LICENSE.incore for details
 
-from yapsy.IPlugin import IPlugin
 from typing import Dict, Union, Any, List
+
+from yapsy.IPlugin import IPlugin
 
 
 class uatg_icache_critical_word_first(IPlugin):
@@ -14,6 +15,8 @@ class uatg_icache_critical_word_first(IPlugin):
         self._word_size = 4
         self._block_size = 16
         self._ways = 4
+        self._ISA = 'RV32I'
+        self._XLEN = 32
 
     def execute(self, core_yaml, isa_yaml) -> bool:
         _icache_dict = core_yaml['icache_configuration']
@@ -39,10 +42,8 @@ class uatg_icache_critical_word_first(IPlugin):
         middle to last and vice versa
         """
 
-        return_list = []
-
-        #initialise all registers to 0
-        #assumes x0 is zero
+        # initialise all registers to 0
+        # assumes x0 is zero
         asm_init = [f"\tmv x{i}, x0\n" for i in range(1, 32)]
         # 0-f-10-1a-2a-20-3a-3f-4f-40-5f-5a
         # 0-f-10-1a-20-2a-3a-3f-40-4f-5a-5f
@@ -82,15 +83,18 @@ class uatg_icache_critical_word_first(IPlugin):
         asm += "label4032:\n\tnop\n"
 
         compile_macros = []
-        return_list.append({
+        yield ({
             'asm_code': f"\t.align {self._word_size}\n" + asm,
             'asm_sig': '',
             'compile_macros': compile_macros
         })
-        yield return_list
 
     def check_log(self, log_file_path, reports_dir):
-        ''
+        """
+        
+        """
 
     def generate_covergroups(self, config_file):
-        ''
+        """
+
+        """

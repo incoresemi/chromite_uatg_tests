@@ -1,10 +1,10 @@
 # See LICENSE.incore for details
 # Co-authored-by: Vishweswaran K <vishwa.kans07@gmail.com>
 
-from yapsy.IPlugin import IPlugin
-
-from typing import Dict, Union, Any, List
 import random
+from typing import Dict, Union, Any, List
+
+from yapsy.IPlugin import IPlugin
 
 
 class uatg_dcache_load_store_types(IPlugin):
@@ -16,6 +16,8 @@ class uatg_dcache_load_store_types(IPlugin):
         self._block_size = 8
         self._ways = 4
         self._fb_size = 9
+        self._ISA = 'RV32I'
+        self._XLEN = 32
 
     def execute(self, core_yaml, isa_yaml) -> bool:
         _dcache_dict = core_yaml['dcache_configuration']
@@ -62,18 +64,18 @@ class uatg_dcache_load_store_types(IPlugin):
         - lowest byte followed by the highest byte (and so on)
         - Do the above for loads and stoers separately after fencing the cache
         """
-        return_list = []
 
         asm_data = f"\nrvtest_data:\n\t.align {self._word_size}\n"
 
         # We load the memory with data twice the size of our dcache.
         asm_data += f"\t.rept " + \
-            f"{self._sets * self._word_size * self._block_size}\n" + \
-            f"\t.dword 0x{random.randrange(16 ** 16):8x}\n" + f"\t.endr\n"
-        #initialise all registers to 0
-        #assumes x0 is zero
+                    f"{self._sets * self._word_size * self._block_size}\n" + \
+                    f"\t.dword 0x{random.randrange(16 ** 16):8x}\n\t.endr\n"
+        # initialise all registers to 0
+        # assumes x0 is zero
         asm_init = [f"\tmv x{i}, x0\n" for i in range(1, 32)]
-        asm_main = "\tfence\n\tla t1, rvtest_data\n\tli t2, 0x9999999999999999\n" \
+        asm_main = "\tfence\n\tla t1, rvtest_data\n\t" \
+                   "li t2, 0x9999999999999999\n" \
                    "\tli t4, 0x1111\n"
         asm_pass1 = f"pass1:\n\tli a2, 0x99\n" \
                     f"\tsb t2, {self._word_size * self._block_size * 1}(t1)\n" \
@@ -83,15 +85,17 @@ class uatg_dcache_load_store_types(IPlugin):
                     f"\tsh t2, {self._word_size * self._block_size * 2}(t1)\n" \
                     f"\tlhu t3, {self._word_size * self._block_size * 2}(t1)" \
                     "\n\tbne a2, t3, end\n"
+        asm_pass3, asm_pass4 = '', ''
         if self._XLEN == 64:
             asm_pass3 = f"pass3:\n\tli a2, 0x99999999\n" \
-                        f"\tsw t2, {self._word_size * self._block_size * 3}(t1)\n" \
-                        f"\tlwu t3, {self._word_size * self._block_size * 3}(t1)" \
+                        f"\tsw t2, {self._word_size * self._block_size * 3}" \
+                        f"(t1)\n\tlwu t3, " \
+                        f"{self._word_size * self._block_size * 3}(t1)" \
                         f"\n\tbne a2, t3, end\n"
-            asm_pass4 = "pass4:\n\tli a2, 0x9999999999999999\n" \
-                        f"\tsd t2, {self._word_size * self._block_size * 4}(t1)\n" \
-                        f"\tld t3, {self._word_size * self._block_size * 4}(t1)\n" \
-                        f"\tbne a2, t3, end\n"
+            asm_pass4 = "pass4:\n\tli a2, 0x9999999999999999\n\tsd t2, " \
+                        f"{self._word_size * self._block_size * 4}(t1)\n" \
+                        f"\tld t3, {self._word_size * self._block_size * 4}" \
+                        f"(t1)\n\tbne a2, t3, end\n"
         asm_pass5 = f"pass5:\n\tli a2, 0xFFFFFFFFFFFFFF99\n" \
                     f"\tlb t3, {self._word_size * self._block_size * 1}(t1)\n" \
                     f"\tbne t3, a2, end\n"
@@ -101,9 +105,11 @@ class uatg_dcache_load_store_types(IPlugin):
         asm_pass7 = "pass7:\n\tli a2, 0xFFFFFFFF99999999\n" \
                     f"\tlw t3, {self._word_size * self._block_size * 3}(t1)\n" \
                     f"\tbne t3, a2, end\n"
+        asm_pass8 = ''
         if self._XLEN == 64:
-            asm_pass8 = "pass8:\n\tli a2, 0x9999999999999999\n\tld t3, {0}(t1)\n"  \
-                        f"\tbne t3, a2, end\n".format(self._word_size * self._block_size * 4)
+            asm_pass8 = f"pass8:\n\tli a2, 0x9999999999999999\n\tld t3, " \
+                        f"{self._word_size * self._block_size * 4}" \
+                        f"(t1)\n\tbne t3, a2, end\n"
         asm_pass9 = "pass9:\n\tli a2, 0x9999999999999999\n\t"
 
         for i in range(7):
@@ -116,12 +122,14 @@ class uatg_dcache_load_store_types(IPlugin):
 
         asm_pass10 = "pass10:\n\tli a2, 0x9999999999999999\n\t"
         for i in range(3):
-            asm_pass10 += f"lh s1, " \
-                      f"{self._word_size * self._block_size * 4 + (16 * i)}" \
-                      f"(t1)\n\tadd s6, s6, s1\n\tslli s6, s6, 16\n\t"
+            _var = self._word_size * self._block_size * 4 + (16 * i)
+            asm_pass10 += f"lh s1, {_var}(t1)\n\t" \
+                          f"add s6, s6, s1\n\tslli s6, s6, 16\n\t"
+        _var = self._word_size * self._block_size * 4 + 16 * 3
         asm_pass10 += f"lb s1," \
-            f"{self._word_size * self._block_size * 4 + 16 * 3}(t1)\n" \
-            f"\tadd s6, s6, s1\n\tbne s6, a2, end\n"
+                      f"{_var}(t1)\n" \
+                      f"\tadd s6, s6, s1\n\tbne s6, a2, end\n"
+        del _var
 
         asm_pass11 = f"pass11:\n\tli a2, 0x9999999999999999\n" \
                      f"\tlw s1, " \
@@ -129,34 +137,38 @@ class uatg_dcache_load_store_types(IPlugin):
                      f"\tadd s6, s6, s1\n\tslli s6, s6, 32\n\tlw s1, " \
                      f"{(self._word_size * self._block_size * 4) + 32}(t1)\n" \
                      f"\tadd s6, s6, s1\n\tbne s6, s2, end\n"
+        asm_pass12 = ''
         if self._XLEN == 64:
+            _var = self._word_size * self._block_size
             asm_pass12 = f"pass12:\n\tli a2, 0x9999999911119999\n\tsh t4, " \
                          f"{self._word_size * self._block_size + (8 * 4)}(t1)" \
-                         f"\n\tld t3, {self._word_size * self._block_size}(t1)" \
-                         f"\n\tbne t3, a2, end\n"
+                         f"\n\tld t3, {_var}(t1)\n\tbne t3, a2, end\n"
         asm_valid = "valid:\n\taddi x31, x0, 1\n"
         asm_end = "end:\n\tnop\n\tfence.i\n"
 
         # Concatenate all pieces of asm.
         asm = "".join(asm_init) + asm_main + asm_pass1 + asm_pass2 + \
-            (asm_pass3 if self._XLEN == 64 else "") + \
-            (asm_pass4 if self._XLEN == 64 else "") + \
-            asm_pass5 + asm_pass6 + asm_pass7 + \
-            (asm_pass8 if self._XLEN == 64 else "") + \
-            asm_pass9 + asm_pass10 + asm_pass11 + \
-            (asm_pass12 if self._XLEN == 64 else "") + asm_valid + asm_end
+              (asm_pass3 if self._XLEN == 64 else "") + \
+              (asm_pass4 if self._XLEN == 64 else "") + \
+              asm_pass5 + asm_pass6 + asm_pass7 + \
+              (asm_pass8 if self._XLEN == 64 else "") + \
+              asm_pass9 + asm_pass10 + asm_pass11 + \
+              (asm_pass12 if self._XLEN == 64 else "") + asm_valid + asm_end
         compile_macros = []
 
-        return_list.append({
+        yield ({
             'asm_code': asm,
             'asm_data': asm_data,
             'asm_sig': '',
             'compile_macros': compile_macros
         })
-        yield return_list
 
     def check_log(self, log_file_path, reports_dir):
-        ''
+        """
+        
+        """
 
     def generate_covergroups(self, config_file):
-        ''
+        """
+
+        """

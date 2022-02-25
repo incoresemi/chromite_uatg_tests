@@ -1,9 +1,9 @@
 # See LICENSE.incore for details
 
-from yapsy.IPlugin import IPlugin
-
-from typing import Dict, Union, Any, List
 import random
+from typing import Dict, Union, Any, List
+
+from yapsy.IPlugin import IPlugin
 
 
 class uatg_dcache_replacement_all(IPlugin):
@@ -17,6 +17,8 @@ class uatg_dcache_replacement_all(IPlugin):
         self._word_size = 8
         self._block_size = 8
         self._ways = 4
+        self._ISA = 'RV32I'
+        self._XLEN = 32
 
     def execute(self, core_yaml, isa_yaml) -> bool:
         """This function gives us access to the core and isa configurations
@@ -45,18 +47,17 @@ class uatg_dcache_replacement_all(IPlugin):
         the cache is loaded with data two more times.
         Hence the cache is replaced twice.
         """
-        return_list = []
 
         # asm_data is the test data that is loaded into memory.
         # We use this to perform load operations.
         asm_data = f"\nrvtest_data:\n\t.align {self._word_size}\n"
-        #initialise all registers to 0
-        #assumes x0 is zero
+        # initialise all registers to 0
+        # assumes x0 is zero
         asm_init = [f"\tmv x{i}, x0\n" for i in range(1, 32)]
         # We load the memory with data twice the size of our dcache.
         asm_data += f"\t.rept " + \
-            f"{self._sets * self._word_size * self._block_size}\n" + \
-            f"\t.dword 0x{random.randrange(16 ** 16):8x}\n" + f"\t.endr\n"
+                    f"{self._sets * self._word_size * self._block_size}\n" + \
+                    f"\t.dword 0x{random.randrange(16 ** 16):8x}\n\t.endr\n"
 
         x2 = str(self._word_size * self._block_size)
 
@@ -73,16 +74,19 @@ class uatg_dcache_replacement_all(IPlugin):
         asm = "".join(asm_init) + asm_main + asm_lab1 + asm_lab2 + asm_end
         compile_macros = []
 
-        return_list.append({
+        yield ({
             'asm_code': asm,
             'asm_data': asm_data,
             'asm_sig': '',
             'compile_macros': compile_macros
         })
-        yield return_list
 
     def check_log(self, log_file_path, reports_dir):
-        ''
+        """
+        
+        """
 
     def generate_covergroups(self, config_file):
-        ''
+        """
+
+        """

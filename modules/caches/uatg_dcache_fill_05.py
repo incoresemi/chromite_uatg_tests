@@ -1,9 +1,9 @@
 # See LICENSE.incore for details
 
-from yapsy.IPlugin import IPlugin
-
-from typing import Dict, Union, Any, List
 import random
+from typing import Dict, Union, Any, List
+
+from yapsy.IPlugin import IPlugin
 
 
 class uatg_dcache_fill_05(IPlugin):
@@ -14,6 +14,8 @@ class uatg_dcache_fill_05(IPlugin):
         self._word_size = 8
         self._block_size = 8
         self._ways = 4
+        self._ISA = 'RV32I'
+        self._XLEN = 32
 
     def execute(self, core_yaml, isa_yaml) -> bool:
         _dcache_dict = core_yaml['dcache_configuration']
@@ -33,22 +35,20 @@ class uatg_dcache_fill_05(IPlugin):
         """This test fiils the cache from the last set and then performs a
         fence operation to check if there is any race in the bus."""
 
-        return_list = []
-
         asm_data = f"\nrvtest_data:\n\t.align {self._word_size}\n"
-        #initialise all registers to 0
-        #assumes x0 is zero
+        # initialise all registers to 0
+        # assumes x0 is zero
         asm_init = [f"\tmv x{i}, x0\n" for i in range(1, 32)]
         # We load the memory with data twice the size of our dcache.
         asm_data += f"\t.rept " + \
-            f"{self._sets * self._word_size * self._block_size * 8}\n" + \
-            f"\t.dword 0x{random.randrange(16 ** 16):8x}\n" + f"\t.endr\n"
+                    f"{self._sets * self._word_size * self._block_size * 8}\n" \
+                    f"\t.dword 0x{random.randrange(16 ** 16):8x}\n\t.endr\n"
 
         data = random.randrange(0, 100)
         # fill up the cache from the last set using store ops
         asm_main = f"\tfence\n\tli t0, {data}\n\tla t1, rvtest_data\n" + \
-            f"\tla a1, rvtest_data\n\tli t2, " + \
-            f"{self._sets * self._word_size * self._block_size}\n"
+                   f"\tla a1, rvtest_data\n\tli t2, " + \
+                   f"{self._sets * self._word_size * self._block_size}\n"
         for i in range(self._ways):
             asm_main += "\tadd t1, t1, t2\n\tadd a1, a1, t2\n"
 
@@ -73,17 +73,19 @@ class uatg_dcache_fill_05(IPlugin):
         asm = "".join(asm_init) + asm_main + asm_fill + asm_race + asm_end
         compile_macros = []
 
-        return_list.append({
+        yield ({
             'asm_code': asm,
             'asm_data': asm_data,
             'asm_sig': '',
             'compile_macros': compile_macros
         })
 
-        yield return_list
-
     def check_log(self, log_file_path, reports_dir):
-        ''
+        """
+        
+        """
 
     def generate_covergroups(self, config_file):
-        ''
+        """
+
+        """
