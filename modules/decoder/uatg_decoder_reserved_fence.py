@@ -33,38 +33,47 @@ class uatg_decoder_illegal_instructions(IPlugin):
 
         # fm ≠ 0, 8
         fence = [
-            f'0b{bin(fm)[2:].zfill(4)}{bin(pred_succ)[2:].zfill(8)}' 
+            f'0b{bin(fm)[2:].zfill(4)}{bin(pred_succ)[2:].zfill(8)}'
             f'{bin(rs1)[2:].zfill(5)}000{bin(rd)[2:].zfill(8)}0001111'
             for fm in range(1, 8) for pred_succ in range(0, 32)
-            for rs1 in range(0, 32) for rd in range(0, 32)]
+            for rs1 in range(0, 32) for rd in range(0, 32)
+        ]
 
         # rd=x0, rs1≠x0, fm=0, and either pred=0 or succ=0
-        fence += [f'0b0000{bin(pred_succ)[2:].zfill(8)}' 
-                  f'{bin(reg)[2:].zfill(5)}000000000001111'
-                  for pred_succ in range(0, 32) for reg in range(1, 32) if
-                  pred_succ != 0]
+        fence += [
+            f'0b0000{bin(pred_succ)[2:].zfill(8)}'
+            f'{bin(reg)[2:].zfill(5)}000000000001111'
+            for pred_succ in range(0, 32)
+            for reg in range(1, 32)
+            if pred_succ != 0
+        ]
 
         # rd≠x0, rs1=x0, fm=0, and either pred=0 or succ=0
         fence += [
-            f'0b0000{bin(pred_succ)[2:].zfill(8)}00000000' 
+            f'0b0000{bin(pred_succ)[2:].zfill(8)}00000000'
             f'{bin(reg)[2:].zfill(5)}0001111'
-            for pred_succ in range(0, 32) for reg in range(1, 32) if
-            pred_succ != 0]
+            for pred_succ in range(0, 32)
+            for reg in range(1, 32)
+            if pred_succ != 0
+        ]
 
         # rd=rs1=x0, fm=0 pred=0, succ≠0
-        fence += [f'0b00000000{bin(succ)[2:].zfill(4)}00000000000000001111'
-                  for succ in range(1, 16)]
+        fence += [
+            f'0b00000000{bin(succ)[2:].zfill(4)}00000000000000001111'
+            for succ in range(1, 16)
+        ]
 
         # rd=rs1=x0, fm=0 pred≠W (pred[0]=0), succ=0
         fence += [
             f'0b0000{bin(pred)[2:].zfill(4)}000000000000000000001111'
-            for pred in range(0, 16) if pred % 2 != 1]
+            for pred in range(0, 16)
+            if pred % 2 != 1
+        ]
 
         # !!! Fence currently do not contain the TSO & PAUSE instructions.
         # Need Clarification
 
-        test_dict = []
-        offset = 2 ** 14
+        offset = 2**14
         ranges = range(0, len(fence), offset)
         for begin in ranges:
             asm_code = f'.align 4\n\n\n'
@@ -89,4 +98,4 @@ class uatg_decoder_illegal_instructions(IPlugin):
                 'compile_macros': compile_macros,
                 'name_postfix': f"fence"
             })
-        #yield test_dict
+        yield

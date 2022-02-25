@@ -45,8 +45,6 @@ class uatg_decoder_jump_jal(IPlugin):
 
         reg_file = base_reg_file.copy()
 
-        test_dict = []
-
         inst = jump_instructions['jal'][0]
 
         # to indicate forward or backward jump
@@ -166,12 +164,3 @@ class uatg_decoder_jump_jal(IPlugin):
                     'compile_macros': compile_macros,
                     'name_postfix': f'rd_{rd}_{postfix_label}'
                 })
-
-        #yield test_dict
-
-    def check_log(self, log_file_path, reports_dir) -> bool:
-        return False
-
-    def generate_covergroups(self, config_file) -> str:
-        sv = ''
-        return sv
