@@ -63,7 +63,7 @@ class uatg_mbox_comp_mul_reg_regCA_WAR(IPlugin):
         instruction_list = []
         random_list = []
         if 'M' in self.isa or 'Zmmul' in self.isa:
-            instruction_list += compressed_instructions[f'reg-regCA']
+            instruction_list += compressed_instructions[f'{self.isa_bit}-reg-regCA']
         if 'i' in self.isa:
             random_list += mext_instructions[f'{self.isa_bit}-mul']
         for inst in instruction_list:
