@@ -53,13 +53,13 @@ class uatg_m_deleg_RO1(IPlugin):
                    f'csrr x4, medeleg\nbne x4, x0, fail_case_medeleg\n' \
                    f'csrw medeleg, x1\n' \
                    f'sw x0, 0(x5)\n\n' \
-                   f'fail_case_medeleg:\n\tli x6, 1\n\tsw x1, 0(x5)\n\n\n' \
+                   f'fail_case_medeleg:{nt}li x6, 1{nt}sw x1, 0(x5)\n\n\n' \
                    f'li x1, {self.i_reset_val}\n' \
                    f'csrr x3, mideleg\n' \
                    f'csrw mideleg, x0  # writing 0s to mideleg\n' \
                    f'csrr x4, mideleg\nbne x4, x0, fail_case_mideleg\n' \
                    f'csrw mideleg, x1\n\n\n\n' \
-                   f'fail_case_mideleg:\n\tli x6, 1\n\tsw x1, 4(x5)\n\n\n'
+                   f'fail_case_mideleg:{nt}li x6, 1{nt}sw x1, 4(x5)\n\n\n'
         sig_code = f'\nmtrap_count:\n .fill 1, 2, 0x0\n' \
                    f'.align 2\nmtrap_sigptr:\n.fill {2}, 4, 0xdeadbeef\n'
         # compile macros for the test

@@ -49,19 +49,25 @@ class uatg_m_deleg_low_priv_bits(IPlugin):
         mideleg_ro_0 = (1 << 3) + (1 << 7) + (1 << 11)
         medeleg_ro_0 = (1 << 11)
 
+        mideleg_ro_0 += (1 << 12) + (1 << 10) + (1 << 6) + (1 << 2) \
+            if 'H' in self.isa else 0
+
         asm_code = f'li x1, {self.e_reset_val}  # medeleg reset value\n' \
                    f'la x5, mtrap_sigptr\nmedeleg_test:{nt}' \
                    f'csrr x3, medeleg{nt}li x2, {hex(medeleg_ro_0)} ' \
                    f'# bitmask of 1<<11{nt}csrw medeleg, x2{nt}' \
                    f'csrr x3, medeleg{nt}bne x3, x0, medeleg_fail_case{nt}' \
                    f'sw x0, 0(x5){nt}j mideleg_test\n' \
-                   f'medeleg_fail_case:{nt}li x4, 1{nt}sw x4, 0(x5)\n' \
+                   f'medeleg_fail_case:{nt}li x4, 1{nt}sw x4, 0(x5)\n\n\n' \
                    f'mideleg_test:{nt}' \
                    f'li x1, {self.i_reset_val}  # mideleg reset value{nt}' \
                    f'csrr x3, medeleg{nt}' \
                    f'li x2, {hex(mideleg_ro_0)} ' \
-                   f'# bitmask of 0b100010001000{nt}' \
-                   f'csrw mideleg, x2{nt}csrr x3, mideleg{nt}' \
+                   f'# bitmask of {bin(mideleg_ro_0)}{nt}' \
+                   f'# Checking if GIELEN is non-zero => bit 12 mideleg RO1' \
+                   f'{nt}# csrr x6, hgeip{nt}# beqz x6, continue{nt}' \
+                   f'# li x6, {hex(1<<12)}{nt}# add x2, x2, x6\n' \
+                   f'# continue:{nt}efcsrw mideleg, x2{nt}csrr x3, mideleg{nt}' \
                    f'bne x3, x0, mideleg_fail_case{nt}sw x0, 4(x5){nt}' \
                    f'j exit\nmideleg_fail_case:{nt}li x4, 1{nt}sw x4, 4(x5)\n' \
                    f'exit:{nt}nop\n\n'
