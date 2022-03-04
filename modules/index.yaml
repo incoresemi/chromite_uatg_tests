@@ -139,10 +139,11 @@ mbox:
   uatg_mbox_comp_comp_rv64_imm_WAR: False #test passed
 
 csrs:
-  uatg_m-deleg_low_priv_bits: True
-  uatg_m-deleg_reset_val: True
-  uatg_m-deleg_RO1: True
-  uatg_m-deleg_SN_dependency: True
+  uatg_m-deleg_low_priv_bits: False
+  uatg_m-deleg_exceptions: True
+  uatg_m-deleg_reset_val: False
+  uatg_m-deleg_RO1: False
+  uatg_m-deleg_SN_dependency: False
   uatg_misa_disable_A: False
   uatg_misa_disable_C: False  # Buggy
   uatg_misa_disable_FDQ: False # To be tested in future
