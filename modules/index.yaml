@@ -140,10 +140,11 @@ mbox:
 
 csrs:
   uatg_m-deleg_low_priv_bits: False
-  uatg_m-deleg_exceptions: True
   uatg_m-deleg_reset_val: False
   uatg_m-deleg_RO1: False
   uatg_m-deleg_SN_dependency: False
+  uatg_medeleg_exceptions_1: False
+  uatg_medeleg_exceptions_2: False
   uatg_misa_disable_A: False
   uatg_misa_disable_C: False  # Buggy
   uatg_misa_disable_FDQ: False # To be tested in future

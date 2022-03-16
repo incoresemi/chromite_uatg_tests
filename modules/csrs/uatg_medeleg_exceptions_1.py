@@ -3,7 +3,7 @@ from typing import Dict, List, Union, Any
 from yapsy.IPlugin import IPlugin
 
 
-class uatg_m_deleg_machine_exceptions(IPlugin):
+class uatg_medeleg_exceptions_1(IPlugin):
     """
 
     """
@@ -37,7 +37,7 @@ class uatg_m_deleg_machine_exceptions(IPlugin):
         return True
 
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
-
+        # Cases 0-11 dealt in this test
         # 0 Instruction address misaligned: jump to 2 byte boundary above 80M
         # 1 Instruction access fault: jump to address below 80 mil
         # 2 Illegal instruction: .dword 0
@@ -49,6 +49,7 @@ class uatg_m_deleg_machine_exceptions(IPlugin):
         # 8 Environment call from U-mode: user pt macro
         # 9 Environment call from S-mode: supervisor pt macro
         # 11 Environment call from M-mode: ecall
+        # Cases 12-15 dealt in uatg_medeleg_exceptions_2.py
         # 12 Instruction page fault:
         # 13 Load page fault:
         # 15 Store/AMO page fault:
@@ -203,7 +204,7 @@ class uatg_m_deleg_machine_exceptions(IPlugin):
         # compile macros for the test
         compile_macros = ['rvtest_mtrap_routine', 's_u_mode_test',
                           'access_fault_test']
-
+    
         privileged_test_enable = True
 
         privileged_test_dict = {
