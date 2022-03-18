@@ -54,7 +54,7 @@ class uatg_misa_reset_val(IPlugin):
         # Checking if reset_val matches with yaml specification
         asm_code += f'\n\n# Checking whether reset_value matches with ' \
                     f'YAML specification\ntest_reset_val:{nt}csrr x4, misa' \
-                    f'{nt}bne x4, x1, fail_case\nla x5, reset_val_sigptr\n' \
+                    f'{nt}bne x4, x1, fail_case\nla x5, mtrap_sigptr\n' \
                     f'sw x0, 0(x5)\n'
         asm_code += f'\n\nj exit\nfail_case:{nt}' \
                     f'li x6, 1\nsw x6, 0(x5)\nexit:{nt}nop'
