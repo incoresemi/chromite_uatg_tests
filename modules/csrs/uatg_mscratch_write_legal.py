@@ -1,6 +1,8 @@
-from typing import Dict, List, Union, Any
-from yapsy.IPlugin import IPlugin
 from random import getrandbits
+from typing import Dict, List, Union, Any
+
+from yapsy.IPlugin import IPlugin
+
 
 class uatg_mscratch_write_legal(IPlugin):
     """
@@ -29,38 +31,33 @@ class uatg_mscratch_write_legal(IPlugin):
         else:
             return False
         # returns true after checks are done
-        return True 
+        return True
 
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
-        # write a random legal value to csr and check the random legal value 
+        # write a random legal value to csr and check the random legal value
         # updated or not
         legal_value = hex(getrandbits(self.xlen))
         nt = '\n\t'
         asm_code = f'.option norvc\nli x1, {self.reset_val}\n'
-                     
-        asm_code += f' la x4, mtrap_sigptr \n '\
+
+        asm_code += f' la x4, mtrap_sigptr \n ' \
                     f' csrr x5, mscratch \n' \
                     f' li x2, {legal_value}\n' \
                     f' csrw mscratch, x2 \n' \
                     f' csrr x3, mscratch \n' \
-                    f' beq x2, x3 , testpass\n'\
-                    f' sw x0, 0(x4)\n'\
+                    f' beq x2, x3 , testpass\n' \
+                    f' sw x0, 0(x4)\n' \
                     f' csrw mscratch, x1\n'
-                    
 
         asm_code += f'\n\n\nj exit\ntestpass:{nt}li x7, 5\nexit:{nt}nop'
         sig_code = f'mtrap_count:\n .fill 1, 8, 0x0\n' \
                    f'mtrap_sigptr:\n.fill {1},4,0xdeadbeef\n'
 
-        #compile macros for the test
-        compile_macros=['rvtest_mtrap_routine']
-              
+        # compile macros for the test
+        compile_macros = ['rvtest_mtrap_routine']
 
         yield ({
             'asm_code': asm_code,
             'asm_sig': sig_code,
             'compile_macros': compile_macros,
-          })
- 
-        
-
+        })

@@ -68,4 +68,3 @@ class uatg_mvendorid_reset_val(IPlugin):
             'asm_sig': sig_code,
             'compile_macros': compile_macros,
         })
-
