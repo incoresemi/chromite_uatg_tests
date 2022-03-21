@@ -7,6 +7,8 @@ from typing import Dict, Union, Any
 from ruamel.yaml import YAML
 from yapsy.IPlugin import IPlugin
 
+from uatg.utils import paging_modes
+
 class uatg_pte_execute_from_read_only_pf(IPlugin):
     """
         the test is used to setup valid and invalid pages and check the
@@ -37,9 +39,18 @@ class uatg_pte_execute_from_read_only_pf(IPlugin):
             self.modes.append('user')
         
         if 'RV32' in self.isa:
-            self.paging_modes.append('sv32')
+            isa_string = 'rv32'
         else:
-            self.paging_modes.append('sv39')
+            isa_string = 'rv64'
+        
+        try:
+            if isa_yaml['hart0']['satp'][f'{isa_string}']['accessible']:
+                mode = isa_yaml['hart0']['satp'][f'{isa_string}']['mode']['type']['warl']['legal']
+                self.satp_mode = mode[0]
+        except KeyError:
+            pass
+        
+        self.paging_modes = paging_modes(self.satp_mode, self.isa)
 
         if ('S' or 'U') in self.isa:
             return True
