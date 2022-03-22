@@ -98,6 +98,9 @@ class uatg_gshare_fa_btb_selfmodifying_01(IPlugin):
                 self.modes.remove('supervisor')
                 self.modes.remove('user')
 
+            asm_data += f'sample_data:\n.word\t0xbabecafe\n\n'\
+                       f'exit_to_s_mode:\n.dword\t0x1\n\n'
+
             privileged_test_dict = {
                 'enable': privileged_test_enable,
                 'mode': mode,

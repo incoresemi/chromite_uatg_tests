@@ -102,6 +102,9 @@ class uatg_gshare_fa_fence_01(IPlugin):
             if not privileged_test_enable:
                 self.modes.remove('supervisor')
                 self.modes.remove('user')
+
+            asm_data = f'sample_data:\n.word\t0xbabecafe\n\n'\
+                       f'exit_to_s_mode:\n.dword\t0x1\n\n'
             
             privileged_test_dict = {
                 'enable': privileged_test_enable,
@@ -114,6 +117,7 @@ class uatg_gshare_fa_fence_01(IPlugin):
             yield ({
                 'asm_code': asm,
                 'asm_sig': sig_code,
+                'asm_data': asm_data,
                 'compile_macros': compile_macros,
                 'privileged_test': privileged_test_dict,
                 'docstring': '',
