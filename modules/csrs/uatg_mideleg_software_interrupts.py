@@ -38,7 +38,7 @@ class uatg_mideleg_software_interrupts(IPlugin):
 
     def generate_asm(self) -> List[Dict[str, Union[Union[str, list], Any]]]:
 
-        nt = '{nt}'
+        nt = '\n\t'
         priv_setup = 'li a0, 173\n' \
                      '#### Privileged Section ####\n\n' \
                      '# setting up root PTEs\n' \
