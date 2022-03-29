@@ -78,11 +78,11 @@ class uatg_mideleg_software_interrupts(IPlugin):
                      'add t5, t5, t4\nsd t5, (t0)\n\n'
         mtime = f'li a0, 173\nla x1, interrupt_address\nla x2, next_inst\nsw ' \
                 f'x2, 0(x1)\nld x9, interrupt_address\n\n# enable mie bit in ' \
-                f'misa\nli x1, 8\ncsrs mstatus, x1\n\n\nli t1, 0x2004000 # ' \
+                f'mstatus\nli x1, 8\ncsrs mstatus, x1\n\n\nli t1, 0x2004000 # ' \
                 f'mtimecmp\nli t2, 0x200BFF8 # mtime\nli x1, 1\nslli x1, x1, ' \
                 f'63\nsd x1, 0(t2) # write 1 << 63 to mtime  \nsd x0, 0(t1) #' \
                 f' set mtimecmp to 0 mtimecmp < mtime -> interrupt on\nli x1,' \
-                f' 128\n# enable msie bit in mie\ncsrw mie, x1\n' \
+                f' 128\n# enable msie bit in mie\n#csrw mie, x1\n' \
                 f'# enable msip bit in mip\n#csrw mip, x1\n' \
                 f'\n\nnext_inst:{nt}nop{nt}nop{nt}{nt}li t1, 0x2004000 # ' \
                 f'mtimecmp{nt}li t2, 0x200BFF8 # mtime{nt}li x1, 1{nt}slli ' \
@@ -92,10 +92,10 @@ class uatg_mideleg_software_interrupts(IPlugin):
                 f'mip{nt}nop{nt}nop\nnop\n '
         msw = f'li a0, 173\nla x1, interrupt_address\nla x2, ' \
               f'next_inst\nsw x2, 0(x1)\nld x9, interrupt_address' \
-              f'\n\n# enable mie bit in misa\nli x1, 8\ncsrs mstatus' \
+              f'\n\n# enable mie bit in mstatus\nli x1, 8\ncsrs mstatus' \
               f', x1\n\nli x1, 8\n# enable msie bit in mie\n' \
-              f'csrw mie, x1\nRVMODEL_SET_MSW_INT\n# enable msip bit' \
-              f' in mip\ncsrw mip, x1\n\n\nnext_inst:{nt}nop{nt}nop' \
+              f'#csrw mie, x1\nRVMODEL_SET_MSW_INT\n# enable msip bit' \
+              f' in mip\n#csrw mip, x1\n\n\nnext_inst:{nt}nop{nt}nop' \
               f'{nt}RVMODEL_CLEAR_MSW_INT{nt}csrr x1, mstatus{nt}' \
               f'csrr x1, mip{nt}nop{nt}nop\nnop\n'
         for asm_code in [msw, mtime]:
