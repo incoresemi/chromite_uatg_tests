@@ -90,14 +90,29 @@ class uatg_mideleg_software_interrupts(IPlugin):
                 f'{nt}sd x0, 0(t2) # set mtime to 0 mtimecmp > mtime -> ' \
                 f'interrupt off{nt}{nt}csrr x1, mstatus{nt}csrr x1, ' \
                 f'mip{nt}nop{nt}nop\nnop\n '
-        msw = f'li a0, 173\nla x1, interrupt_address\nla x2, ' \
-              f'next_inst\nsw x2, 0(x1)\nld x9, interrupt_address' \
-              f'\n\n# enable mie bit in mstatus\nli x1, 8\ncsrs mstatus' \
-              f', x1\n\nli x1, 8\n# enable msie bit in mie\n' \
-              f'#csrw mie, x1\nRVMODEL_SET_MSW_INT\n# enable msip bit' \
-              f' in mip\n#csrw mip, x1\n\n\nnext_inst:{nt}nop{nt}nop' \
-              f'{nt}RVMODEL_CLEAR_MSW_INT{nt}csrr x1, mstatus{nt}' \
-              f'csrr x1, mip{nt}nop{nt}nop\nnop\n'
+        msw = f'''
+            li a0, 173; # to indicate trap handler that this intended
+            la x1, interrupt_address
+            la x2, next_inst
+            sw x2, 0(x1)
+            ld x9, interrupt_address
+
+            # enable mie bit in mstatus
+            csrsi mstatus, 0x8
+
+            # enable msie bit in mie
+            csrwi mie, 0x8
+            RVMODEL_SET_MSW_INT
+
+            next_inst:
+              nop
+              nop
+              RVMODEL_CLEAR_MSW_INT
+              csrr x1, mstatus
+              nop
+              nop
+            nop
+        '''
         for asm_code in [msw, mtime]:
 
             sig_code = f'mtrap_count:\n .fill 1, 8, 0x0\n' \
