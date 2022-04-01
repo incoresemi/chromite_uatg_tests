@@ -145,6 +145,7 @@ csrs:
   uatg_m-deleg_SN_dependency: False
   uatg_mcause_exceptions_1: False
   uatg_mcause_exceptions_2: False
+  uatg_mcause_interrupts_1: False
   uatg_medeleg_exceptions_1: False
   uatg_medeleg_exceptions_2: False
   uatg_mideleg_software_interrupts: True

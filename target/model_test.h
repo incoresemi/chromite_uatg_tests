@@ -1,4 +1,5 @@
 #define MSIP_ADDR 0x2000000
+#define SSIP_ADDR 0x2000000
 #define MTIMECMP_ADDR 0x200bff8
 #define MTIME_ADDR 0x2004000
 
@@ -70,5 +71,14 @@
   li t2, MTIMECMP_ADDR ;                                    \
   ld t3, 0(t2);                                             \
   sd t3, 0(t1);
+
+#define RVMODEL_SET_SSW_INT                                 \
+  li t1, 1;                                                 \
+  li t2, SSIP_ADDR;                                         \
+  sb t1, 0(t2);
+
+#define RVMODEL_CLEAR_SSW_INT                               \
+  li t2, SSIP_ADDR;                                         \
+  sb x0, 0(t2);
 
 #define RVMODEL_CLEAR_MEXT_INT

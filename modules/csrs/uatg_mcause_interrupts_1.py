@@ -76,7 +76,7 @@ class uatg_mideleg_software_interrupts(IPlugin):
         sd t5, (t0)
         # address updation
         add t0, t3, 0 # move address of l1 page into t0
-        
+
         # update l1 page entry with address of l2 page
         addi t2, x0, 1
         slli t2, t2, 12
@@ -93,11 +93,11 @@ class uatg_mideleg_software_interrupts(IPlugin):
         la x2, next_inst
         sw x2, 0(x1)
         ld x9, interrupt_address
-        
+
         # enable mie bit in mstatus
         li x1, 8
         csrs mstatus, x1
-        
+
         li t1, 0x2004000 # mtimecmp
         li t2, 0x200BFF8 # mtime
         li x1, 1
@@ -109,7 +109,7 @@ class uatg_mideleg_software_interrupts(IPlugin):
         #csrw mie, x1
         # enable msip bit in mip
         #csrw mip, x1
-        
+
         next_inst:
             nop
             nop
@@ -149,16 +149,16 @@ class uatg_mideleg_software_interrupts(IPlugin):
         '''
 
         ssw = f'''{priv_setup}
-            
+
             li a0, 173; # to indicate trap handler that this intended
             la x1, interrupt_address
             la x2, next_inst
             sw x2, 0(x1)
             ld x9, interrupt_address
-            
+
             # enable mie bit in mstatus
             csrsi mstatus, 0x8
-            
+
             # enable ssie bit in sie
             csrwi sie, 0x2
             RVTEST_SUPERVISOR_ENTRY(12, 8, 60)
@@ -176,7 +176,7 @@ class uatg_mideleg_software_interrupts(IPlugin):
             nop
             '''
         stime = f'''{priv_setup}
-            
+
         li a0, 173; # to indicate trap handler that this intended
         la x1, interrupt_address
         la x2, next_inst
@@ -185,11 +185,11 @@ class uatg_mideleg_software_interrupts(IPlugin):
 
         # enable mie bit in mstatus
         csrsi mstatus, 0x8
-            
+
         # enable ssie bit in sie
         li x1, 32
         csrs sie, x1
-            
+
         li t1, 0x2004000 # mtimecmp
         li t2, 0x200BFF8 # mtime
         li x1, 1
@@ -263,7 +263,7 @@ class uatg_mideleg_software_interrupts(IPlugin):
                '0x2000f4ff\n.dword 0x2000f8ff\n.dword 0x2000fcff\n.rept ' \
                '448\n.dword 0x0\n.endr '
         interrupts = {'msw': msw, 'mtime': mtime, 'ssw': ssw,
-                    'stime': stime}
+                      'stime': stime}
         for int in interrupts:
             sig_code = f'mtrap_count:\n .fill 1, 8, 0x0\n' \
                        f'mtrap_sigptr:\n.fill {1},4,0xdeadbeef\n'
