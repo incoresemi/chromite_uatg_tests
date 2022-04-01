@@ -114,10 +114,12 @@ class uatg_gshare_fa_mispredict_loop_01(IPlugin):
                 if not privileged_test_enable:
                     self.modes.remove('supervisor')
                     self.modes.remove('user')
-
+                
                 asm_data = f'\n.align 3\n\n'\
-                           f'exit_to_s_mode:\n.dword\t0x1\n'\
-                           f'sample_data:\n.word\t0xbabecafe\n\n'
+                           f'exit_to_s_mode:\n.dword\t0x1\n\n'\
+                           f'sample_data:\n.word\t0xbabecafe\n'\
+                           f'.word\t0xdeadbeef\n\n'\
+                           f'.align 3\n\nsatp_mode_val:\n.dword\t0x0\n\n'
 
                 privileged_test_dict = {
                     'enable': privileged_test_enable,
