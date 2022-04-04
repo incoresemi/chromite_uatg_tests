@@ -134,8 +134,7 @@ class uatg_mideleg_software_interrupts(IPlugin):
             # enable mie bit in mstatus
             csrsi mstatus, 0x8
 
-            # enable msie bit in mie
-            csrwi mie, 0x8
+
             RVMODEL_SET_MSW_INT
 
             next_inst:
@@ -159,16 +158,21 @@ class uatg_mideleg_software_interrupts(IPlugin):
             # enable mie bit in mstatus
             csrsi mstatus, 0x8
 
-            # enable ssie bit in sie
-            csrwi sie, 0x2
+            # enable ssie bit in mie
+            csrwi mie, 0x2
+
+            # enable ssip in mideleg
+            csrwi mideleg, 0x2
+
             RVTEST_SUPERVISOR_ENTRY(12, 8, 60)
             101:	# supervisor entry point
                 RVMODEL_SET_MSW_INT
                 next_inst:
                     nop
                     nop
+                    csrr x1, scause
                     RVMODEL_CLEAR_MSW_INT
-                    csrr x1, mstatus
+                    nop
                     nop
             supervisor_exit_label:
             test_exit:
@@ -186,9 +190,12 @@ class uatg_mideleg_software_interrupts(IPlugin):
         # enable mie bit in mstatus
         csrsi mstatus, 0x8
 
-        # enable ssie bit in sie
+        # enable ssie bit in mie
         li x1, 32
-        csrs sie, x1
+        csrs mie, x1
+
+        # enable stip in mideleg
+        csrs mideleg, x1
 
         li t1, 0x2004000 # mtimecmp
         li t2, 0x200BFF8 # mtime
@@ -200,14 +207,13 @@ class uatg_mideleg_software_interrupts(IPlugin):
         next_inst:
             nop
             nop
+            csrr x1, scause
             li t1, 0x2004000 # mtimecmp
             li t2, 0x200BFF8 # mtime
             li x1, 1
             slli x1, x1, 63
             sd x1, 0(t1) # write 1 << 63 to mtimecmp
             sd x0, 0(t2) # set mtime to 0 mtimecmp > mtime -> interrupt off
-            csrr x1, mstatus
-            csrr x1, mip
             nop
         supervisor_exit_label:
         test_exit:
