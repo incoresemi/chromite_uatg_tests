@@ -46,8 +46,10 @@ class uatg_mcause_exceptions_2(IPlugin):
                      f'with the existing address to get address of level l ' \
                      f'page{nt}srli t4, t3, 12 # divide that address with ' \
                      f'page size{nt}slli t4, t4, 10 # left shift for PTE ' \
-                     f'format{nt}add t4, t4, t1 # set valid bit to 1{nt}sd' \
-                     f' t4, 24(t0) # store l1 first entry address into the ' \
+                     f'format{nt}add t4, t4, t1 # set valid bit to 1{nt}' \
+                     'mv t2, t0\n\tli t1, 0x1e0\n\tadd t0, t0, t1\n'\
+                     '\tSREG t4, (t0)\n\tmv t0, t2\n'\
+                     f'# store l1 first entry address into the ' \
                      f'first entry of l0\n{nt}#address updation{nt}add ' \
                      f't0, t3, 0 # move the address of level 1 page to ' \
                      f't0\n{nt}# setting up l1 table to point l2 ' \
@@ -57,9 +59,8 @@ class uatg_mcause_exceptions_2(IPlugin):
                      f'with the existing address to get address of level l ' \
                      f'page{nt}srli t4, t3, 12 # divide that address with ' \
                      f'page size{nt}slli t4, t4, 10 # left shift for PTE ' \
-                     f'format{nt}add t4, t4, t1 # set valid bit to 1{nt}# ' \
-                     f'calculation for offset{nt}addi t6, x0, 3{nt}slli ' \
-                     f't6, t6, 10{nt}add t0, t0, t6{nt}sd t4, 0(t0) # ' \
+                     f'format{nt}add t4, t4, t1 # set valid bit to 1{nt}\n ' \
+                     f'SREG t4, 0(t0) # ' \
                      f'store l2 first entry address into the first entry of ' \
                      f'l1\n '
 
@@ -104,9 +105,12 @@ class uatg_mcause_exceptions_2(IPlugin):
             sig_code = f'mtrap_count:\n .fill 1, 8, 0x0\n' \
                        f'mtrap_sigptr:\n .fill {6},4,0xdeadbeef\n'
 
-            asm_data = '.align 3\nsample_data:\n.dword 0xbabecafe\nreturn_' \
-                       'address:\n.dword 0x0\n\nfaulty_page_address:\n.dword ' \
-                       '0x0\n' \
+            asm_data = '.align 3\nexit_to_s_mode:\n.dword\t0x01\n\n'\
+                       'sample_data:\n.word\t0xbabecafe\n'\
+                       '.word\t0xdeadbeef\n\n'\
+                       '.align 3\nsatp_mode_val:\n.dword\t0x0\n\n' \
+                       'faulty_page_address:\n.dword\t0x0\n'\
+                       'return_address:\n.dword\t0x0\n\n' \
                        '.align 12 \nl0_pt:\n.rept 512\n.dword 0x0\n.endr' \
                        '\nl1_pt:\n .rept 512\n.dword 0x0\n.endr\n' \
                        'l2_pt:\n.dword 0x200000ef ' \
@@ -137,7 +141,7 @@ class uatg_mcause_exceptions_2(IPlugin):
                        '\n.dword 0x2000f4ef \n.dword 0x2000f8ef \n.dword ' \
                        '0x2000fcef \n.rept 448\n.dword 0x0\n.endr\nl2_u_pt:' \
                        '\n.rept 448\n.dword 0x0\n.endr\naccess_fault:\n' \
-                       '.dword 0x0\nexit_to_s_mode:\n.dword 0x0'
+                       '.dword 0x0'
 
             # compile macros for the test
             compile_macros = ['rvtest_mtrap_routine', 's_u_mode_test',

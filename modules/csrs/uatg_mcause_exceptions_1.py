@@ -62,7 +62,9 @@ class uatg_mcause_exceptions_1(IPlugin):
                      'srli t4, t3, 12 # divide that address with page size\n' \
                      'slli t4, t4, 10 # left shift for PTE format\n' \
                      'add t4, t4, t1 # set valid bit to 1\n' \
-                     'sd t4, 24(t0) # store l1 first entry address into the ' \
+                     'mv t2, t0\n\tli t1, 0x1e0\n\tadd t0, t0, t1\n'\
+                     '\tSREG t4, (t0)\n\tmv t0, t2\n'\
+                     '# store l1 first entry address into the ' \
                      f'first entry of l0{nn}#address updation\n' \
                      'add t0, t3, 0 # move the address of level 1 page to t0' \
                      f'{nn}# setting up l1 table to point l2 table\n' \
@@ -73,20 +75,18 @@ class uatg_mcause_exceptions_1(IPlugin):
                      'srli t4, t3, 12 # divide that address with page size\n' \
                      'slli t4, t4, 10 # left shift for PTE format\n' \
                      'add t4, t4, t1 # set valid bit to 1\n' \
-                     '# calculation for offset\n' \
-                     'addi t6, x0, 3\nslli t6, t6, 10\nadd t0, t0, t6\n' \
-                     'sd t4, 0(t0) # store l2 first entry address into the ' \
+                     'SREG t4, (t0) # store l2 first entry address into the ' \
                      f'first entry of l1{nn}\n# user page table set up\n' \
                      f'la t0, l0_pt # load address of root page{nn}' \
                      f'la t3, l1_u_pt # load address of l1 user page{nn}' \
                      '# update l0 page entry with address of l1 page\n' \
                      'srli t5, t3, 12\nslli t5, t5, 10\nli t4, 1\n' \
-                     f'add t5, t5, t4\nsd t5, (t0){nn}# address updation\n' \
+                     f'add t5, t5, t4\nSREG t5, (t0){nn}# address updation\n' \
                      f'add t0, t3, 0 # move address of {nt}\t#l1 page into t0' \
                      '# update l1 page entry with address of l2 page\n' \
                      'addi t2, x0, 1\nslli t2, t2, 12\nadd t3, t0, t2\n' \
                      'srli t5, t3, 12\nslli t5, t5, 10\nli t4, 1\n' \
-                     f'add t5, t5, t4\nsd t5, (t0){nn}'
+                     f'add t5, t5, t4\nSREG t5, (t0){nn}'
 
         inst_misaligned = f'li a0, 173\n# Instruction address misaligned\n' \
                           f'la x1, lab{nn}jr x1 # <- Exception Here\nlab:' \
@@ -143,7 +143,10 @@ class uatg_mcause_exceptions_1(IPlugin):
         sig_code = f'mtrap_count:\n .fill 1, 8, 0x0\n' \
                    f'mtrap_sigptr:\n.fill {1},4,0xdeadbeef\n'
 
-        asm_data = '.align 4\nsample_data:\n.word 0xbabecafe\n.align ' \
+        asm_data = '.align 3\nexit_to_s_mode:\n.dword\t0x00\n\n'\
+                   'sample_data:\n.word\t0xbabecafe\n'\
+                   '.word\t0xdeadbeef\n\n'\
+                   '.align 3\nsatp_mode_val:\n.dword\t0x0\n\n.align ' \
                    '12\nl0_pt:\n.rept 512\n.dword 0x0\n.endr\nl1_pt:\n.rept ' \
                    '512\n.dword 0x0\n.endr\nl2_pt:\n.dword 0x200000ef ' \
                    '\n.dword 0x200004ef \n.dword 0x200008ef \n.dword ' \
@@ -200,7 +203,7 @@ class uatg_mcause_exceptions_1(IPlugin):
                    '\n.dword 0x2000ecff \n.dword 0x2000f0ff \n.dword ' \
                    '0x2000f4ff \n.dword 0x2000f8ff \n.dword 0x2000fcff ' \
                    '\n.rept 448\n.dword 0x0\n.endr\n.align 2\naccess_fault:' \
-                   '\n.dword 0x0\nexit_to_s_mode:\n.dword 0x0'
+                   '\n.dword 0x0'
 
         # compile macros for the test
         compile_macros = ['rvtest_mtrap_routine', 's_u_mode_test',
