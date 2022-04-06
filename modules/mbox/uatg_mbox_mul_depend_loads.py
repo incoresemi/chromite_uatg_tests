@@ -69,63 +69,62 @@ class uatg_mbox_mul_depend_loads(IPlugin):
 
             imm = range(1, 100)
 
-            for rd in reg_file:
-                for rs1 in reg_file:
-                    for rs2 in reg_file:
-                        rs2_val = hex(random.getrandbits(self.xlen))
-                        rand_inst = random.choice(random_list)
-                        imm_val = random.choice(imm)
+            for _ in range(10):
+                [rs1, rs2, rd] = random.choices(reg_file, k=3)
+                rs2_val = hex(random.getrandbits(self.xlen))
+                rand_inst = random.choice(random_list)
+                imm_val = random.choice(imm)
 
-                        # if signature register needs to be used for operations
-                        # then first choose a new signature pointer and move the
-                        # value to it.
-                        if swreg in [rd, rs1, rs2, testreg]:
-                            newswreg = random.choice([
-                                x for x in reg_file
-                                if x not in [rd, rs1, rs2, 'x0']
-                            ])
-                            asm_code += f'mv {newswreg}, {swreg}\n'
-                            swreg = newswreg
-                        if testreg in [rd, rs1, rs2, swreg]:
-                            new_testreg = random.choice([
-                                x for x in reg_file
-                                if x not in [rd, rs1, rs2, swreg, 'x0']
-                            ])
-                            testreg = new_testreg
-                        if rd in [swreg, testreg, rs1, rs2]:
-                            new_rd = random.choice([
-                                x for x in reg_file
-                                if x not in [swreg, testreg, rs1, rs2, 'x0']
-                            ])
-                            rd = new_rd
+                # if signature register needs to be used for operations
+                # then first choose a new signature pointer and move the
+                # value to it.
+                if swreg in [rd, rs1, rs2, testreg]:
+                    newswreg = random.choice([
+                        x for x in reg_file
+                        if x not in [rd, rs1, rs2, 'x0']
+                    ])
+                    asm_code += f'mv {newswreg}, {swreg}\n'
+                    swreg = newswreg
+                if testreg in [rd, rs1, rs2, swreg]:
+                    new_testreg = random.choice([
+                        x for x in reg_file
+                        if x not in [rd, rs1, rs2, swreg, 'x0']
+                    ])
+                    testreg = new_testreg
+                if rd in [swreg, testreg, rs1, rs2]:
+                    new_rd = random.choice([
+                        x for x in reg_file
+                        if x not in [swreg, testreg, rs1, rs2, 'x0']
+                    ])
+                    rd = new_rd
 
-                        if rs2 in [swreg, testreg, rs1, rd]:
-                            new_rs2 = random.choice([
-                                x for x in reg_file
-                                if x not in [swreg, testreg, rs1, rd, 'x0']
-                            ])
-                            rs2 = new_rs2
+                if rs2 in [swreg, testreg, rs1, rd]:
+                    new_rs2 = random.choice([
+                        x for x in reg_file
+                        if x not in [swreg, testreg, rs1, rd, 'x0']
+                    ])
+                    rs2 = new_rs2
 
-                        if rs1 in [swreg, testreg, rs1, rd]:
-                            new_rs1 = random.choice([
-                                x for x in reg_file
-                                if x not in [swreg, testreg, rs1, rd, 'x0']
-                            ])
-                            rs1 = new_rs1
+                if rs1 in [swreg, testreg, rs1, rd]:
+                    new_rs1 = random.choice([
+                        x for x in reg_file
+                        if x not in [swreg, testreg, rs1, rd, 'x0']
+                    ])
+                    rs1 = new_rs1
 
-                        # perform the  required assembly operation
+                # perform the  required assembly operation
 
-                        asm_code += f'\ninst_{inst_count}:\n'
+                asm_code += f'\ninst_{inst_count}:\n'
 
-                        asm_code += f'MBOX_TEST_LD_OP({rand_inst},{inst}' \
-                                    f',{rs1},{rs2},{rd},{testreg},0,' \
-                                    f'{rs2_val},{imm_val},{swreg},0,{offset},0)'
+                asm_code += f'MBOX_TEST_LD_OP({rand_inst},{inst}' \
+                            f',{rs1},{rs2},{rd},{testreg},0,' \
+                            f'{rs2_val},{imm_val},{swreg},0,{offset},0)'
 
-                        # keep track of the total number of signature bytes used
-                        # so far.
-                        sig_bytes = sig_bytes + self.offset_inc
+                # keep track of the total number of signature bytes used
+                # so far.
+                sig_bytes = sig_bytes + self.offset_inc
 
-                        inst_count += 1
+                inst_count += 1
 
                 # asm code to populate the signature region
                 sig_code = 'signature_start:\n'

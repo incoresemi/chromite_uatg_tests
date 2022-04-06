@@ -71,48 +71,47 @@ class uatg_mbox_mul_div_insts_01(IPlugin):
 
             inst_count = 0
 
-            for rd in reg_file:
-                for rs1 in reg_file:
-                    for rs2 in reg_file:
+            for _ in range(10):
+                [rs1, rs2, rd] = random.choices(reg_file, k=3)
 
-                        rs1_val = hex(random.getrandbits(self.xlen))
-                        rs2_val = hex(random.getrandbits(self.xlen))
+                rs1_val = hex(random.getrandbits(self.xlen))
+                rs2_val = hex(random.getrandbits(self.xlen))
 
-                        # if signature register needs to be used for operations
-                        # then first choose a new signature pointer and move the
-                        # value to it.
-                        if swreg in [rd, rs1, rs2]:
-                            newswreg = random.choice([
-                                x for x in reg_file
-                                if x not in [rd, rs1, rs2, 'x0']
-                            ])
-                            asm_code += f'mv {newswreg}, {swreg}\n'
-                            swreg = newswreg
+                # if signature register needs to be used for operations
+                # then first choose a new signature pointer and move the
+                # value to it.
+                if swreg in [rd, rs1, rs2]:
+                    newswreg = random.choice([
+                        x for x in reg_file
+                        if x not in [rd, rs1, rs2, 'x0']
+                    ])
+                    asm_code += f'mv {newswreg}, {swreg}\n'
+                    swreg = newswreg
 
-                        # perform the  required assembly operation
-                        asm_code += f'\ninst_{inst_count}:'
-                        asm_code += f'\n#operation: {inst}, rs1={rs1}, rs2=' \
-                                    f'{rs2}, rd={rd}\n'
-                        asm_code += f'TEST_RR_OP({inst}, {rd}, {rs1}, {rs2}, ' \
-                                    f'0, {rs1_val}, {rs2_val}, {swreg}, ' \
-                                    f'{offset}, x0)\n'
+                # perform the  required assembly operation
+                asm_code += f'\ninst_{inst_count}:'
+                asm_code += f'\n#operation: {inst}, rs1={rs1}, rs2=' \
+                            f'{rs2}, rd={rd}\n'
+                asm_code += f'TEST_RR_OP({inst}, {rd}, {rs1}, {rs2}, ' \
+                            f'0, {rs1_val}, {rs2_val}, {swreg}, ' \
+                            f'{offset}, x0)\n'
 
-                        # adjust the offset. reset to 0 if it crosses 2048 and
-                        # increment the current signature pointer with the
-                        # current offset value
-                        if offset + self.offset_inc >= 2048:
-                            asm_code += f'addi {swreg}, {swreg}, {offset}\n'
-                            offset = 0
+                # adjust the offset. reset to 0 if it crosses 2048 and
+                # increment the current signature pointer with the
+                # current offset value
+                if offset + self.offset_inc >= 2048:
+                    asm_code += f'addi {swreg}, {swreg}, {offset}\n'
+                    offset = 0
 
-                        # increment offset by the amount of bytes updated in
-                        # signature by each test-macro.
-                        offset = offset + self.offset_inc
+                # increment offset by the amount of bytes updated in
+                # signature by each test-macro.
+                offset = offset + self.offset_inc
 
-                        # keep track of the total number of signature bytes used
-                        # so far.
-                        sig_bytes = sig_bytes + self.offset_inc
+                # keep track of the total number of signature bytes used
+                # so far.
+                sig_bytes = sig_bytes + self.offset_inc
 
-                        inst_count += 1
+                inst_count += 1
 
             # asm code to populate the signature region
             sig_code = 'signature_start:\n'
