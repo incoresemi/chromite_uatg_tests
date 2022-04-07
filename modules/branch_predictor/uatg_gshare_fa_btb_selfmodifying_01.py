@@ -105,7 +105,9 @@ class uatg_gshare_fa_btb_selfmodifying_01(IPlugin):
                            f'exit_to_s_mode:\n.dword\t0x1\n\n'\
                            f'sample_data:\n.word\t0xbabecafe\n'\
                            f'.word\t0xdeadbeef\n\n'\
-                           f'.align 3\n\nsatp_mode_val:\n.dword\t0x0\n\n'
+                           f'.align 3\n\nsatp_mode_val:\n.dword\t0x0\n\n'\
+                           f'.align 3\nadd_instruction:\n'\
+                           f'\t.word 0x00000033\n\n'
 
                 # trap signature bytes
                 trap_sigbytes = 24

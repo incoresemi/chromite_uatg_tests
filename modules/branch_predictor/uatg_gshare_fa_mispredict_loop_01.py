@@ -93,7 +93,8 @@ class uatg_gshare_fa_mispredict_loop_01(IPlugin):
                       f"\taddi t2,t2,-10\n\taddi t2,t2,20\n" \
                       f"\tadd t2,t2,t2\n\taddi t2,t2,-10\n" \
                       f"\tblt t1,t0,loop\n\n" \
-                      f"\tadd t2,t0,t1\n"
+                      f"\tadd t2,t0,t1\n"\
+                      f"\t.align 2\n"
                 # trap signature bytes
                 trap_sigbytes = 24
 
