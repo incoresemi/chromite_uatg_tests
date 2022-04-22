@@ -50,7 +50,7 @@ class uatg_pte_execute_write_only_inst_pf(IPlugin):
         
         self.paging_modes = paging_modes(self.satp_mode, self.isa)
 
-        if 'U' in self.isa:
+        if ('S' in self.isa) or ('U' in self.isa):
             return True
         else:
             return False
@@ -75,11 +75,15 @@ class uatg_pte_execute_write_only_inst_pf(IPlugin):
                       f"\tblt t1, t0, loop\n"\
                       f"\tc.nop\n\n"\
 
-                asm_data = f"\n\n.align 4\n"\
+                asm_data = f"\n\n.align 3\n"\
+                           f"exit_to_s_mode:\n.dword\t0x1\n\n"\
+                           f".align 3\n"\
                            f"return_address:\n"\
                            f".dword 0x0\n\n"\
                            f"faulty_page_address:\n"\
                            f".dword 0x0\n"\
+                           f".align 3\n\n"\
+                           f"satp_mode_val:\n.dword\t0x0\n\n"
 
                 trap_sigbytes = 24
 

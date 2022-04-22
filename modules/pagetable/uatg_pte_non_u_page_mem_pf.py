@@ -76,6 +76,7 @@ class uatg_pte_non_u_page_mem_pf(IPlugin):
                           f".rept 1024\n"\
                           f".word 0x13\n"\
                           f".endr\n\n"\
+                          f".align 3\n"\
                           f"faulting_address:\n"\
                           f".rept 1024\n"\
                           f".word 0x13\n"\
@@ -92,11 +93,16 @@ class uatg_pte_non_u_page_mem_pf(IPlugin):
                           f"\tblt t1, t0, loop\n"\
                           f"\tc.nop\n"
 
-                    asm_data = f"\n\n.align 4\n"\
+                    asm_data = f"\n\n.align 3\n"\
                                f"return_address:\n"\
                                f".dword 0x0\n\n"\
                                f"faulty_page_address:\n"\
                                f".dword 0x0\n"\
+                               f'\n.align 3\n\n'\
+                               f'exit_to_s_mode:\n.dword\t0x1\n\n'\
+                               f'sample_data:\n.word\t0xbabecafe\n'\
+                               f'.word\t0xdeadbeef\n\n'\
+                               f'.align 3\n\nsatp_mode_val:\n.dword\t0x0\n\n'
 
                     trap_sigbytes = 24
 
