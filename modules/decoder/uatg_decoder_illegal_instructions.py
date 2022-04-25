@@ -19,6 +19,7 @@ class uatg_decoder_illegal_instructions(IPlugin):
 
     def execute(self, core_yaml, isa_yaml) -> bool:
         self.isa = isa_yaml['hart0']['ISA']
+        print(self.isa)
         if 'RV32' in self.isa:
             self.isa_bit = 'rv32'
             self.xlen = 32
@@ -42,7 +43,7 @@ class uatg_decoder_illegal_instructions(IPlugin):
 
         # FIX-ME #
         # characters to be deleted
-        del_chars = 'NCSU_ZifenceiZicsr'
+        del_chars = 'NCSU_ZifenceiZicsrSvnapot'
         # translation table
         table = self.isa.maketrans('', '', del_chars)
         # translation
