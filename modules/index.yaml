@@ -171,3 +171,4 @@ pagetable:
   uatg_pte_execute_write_only_mem_pf: True
   uatg_pte_non_u_page_inst_pf: True
   uatg_pte_non_u_page_mem_pf: True
+  uatg_pte_superpage: True
