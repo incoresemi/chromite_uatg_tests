@@ -10,6 +10,7 @@ from yapsy.IPlugin import IPlugin
 from uatg.utils import paging_modes
 
 from uatg.instruction_constants import possible_superpage_variants
+from uatg.instruction_constants import possible_superpage_privilege
 
 class uatg_pte_superpage(IPlugin):
     """
@@ -54,9 +55,6 @@ class uatg_pte_superpage(IPlugin):
         
         self.paging_modes = paging_modes(self.satp_mode, self.isa)
 
-        self.superpage_privilege = ['supervisor_superpage', 'user_superpage',
-                                    'user_supervisor_superpage']
-
         if ('S' in self.isa) or ('U' in self.isa):
             return True
         else:
@@ -72,11 +70,9 @@ class uatg_pte_superpage(IPlugin):
             
             for paging_mode in self.paging_modes:
 
-                paging_superpage = possible_superpage_variants[paging_mode]
+                for superpage_type in possible_superpage_variants[paging_mode]:
 
-                for superpage_type in paging_superpage:
-
-                    for superpage_privilege in self.superpage_privilege:
+                    for superpage_privilege in possible_superpage_privilege[mode]:
 
                         asm = f"\nfaulting_instruction:\n"\
                               f"\tadd t2, t0, t0\n"\
@@ -109,7 +105,7 @@ class uatg_pte_superpage(IPlugin):
                                    f' .fill {trap_sigbytes // 4},4,0xdeadbeef\n'
 
                         compile_macros = ['rvtest_mtrap_routine', 's_u_mode_test', 
-                                          'page_fault_test', 'misaligned_superpage_test']
+                                          'page_fault_test']
 
                         privileged_test_dict = {
                             'enable' : True,
