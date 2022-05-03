@@ -115,7 +115,7 @@ class uatg_pte_superpage(IPlugin):
                             'll_pages' : 64,
                             f'{superpage_type}' : True,
                             f'{superpage_privilege}' : True,
-                            'fault' : True,
+                            'fault' : False,
                             'mem_fault':False,
                             'pte_dict' : {'valid': True,
                                 'read': True,
