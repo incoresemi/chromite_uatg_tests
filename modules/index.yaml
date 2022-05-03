@@ -172,3 +172,4 @@ pagetable:
   uatg_pte_non_u_page_inst_pf: True
   uatg_pte_non_u_page_mem_pf: True
   uatg_pte_superpage: True
+  uatg_pte_misaligned_superpage: True
