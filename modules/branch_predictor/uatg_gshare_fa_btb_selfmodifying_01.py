@@ -115,6 +115,7 @@ class uatg_gshare_fa_btb_selfmodifying_01(IPlugin):
                 # initialize the signature region
                 sig_code = f'mtrap_count:\n .fill 1, 8, 0x0\nmtrap_sigptr:\n ' \
                            f'.fill {trap_sigbytes // 4},4,0xdeadbeef\n'
+                
                 # compile macros for the test
                 if mode != 'machine':
                     compile_macros = ['rvtest_mtrap_routine', 's_u_mode_test']
@@ -138,20 +139,13 @@ class uatg_gshare_fa_btb_selfmodifying_01(IPlugin):
                 }
 
                 yield ({
-                    'asm_code':
-                        asm,
-                    'asm_sig':
-                        sig_code,
-                    'asm_data':
-                        asm_data,
-                    'compile_macros':
-                        compile_macros,
-                    'privileged_test':
-                        privileged_test_dict,
-                    'docstring':
-                        '',
-                    'name_postfix':
-                        f"{mode}-" + ('' if mode == 'machine' else paging_mode)
+                    'asm_code': asm,
+                    'asm_sig': sig_code,
+                    'asm_data': asm_data,
+                    'compile_macros': compile_macros,
+                    'privileged_test': privileged_test_dict,
+                    'docstring': '',
+                    'name_postfix': f"{mode}-" + ('' if mode == 'machine' else paging_mode)
                 })
 
     def check_log(self, log_file_path, reports_dir):

@@ -131,20 +131,13 @@ class uatg_gshare_fa_mispredict_loop_01(IPlugin):
                 }
 
                 yield ({
-                    'asm_code':
-                        asm,
-                    'asm_sig':
-                        sig_code,
-                    'asm_data':
-                        asm_data,
-                    'compile_macros':
-                        compile_macros,
-                    'privileged_test':
-                        privileged_test_dict,
-                    'docstring':
-                        '',
-                    'name_postfix':
-                        f"{mode}-" + ('' if mode == 'machine' else paging_mode)
+                    'asm_code': asm,
+                    'asm_sig': sig_code,
+                    'asm_data': asm_data,
+                    'compile_macros': compile_macros,
+                    'privileged_test': privileged_test_dict,
+                    'docstring': '',
+                    'name_postfix': f"{mode}-" + ('' if mode == 'machine' else paging_mode)
                 })
 
     def check_log(self, log_file_path, reports_dir) -> bool:
