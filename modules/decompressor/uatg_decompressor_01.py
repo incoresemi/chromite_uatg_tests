@@ -62,7 +62,7 @@ class uatg_decompressor_01(IPlugin):
                         continue
                     machine_exit_count = machine_exit_count + 1
 
-                asm = '\n\n## test: decompressor_01 ##\n\n'
+                asm = '\n\n## test: decompressor_01 ##\n\n.align 1\n'
                 asm += f"###Integer Constant-Generation Instructions###\n" \
                        f"c.li x1,1   ## x1=1\n" \
                        f"c.li x2,2   ## x2=2\n"
@@ -121,7 +121,9 @@ class uatg_decompressor_01(IPlugin):
                        f"c.jr x28\n\n" \
                        f"entry_jr:\n" \
                        f"c.add x9,x10\n\n" \
-                       f"c.nop\n\n" \
+                       f".align 3\n\n" \
+                       f"nop\n" \
+                       f"nop\n"
                 
                 # trap signature bytes
                 trap_sigbytes = 24

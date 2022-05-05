@@ -77,6 +77,7 @@ class uatg_decompressor_02(IPlugin):
                            f"###stack pointer based load and store floating " \
                            f"point instructions(RV32 only)###\n" \
                            f"LA(x2,sample_data)\n" \
+                           f'.align 1\n\n'\
                            f"c.fswsp f8,4(x2)\n" \
                            f"c.flwsp f9,4(x2)\n\n" \
                            f"### register based load amd store floating point " \
@@ -89,11 +90,13 @@ class uatg_decompressor_02(IPlugin):
                 if 'RV32' in self.split_isa[0]:
                     asm += f"### control transfers instructions(RV32 only) ###\n" \
                            f"LA (x29,entry_jal)\n" \
+                           f'.align 1\n\n'\
                            f"c.jal x29\n\n" \
                            f"entry_jal:\n" \
                            f"c.srai x9,5      ## x9=x9>>5\n\n"
 
-                asm += f"### integer register-immediate operations###\n" \
+                asm += f".align 1\n\n"\
+                       f"### integer register-immediate operations###\n" \
                        f"c.srli x15,1       ## x15=x15>>1\n" \
                        f"c.srai x8,4        ## x8=x8arith>>4\n" \
                        f"c.slli x5,1        ## x5=x5<<1\n" \
@@ -144,8 +147,9 @@ class uatg_decompressor_02(IPlugin):
                        f"LA (x28, entry_jr)\n" \
                        f"c.jr x28\n\n" \
                        f"entry_jr:\n" \
-                       f"c.add x9,x10\n" \
-                       f"c.nop\n\n"
+                       f"c.add x9,x10\n\n" \
+                       f".align 3\n\n" \
+                       f"nop\nnop\n\n"
 
                 # trap signature bytes
                 trap_sigbytes = 24
