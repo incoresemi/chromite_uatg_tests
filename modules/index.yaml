@@ -156,3 +156,20 @@ regfile_bypass:
   uatg_bypass_regfiles: True
   uatg_bypass_trap: True
   uatg_regfiles_r1: True
+
+pagetable:
+  uatg_pte_valid_bit_inst_pf: True
+  uatg_pte_valid_bit_mem_pf: True
+  uatg_pte_write_only_inst_pf: True
+  uatg_pte_write_only_mem_pf: True
+  uatg_pte_write_to_read_only_pf: True
+  uatg_pte_execute_from_read_only_pf: True
+  uatg_pte_execute_from_read_write_only_pf: True
+  uatg_pte_read_write_on_execute_only_pf: True
+  uatg_pte_write_to_read_execute_only_pf: True
+  uatg_pte_execute_write_only_inst_pf: True
+  uatg_pte_execute_write_only_mem_pf: True
+  uatg_pte_non_u_page_inst_pf: True
+  uatg_pte_non_u_page_mem_pf: True
+  uatg_pte_superpage: True
+  uatg_pte_misaligned_superpage: True

@@ -4,6 +4,7 @@ import uatg.regex_formats as rf
 import re
 import os
 from typing import Dict, Union, Any, List
+from uatg.utils import paging_modes
 
 
 class uatg_gshare_fa_mispredict_loop_01(IPlugin):
@@ -40,8 +41,24 @@ class uatg_gshare_fa_mispredict_loop_01(IPlugin):
         if 'S' in self.isa:
             self.modes.append('supervisor')
 
-        if 'S' in self.isa and 'U' in self.isa:
+        if 'U' in self.isa:
             self.modes.append('user')
+
+        if 'RV32' in self.isa:
+            isa_string = 'rv32'
+        else:
+            isa_string = 'rv64'
+
+        try:
+            if isa_yaml['hart0']['satp'][f'{isa_string}']['accessible']:
+                mode = isa_yaml['hart0']['satp'][f'{isa_string}']['mode'][
+                    'type']['warl']['legal']
+                self.satp_mode = mode[0]
+
+        except KeyError:
+            pass
+
+        self.paging_modes = paging_modes(self.satp_mode, self.isa)
 
         if _en_bpu and _history_len:
             return True
@@ -56,55 +73,72 @@ class uatg_gshare_fa_mispredict_loop_01(IPlugin):
 
         for mode in self.modes:
 
-            loop_count = 4 * self._history_len
-            # the should iterate at least 2
-            # times more than the actual ghr width for the BPU to predict
-            # correctly at least once. We assume 2x arbitrarily
-            asm = f"\n\taddi t0, x0, {loop_count}\n" \
-                  f"\taddi t1,x0,0\n\taddi t2,x0,2\n\n" \
-                  f"loop:\n\taddi t1,t1,1\n" \
-                  f"\taddi t2,t2,10\n\tadd t2,t2,t2\n" \
-                  f"\taddi t2,t2,-10\n\taddi t2,t2,20\n" \
-                  f"\tadd t2,t2,t2\n\taddi t2,t2,-10\n" \
-                  f"\tblt t1,t0,loop\n\n" \
-                  f"\tadd t2,t0,t1\n"
-            # trap signature bytes
-            trap_sigbytes = 24
+            machine_exit_count = 0
 
-            # initialize the signature region
-            sig_code = f'mtrap_count:\n .fill 1, 8, 0x0\nmtrap_sigptr:\n' \
-                       f' .fill {trap_sigbytes // 4},4,0xdeadbeef\n'
+            for paging_mode in self.paging_modes:
 
-            # compile macros for the test
-            if mode != 'machine':
-                compile_macros = ['rvtest_mtrap_routine', 's_u_mode_test']
-            else:
-                compile_macros = []
+                if mode == 'machine':
+                    if machine_exit_count > 0:
+                        continue
+                    machine_exit_count = machine_exit_count + 1
 
-            # user can choose to generate supervisor and/or user tests in
-            # addition to machine mode tests here.
-            privileged_test_enable = True
+                loop_count = 4 * self._history_len
+                # the should iterate at least 2
+                # times more than the actual ghr width for the BPU to predict
+                # correctly at least once. We assume 2x arbitrarily
+                asm = f"\n\taddi t0, x0, {loop_count}\n" \
+                      f"\taddi t1,x0,0\n\taddi t2,x0,2\n\n" \
+                      f"loop:\n\taddi t1,t1,1\n" \
+                      f"\taddi t2,t2,10\n\tadd t2,t2,t2\n" \
+                      f"\taddi t2,t2,-10\n\taddi t2,t2,20\n" \
+                      f"\tadd t2,t2,t2\n\taddi t2,t2,-10\n" \
+                      f"\tblt t1,t0,loop\n\n" \
+                      f"\tadd t2,t0,t1\n"\
+                      f"\t.align 2\n"
+                # trap signature bytes
+                trap_sigbytes = 24
 
-            if not privileged_test_enable:
-                self.modes.remove('supervisor')
-                self.modes.remove('user')
+                # initialize the signature region
+                sig_code = f'mtrap_count:\n .fill 1, 8, 0x0\nmtrap_sigptr:\n' \
+                           f' .fill {trap_sigbytes // 4},4,0xdeadbeef\n'
 
-            privileged_test_dict = {
-                'enable': privileged_test_enable,
-                'mode': mode,
-                'page_size': 4096,
-                'paging_mode': 'sv39',
-                'll_pages': 64,
-            }
+                # compile macros for the test
+                if mode != 'machine':
+                    compile_macros = ['rvtest_mtrap_routine', 's_u_mode_test']
+                else:
+                    compile_macros = []
 
-            yield ({
-                'asm_code': asm,
-                'asm_sig': sig_code,
-                'compile_macros': compile_macros,
-                'privileged_test': privileged_test_dict,
-                'docstring': '',
-                'name_postfix': mode
-            })
+                # user can choose to generate supervisor and/or user tests in
+                # addition to machine mode tests here.
+                privileged_test_enable = True
+
+                if not privileged_test_enable:
+                    self.modes.remove('supervisor')
+                    self.modes.remove('user')
+                
+                asm_data = f'\n.align 3\n\n'\
+                           f'exit_to_s_mode:\n.dword\t0x1\n\n'\
+                           f'sample_data:\n.word\t0xbabecafe\n'\
+                           f'.word\t0xdeadbeef\n\n'\
+                           f'.align 3\n\nsatp_mode_val:\n.dword\t0x0\n\n'
+
+                privileged_test_dict = {
+                    'enable': privileged_test_enable,
+                    'mode': mode,
+                    'page_size': 4096,
+                    'paging_mode': paging_mode,
+                    'll_pages': 64,
+                }
+
+                yield ({
+                    'asm_code': asm,
+                    'asm_sig': sig_code,
+                    'asm_data': asm_data,
+                    'compile_macros': compile_macros,
+                    'privileged_test': privileged_test_dict,
+                    'docstring': '',
+                    'name_postfix': f"{mode}-" + ('' if mode == 'machine' else paging_mode)
+                })
 
     def check_log(self, log_file_path, reports_dir) -> bool:
         """

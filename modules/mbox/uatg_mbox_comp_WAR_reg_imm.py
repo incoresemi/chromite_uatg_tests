@@ -68,7 +68,7 @@ class uatg_mbox_comp_WAR_reg_imm(IPlugin):
         if 'M' in self.isa or 'Zmmul' in self.isa:
             instruction_list += mext_instructions[f'{self.isa_bit}-mul']
         if 'i' in self.isa:
-            random_list += compressed_instructions[f'reg-imm']
+            random_list += compressed_instructions[f'{self.isa_bit}-reg-imm']
         for inst in instruction_list:
             asm_code = '#' * 5 + ' mul reg, reg, reg ' + '#' * 5 + '\n'
 

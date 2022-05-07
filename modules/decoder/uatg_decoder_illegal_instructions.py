@@ -42,7 +42,8 @@ class uatg_decoder_illegal_instructions(IPlugin):
 
         # FIX-ME #
         # characters to be deleted
-        del_chars = 'NCSU_ZifenceiZicsr'
+        del_chars = 'NCSU_ZifenceiZicsrvnapot'
+
         # translation table
         table = self.isa.maketrans('', '', del_chars)
         # translation

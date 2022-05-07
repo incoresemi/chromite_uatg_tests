@@ -6,6 +6,7 @@ import uatg.regex_formats as rf
 import re
 import os
 from typing import Dict, Union, Any, List
+from uatg.utils import paging_modes
 
 
 class uatg_gshare_fa_btb_selfmodifying_01(IPlugin):
@@ -38,8 +39,24 @@ class uatg_gshare_fa_btb_selfmodifying_01(IPlugin):
         if 'S' in self.isa:
             self.modes.append('supervisor')
 
-        if 'S' in self.isa and 'U' in self.isa:
+        if 'U' in self.isa:
             self.modes.append('user')
+
+        if 'RV32' in self.isa:
+            isa_string = 'rv32'
+        else:
+            isa_string = 'rv64'
+
+        try:
+            if isa_yaml['hart0']['satp'][f'{isa_string}']['accessible']:
+                mode = isa_yaml['hart0']['satp'][f'{isa_string}']['mode'][
+                    'type']['warl']['legal']
+                self.satp_mode = mode[0]
+
+        except KeyError:
+            pass
+
+        self.paging_modes = paging_modes(self.satp_mode, self.isa)
 
         if _en_bpu:  # check condition, if BPU exists
             return True  # return true if this test can exist.
@@ -62,59 +79,74 @@ class uatg_gshare_fa_btb_selfmodifying_01(IPlugin):
 
         for mode in self.modes:
 
-            # ASM Syntax
-            asm = ".option norvc\n\n" \
-                  "\taddi t3,x0,0\n\taddi t4,x0,3\n\tjal x0,first\n\n" \
-                  "first:\n\taddi t3,t3,1\n\n" \
-                  "b_address:\n\tbeq t3,t4,end\n\n" \
-                  "j_address:\n\tjal x0,first\n\n\tjal x0,fin\n\n" \
-                  "end:\n\taddi x0,x0,0\n\taddi t0,x0,1\n" \
-                  "\tla t0, b_address\n\tla t2, j_address\n" \
-                  "\tla t5, add_instruction\n\tlw t1, 0(t5)\n" \
-                  "\taddi t3,x0,5\n\tsw t1, 0(t2)\n\tsw t1, 0(t0)\n" \
-                  "\tfence.i\n\tjal x0,first\n\nfin:\n"
+            machine_exit_count = 0
 
-            # rvtest_data
-            asm_data = "\n.align 4\n\nadd_instruction:\n" \
-                       "\t.word 0x00000033\n"
+            for paging_mode in self.paging_modes:
 
-            # trap signature bytes
-            trap_sigbytes = 24
+                if mode == 'machine':
+                    if machine_exit_count > 0:
+                        continue
+                    machine_exit_count = machine_exit_count + 1
 
-            # initialize the signature region
-            sig_code = f'mtrap_count:\n .fill 1, 8, 0x0\nmtrap_sigptr:\n ' \
-                       f'.fill {trap_sigbytes // 4},4,0xdeadbeef\n'
-            # compile macros for the test
-            if mode != 'machine':
-                compile_macros = ['rvtest_mtrap_routine', 's_u_mode_test']
-            else:
-                compile_macros = []
+                # ASM Syntax
+                asm = ".option norvc\n\n" \
+                      "\taddi t3,x0,0\n\taddi t4,x0,3\n\tjal x0,first\n\n" \
+                      "first:\n\taddi t3,t3,1\n\n" \
+                      "b_address:\n\tbeq t3,t4,end\n\n" \
+                      "j_address:\n\tjal x0,first\n\n\tjal x0,fin\n\n" \
+                      "end:\n\taddi x0,x0,0\n\taddi t0,x0,1\n" \
+                      "\tla t0, b_address\n\tla t2, j_address\n" \
+                      "\tla t5, add_instruction\n\tlw t1, 0(t5)\n" \
+                      "\taddi t3,x0,5\n\tsw t1, 0(t2)\n\tsw t1, 0(t0)\n" \
+                      "\tfence.i\n\tjal x0,first\n\nfin:\n"
 
-            # user can choose to generate supervisor and/or user tests in
-            # addition to machine mode tests here.
-            privileged_test_enable = True
+                # rvtest_data
+                asm_data = f'\n.align 3\n\n'\
+                           f'exit_to_s_mode:\n.dword\t0x1\n\n'\
+                           f'sample_data:\n.word\t0xbabecafe\n'\
+                           f'.word\t0xdeadbeef\n\n'\
+                           f'.align 3\n\nsatp_mode_val:\n.dword\t0x0\n\n'\
+                           f'.align 3\nadd_instruction:\n'\
+                           f'\t.word 0x00000033\n\n'
 
-            if not privileged_test_enable:
-                self.modes.remove('supervisor')
-                self.modes.remove('user')
+                # trap signature bytes
+                trap_sigbytes = 24
 
-            privileged_test_dict = {
-                'enable': privileged_test_enable,
-                'mode': mode,
-                'page_size': 4096,
-                'paging_mode': 'sv39',
-                'll_pages': 64,
-            }
+                # initialize the signature region
+                sig_code = f'mtrap_count:\n .fill 1, 8, 0x0\nmtrap_sigptr:\n ' \
+                           f'.fill {trap_sigbytes // 4},4,0xdeadbeef\n'
+                
+                # compile macros for the test
+                if mode != 'machine':
+                    compile_macros = ['rvtest_mtrap_routine', 's_u_mode_test']
+                else:
+                    compile_macros = []
 
-            yield ({
-                'asm_code': asm,
-                'asm_sig': sig_code,
-                'asm_data': asm_data,
-                'compile_macros': compile_macros,
-                'privileged_test': privileged_test_dict,
-                'docstring': '',
-                'name_postfix': mode
-            })
+                # user can choose to generate supervisor and/or user tests in
+                # addition to machine mode tests here.
+                privileged_test_enable = True
+
+                if not privileged_test_enable:
+                    self.modes.remove('supervisor')
+                    self.modes.remove('user')
+
+                privileged_test_dict = {
+                    'enable': privileged_test_enable,
+                    'mode': mode,
+                    'page_size': 4096,
+                    'paging_mode': paging_mode,
+                    'll_pages': 64,
+                }
+
+                yield ({
+                    'asm_code': asm,
+                    'asm_sig': sig_code,
+                    'asm_data': asm_data,
+                    'compile_macros': compile_macros,
+                    'privileged_test': privileged_test_dict,
+                    'docstring': '',
+                    'name_postfix': f"{mode}-" + ('' if mode == 'machine' else paging_mode)
+                })
 
     def check_log(self, log_file_path, reports_dir):
         """
