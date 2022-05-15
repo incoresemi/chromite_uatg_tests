@@ -122,10 +122,10 @@ class uatg_decoder_memory_insts_2(IPlugin):
                         # perform the  required assembly operation
                         asm_code += f'\ninst_{count}:'
                         asm_code += f'\n#operation: {inst}, rs1={rs1}, imm=' \
-                                    f'{imm_val}, rs2={rs2} align={adj}\n'
+                                    f'{imm_val}, rs2={rs2}\n'
                         asm_code += f'TEST_STORE({swreg}, {test_reg}, 0, {rs1}'\
                                     f', {rs2}, {random_rs2}, {imm_val}, '\
-                                    f' {offset}, {inst}, {adj})\n'
+                                    f' {offset}, {inst})\n'
 
                         # adjust the offset. reset to 0 if it crosses 2048 and
                         # increment the current signature pointer with the
