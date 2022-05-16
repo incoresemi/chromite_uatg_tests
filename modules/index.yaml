@@ -165,7 +165,9 @@ pagetable:
   uatg_pte_write_to_read_only_pf: True
   uatg_pte_execute_from_read_only_pf: True
   uatg_pte_execute_from_read_write_only_pf: True
+  uatg_pte_read_from_execute_only_page_pf: True
   uatg_pte_read_write_on_execute_only_pf: True
+  uatg_pte_write_to_execute_only_page_pf: True
   uatg_pte_write_to_read_execute_only_pf: True
   uatg_pte_execute_write_only_inst_pf: True
   uatg_pte_execute_write_only_mem_pf: True
@@ -173,3 +175,5 @@ pagetable:
   uatg_pte_non_u_page_mem_pf: True
   uatg_pte_superpage: True
   uatg_pte_misaligned_superpage: True
+  uatg_pte_supervisor_read_write_u_page_pf: True
+  uatg_pte_supervisor_execute_u_page_pf: True
