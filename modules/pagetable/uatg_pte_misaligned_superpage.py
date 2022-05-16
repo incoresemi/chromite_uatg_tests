@@ -124,7 +124,7 @@ class uatg_pte_misaligned_superpage(IPlugin):
                                 'read': True,
                                 'write': True,
                                 'execute': True,
-                                'user': True,
+                                'user': True if mode=='user' else False,
                                 'globl': True,
                                 'access': True,
                                 'dirty': True}
@@ -136,6 +136,6 @@ class uatg_pte_misaligned_superpage(IPlugin):
                             'asm_sig': sig_code,
                             'compile_macros': compile_macros,
                             'privileged_test': privileged_test_dict,
-                            'docstring': 'This test fills ghr register with ones',
+                            'docstring': '',
                             'name_postfix': f"{mode}-{paging_mode}-{superpage_type}-{superpage_privilege}"
                         })

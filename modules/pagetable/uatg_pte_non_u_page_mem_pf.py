@@ -137,6 +137,6 @@ class uatg_pte_non_u_page_mem_pf(IPlugin):
                         'asm_sig': sig_code,
                         'compile_macros': compile_macros,
                         'privileged_test': privileged_test_dict,
-                        'docstring': 'This test fills ghr register with ones',
+                        'docstring': '',
                         'name_postfix': f"{inst}-{mode}-{paging_mode}"
                     })
