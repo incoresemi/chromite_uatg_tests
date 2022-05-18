@@ -153,11 +153,16 @@ class uatg_decoder_jump_jalr(IPlugin):
             asm_data += '.word 0xbabecafe\n'
             asm_data += '.word 0xbabecafe\n'
 
+            privileged_test_dict = {
+                    'enable' : True
+            }
+
             # return asm_code and sig_code
             yield ({
                 'asm_code': asm_code,
                 'asm_data': asm_data,
                 'asm_sig': sig_code,
                 'compile_macros': compile_macros,
+                'privileged_test' : privileged_test_dict,
                 'name_postfix': f'rs1_{rs1}'
             })

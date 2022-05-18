@@ -162,6 +162,10 @@ class uatg_decoder_branch_insts_1(IPlugin):
                         postfix_label = 'forward'
                     elif label == '1b':
                         postfix_label = 'backward'
+        
+                    privileged_test_dict = {
+                        'enable' : True
+                    }
 
                     # return asm_code and sig_code
 
@@ -170,5 +174,6 @@ class uatg_decoder_branch_insts_1(IPlugin):
                         'asm_data': asm_data,
                         'asm_sig': sig_code,
                         'compile_macros': compile_macros,
+                        'privileged_test' : privileged_test_dict,
                         'name_postfix': f'{inst}_rs1_{rs1}_{postfix_label}'
                     })

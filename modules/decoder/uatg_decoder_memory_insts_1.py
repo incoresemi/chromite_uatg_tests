@@ -154,6 +154,10 @@ class uatg_decoder_memory_insts_1(IPlugin):
                 # compile macros for the test
                 compile_macros = ['rvtest_mtrap_routine']
 
+                privileged_test_dict = {
+                       'enable' : True
+                }
+
                 # return asm_code and sig_code
 
                 asm_code = f'## inst_count: {count}, trap_count: ' \
@@ -170,5 +174,6 @@ class uatg_decoder_memory_insts_1(IPlugin):
                     'asm_data': asm_data,
                     'asm_sig': sig_code,
                     'compile_macros': compile_macros,
+                    'privileged_test' : privileged_test_dict,
                     'name_postfix': f"{inst}_rd_{rd}"
                 })

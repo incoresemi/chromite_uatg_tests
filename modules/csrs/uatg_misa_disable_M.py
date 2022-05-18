@@ -80,10 +80,16 @@ class uatg_misa_disable_mext(IPlugin):
                    f'mtrap_sigptr:\n.fill {1},4,0xdeadbeef\n'
         # compile macros for the test
         compile_macros = ['rvtest_mtrap_routine']
+        privileged_test_dict = {
+            'enable' : True
+            }
+
+
         yield({
             'asm_code': asm_code,
             'asm_sig': sig_code,
             'compile_macros': compile_macros,
+            'privileged_test' : privileged_test_dict,
             'name_postfix': 'machine'
         })
         

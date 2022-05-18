@@ -155,6 +155,10 @@ class uatg_decoder_jump_jal(IPlugin):
                     postfix_label = 'forward'
                 elif label == '1b':
                     postfix_label = 'backward'
+            
+                privileged_test_dict = {
+                        'enable' : True
+                }
 
                 # return asm_code and sig_code
                 yield ({
@@ -162,5 +166,6 @@ class uatg_decoder_jump_jal(IPlugin):
                     'asm_data': asm_data,
                     'asm_sig': sig_code,
                     'compile_macros': compile_macros,
+                    'privileged_test' : privileged_test_dict,
                     'name_postfix': f'rd_{rd}_{postfix_label}'
                 })

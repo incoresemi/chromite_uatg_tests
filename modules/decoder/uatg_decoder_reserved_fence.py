@@ -92,9 +92,15 @@ class uatg_decoder_reserved_fence(IPlugin):
             sig_code += f' .fill {trap_sigbytes // 4},4,0xdeadbeef\n'
             # compile macros for the test
             compile_macros = ['rvtest_mtrap_routine']
+
+            privileged_test_dict = {
+                    'enable' : True
+            }
+
             yield ({
                 'asm_code': asm_code,
                 'asm_sig': sig_code,
                 'compile_macros': compile_macros,
+                'privileged_test':privileged_test_dict,
                 'name_postfix': f"fence"
             })

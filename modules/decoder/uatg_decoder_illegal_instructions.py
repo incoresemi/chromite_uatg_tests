@@ -97,11 +97,15 @@ class uatg_decoder_illegal_instructions(IPlugin):
 
             asm_data = '\nrvtest_data:\n.word 0xbabecafe\n.word 0xbabecafe' \
                        '\n.word 0xbabecafe\n.word 0xbabecafe\n'
+            privileged_test_dict = {
+                    'enable' : True
+            }
 
             yield ({
                 'asm_code': asm_code,
                 'asm_data': asm_data,
                 'asm_sig': sig_code,
-                'compile_macros': compile_macros,
+                'compile_macros' : compile_macros,
+                'privileged_test' : privileged_test_dict,
                 'name_postfix': f"illegals_{new_isa_string}"
             })
