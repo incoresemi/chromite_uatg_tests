@@ -148,6 +148,10 @@ csrs:
   uatg_misa_mxl: True
   uatg_misa_reset_val: True
   uatg_misa_zero_bits: True
+  uatg_pmp_fields_check: False
+  uatg_pmp_imp_csrs: False
+  uatg_pmp_reset_val: False
+  uatg_pmp_rwx_test: False
   
 regfile_bypass:
   uatg_bypass_alu_alu: True
