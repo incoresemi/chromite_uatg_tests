@@ -41,23 +41,27 @@ def reset_pmp(entry, treg, xlen):
 
     reg, shamt = get_pmp_reg_index(entry, xlen)
     cfg_val = 0 << shamt
+    mask = ((2**8)-1) << shamt
     addr_reg = 'pmpaddr'+str(entry)
-    code = f'\nli {treg}, {cfg_val};\ncsrw {reg}, {treg};\ncsrw {addr_reg}, {treg};\n'
+    code = f'\nli {treg}, {mask};\ncsrrc x0, {reg}, {treg};\nli {treg}, 0;\ncsrw {addr_reg}, {treg};\n'
     return code
 
-def config_pmp(entry, treg, addr, cfg, xlen, label):
+def config_pmp(entry, treg1, treg2, addr, cfg, xlen, label):
 
     if label:
         linst = 'la'
-        shinst = f'srli {treg}, 2;\n'
+        shinst = f'srli {treg1}, {treg1}, 2;\n'
     else:
         linst = 'li'
         shinst = ''
     reg, shamt = get_pmp_reg_index(entry, xlen)
     cfg_val = cfg << shamt
     addr_reg = 'pmpaddr'+str(entry)
-    code = f'\nli {treg}, {cfg_val};\ncsrw {reg}, {treg};\n{linst} {treg},{addr};\
-\n{shinst}csrw {addr_reg}, {treg};\n'
+    mask = ((2**8)-1) << shamt
+    code = f'\n li {treg1}, ~{mask};\ncsrr {treg2}, {reg};\n and {treg2},{treg2},{treg1}\n'\
+            f'li {treg1}, {cfg_val};\n or {treg1}, {treg1}, {treg2};\n'\
+            f'csrw {reg}, {treg1};\n{linst} {treg1},{addr};\
+\n{shinst}csrw {addr_reg}, {treg1};\n'
     return code
 
 def get_xlen(yaml, hart='hart0'):
@@ -79,11 +83,12 @@ def get_legal_modes(yaml,entry,hart='hart0'):
     legal_list = []
     reg,_ = get_pmp_reg_index(entry,get_xlen(yaml,hart))
     node = yaml[hart][reg]['rv'+str(get_xlen(yaml,hart))][f'pmp{entry}cfg']
+    depend = { f'pmp{entry}cfg': (yaml[hart][reg]['reset-val']>>node['lsb'])&((2**node['msb'])-1)}
     if 'warl' in node['type']:
-        var = itertools.product([True,False], [True,False], [True,False], [False])
+        var = list(itertools.product([True,False], [True,False], [True,False], [False]))
         field = warl_class(node['type']['warl'],f'pmp{entry}cfg',node['msb'],node['lsb'])
         for i in range(1,4):
-            if any([field.islegal(cfg(x[0],x[1],x[2],x[3],i)) for x in var]):
+            if any([len(field.islegal(cfg(x[0],x[1],x[2],x[3],i), dependency_vals=depend))==0 for x in var]):
                 legal_list.append(i)
     else:
         legal_list.append((node['type']['ro_constant']&(3<<3)) >> 3)
