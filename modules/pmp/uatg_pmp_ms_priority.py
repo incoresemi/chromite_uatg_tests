@@ -3,7 +3,7 @@
 #    Author(s):
 #    - S Pawan Kumar <pawan.kumar@incoresemi.com> gitlab: @pawks github: @pawks
 
-import random,sys
+import random,sys,math
 from typing import Dict, Union, Any, List
 
 from yapsy.IPlugin import IPlugin
@@ -28,6 +28,8 @@ class uatg_pmp_ms_priority(IPlugin):
 
     def generate_asm(self) -> Dict[str, Union[Union[str, list], Any]]:
 
+        align = int(math.log(self.rsize, 2))
+
         asm_data = f"\n\n.align 3\n"\
                 f"return_address:\n"\
                 f".dword 0x0\n\n"\
@@ -38,14 +40,14 @@ class uatg_pmp_ms_priority(IPlugin):
                 f'sample_data:\n.word\t0xbabecafe\n'\
                 f'.word\t0xdeadbeef\n\n'\
                 f'.align 3\n\nsatp_mode_val:\n.dword\t0x0\n\n'\
-                f"\nrvtest_data:\n\t.align 4\n"+(''.join([".word 0xbabecafe\n"]*int(self.rsize/4)))
+                f"\n.align {align}\nrvtest_data:\n"+(''.join([".word 0xbabecafe\n"]*int(self.rsize/4)))
         log.debug("Generating Test")
         xlen = helpers.get_xlen(self.isa_yaml)
         pmps = helpers.get_valid_pmp_entries(self.isa_yaml)
         asm = "li t0, 0;\n csrw satp, t0;\n"
-        for i in pmps:
+        for i in pmps[:-1]:
             asm += helpers.reset_pmp(i,'t0',xlen)
-        asm += helpers.config_pmp(max(pmps),'t0', 's0','0xBFFFFFFF',
+        asm += helpers.config_pmp(max(pmps),'t0', 's0','li t0,0x2FFFFFFF',
                     helpers.cfg(True, True,True, False, helpers.mode_napot),xlen,False)
         compile_macros = ['rvtest_mtrap_routine','s_u_mode_test']
         exemode='m' + ('s' if 'S' in self.isa_yaml['hart0']['ISA'] else '')
@@ -56,30 +58,50 @@ class uatg_pmp_ms_priority(IPlugin):
                 sinst = access_inst[1]
                 inc = int(xlen/8)
                 for inst in access_inst:
+                    off = 0
                     load = True if inst[0] == 'l' else False
                     tseq = (f'{inst} t3, 0(t1);\n' if load else 'li t3, 1234;\n' )
                     label = 'rvtest_data' if load else 'sig'
                     r = False if load else True
                     x = True if entry == 0 else False
                     test_asm = helpers.config_pmp(entry, 't0', 's0',
-                            label+helpers.get_addr_mask(mode,self.rsize),
+                            helpers.get_addr_seq(mode,self.rsize,'t0','s0',
+                                label),
                             helpers.cfg(r, False, x, False, mode), xlen , True)
                     if mode == 1 and entry != 0:
                         test_asm += helpers.config_pmp(entry-1, 't0', 's0',
-                            label,0, xlen, True)
-                    test_asm += f'la t1, rvtest_data;\n la t2, sig;\n {tseq}{sinst} t3, 0(t2);\n'
+                            helpers.get_addr_seq(0,0,'t0','s0',
+                            label),
+                            0, xlen, True)
+                    test_asm += f'la t1, rvtest_data;\n la t2, sig;\n {tseq}{sinst} t3, {off}(t2);\n'
+                    off += inc
+                    test_asm += helpers.config_pmp(entry, 't0', 's0',
+                            helpers.get_addr_seq(mode,self.rsize,'t0','s0',
+                                label+'+' + str(off if not load else 0)),
+                            helpers.cfg(r, False, x, False, mode), xlen , True)
+                    if mode == 1 and entry != 0:
+                        test_asm += helpers.config_pmp(entry-1, 't0', 's0',
+                            helpers.get_addr_seq(0,0,'t0','s0',
+                            label+'+'+ str(off-inc if not load else 0)),
+                            0, xlen, True)
                     if 'S' in self.isa_yaml['hart0']['ISA']:
                         test_asm += 'li t3, 0;\naddi t6, x0, 1;\nslli t6, t6, 11;\n'\
                                 'csrs CSR_MSTATUS, t6;\n la t5, supervisor_entry;\n'\
                                 'csrw CSR_MEPC, t5;\n mret;\n supervisor_entry:\n'\
-                                'li a0, 173;\n'+f'{tseq}{sinst} t3,{inc}(t2);\necall;\n'\
+                                'li a0, 173;\n'+f'{tseq}{sinst} t3,{off}(t2);\necall;\n'\
                                 'supervisor_exit_label:\n'
-                        inc += inc
-                    if mode == 1 and entry != 0:
+                        off += inc
+                    if not(mode == 1 and entry == 0):
                         test_asm += helpers.config_pmp(entry, 't0', 's0',
-                            label+helpers.get_addr_mask(mode,self.rsize),
+                            helpers.get_addr_seq(mode,self.rsize,'t0','s0',
+                                label+'+' + str(off if not load else 0)),
                             helpers.cfg(r, False, x, True, mode), xlen , True)
-                        test_asm += f'{tseq}{sinst} t3, {inc}(t2);\n'
+                        if mode == 1:
+                            test_asm += helpers.config_pmp(entry-1, 't0', 's0',
+                            helpers.get_addr_seq(0,0,'t0','s0',
+                                label+'+'+ str(off-inc if not load else 0)),
+                            0, xlen, True)
+                        test_asm += f'li t3, 0;\n{tseq}{sinst} t3, {off}(t2);\n'
 
 
                     trap_sigbytes = 24

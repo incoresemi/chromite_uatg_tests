@@ -16,14 +16,16 @@ enc_mode = {"OFF": 0, "TOR": 1, "NA4": 2, "NAPOT": 3}
 def get_mode(mode):
     return enc_mode[mode.toupper()]
 
-def get_addr_mask(mode, size):
+def get_addr_seq(mode, size, reg, treg, addr):
     if mode == mode_napot:
+        size = int(size/2)
         mask = size-1
-        return f' & ~{size} | {mask}'
+        return f'la {reg},{addr};\nli {treg},~{size};\nand {reg},{reg},{treg};\n'\
+                f'li {treg},{mask};\nor {reg},{reg},{treg};\n'
     elif mode == mode_tor:
-        return f'+ {size}'
+        return f'la {reg},{addr} + {size};\n'
     else:
-        return ''
+        return f'la {reg},{addr};\n'
 
 def cfg(read, write, execute, lock, mode):
     cfg = mode << 3
@@ -46,22 +48,20 @@ def reset_pmp(entry, treg, xlen):
     code = f'\nli {treg}, {mask};\ncsrrc x0, {reg}, {treg};\nli {treg}, 0;\ncsrw {addr_reg}, {treg};\n'
     return code
 
-def config_pmp(entry, treg1, treg2, addr, cfg, xlen, label):
+def config_pmp(entry, treg1, treg2, addr_seq, cfg, xlen, label):
 
     if label:
-        linst = 'la'
         shinst = f'srli {treg1}, {treg1}, 2;\n'
     else:
-        linst = 'li'
         shinst = ''
     reg, shamt = get_pmp_reg_index(entry, xlen)
     cfg_val = cfg << shamt
     addr_reg = 'pmpaddr'+str(entry)
     mask = ((2**8)-1) << shamt
-    code = f'\n li {treg1}, ~{mask};\ncsrr {treg2}, {reg};\n and {treg2},{treg2},{treg1}\n'\
+    code = f'\n{addr_seq}\n{shinst}csrw {addr_reg}, {treg1};\n li {treg1}, ~{mask};\n'\
+            f'csrr {treg2}, {reg};\n and {treg2},{treg2},{treg1}\n'\
             f'li {treg1}, {cfg_val};\n or {treg1}, {treg1}, {treg2};\n'\
-            f'csrw {reg}, {treg1};\n{linst} {treg1},{addr};\
-\n{shinst}csrw {addr_reg}, {treg1};\n'
+            f'csrw {reg}, {treg1};\n'
     return code
 
 def get_xlen(yaml, hart='hart0'):
