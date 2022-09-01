@@ -3,7 +3,7 @@
 #    Author(s):
 #    - S Pawan Kumar <pawan.kumar@incoresemi.com> gitlab: @pawks github: @pawks
 
-import random,sys
+import random,sys,math
 from typing import Dict, Union, Any, List
 
 from yapsy.IPlugin import IPlugin
@@ -55,6 +55,7 @@ class uatg_pmp_u_priority(IPlugin):
                 access_inst = ('lw','sw') if mode == helpers.mode_na4 else ('ld','sd')
                 sinst = access_inst[1]
                 for inst in access_inst:
+                    test_asm = ''
                     load = True if inst[0] == 'l' else False
                     tseq = (f'{inst} t3, 0(t1);\n' if load else 'li t3, 1234;\n' )
                     label = 'rvtest_data' if load else 'sig'
@@ -69,9 +70,9 @@ class uatg_pmp_u_priority(IPlugin):
                             helpers.get_addr_seq(0,0,'t0','s0',
                             label),
                             0, xlen, True)
-                    test_asm += f'la t1, exit_to_s_mode+4;\n sw x0, 0(t1);'\
+                    test_asm += f'la t1, exit_to_s_mode;\n sw x0, 0(t1);'\
                                 f'\nla t1, rvtest_data;\n la t2, sig;\n'
-                    test_asm += 'li t3, 0;\naddi t6, x0, 3;\nslli t6, t6, 11;\n'\
+                    test_asm += 'li t3, 0;\naddi t6, x0, 0;\nslli t6, t6, 11;\n'\
                                 'csrs CSR_MSTATUS, t6;\n la t5, user_entry;\n'\
                                 'csrw CSR_MEPC, t5;\n mret;\n user_entry:\n'\
                                 'li a0, 173;\n'+f'{tseq}{sinst} t3,0(t2);\necall;\n'\
