@@ -31,17 +31,17 @@ class uatg_pmp_u_xpriority(IPlugin):
         align = int(math.log(self.rsize, 2))
 
         asm_data = f"\n\n.align 3\n"\
-                f"return_address:\n"\
-                f".dword 0x0\n\n"\
-                f"access_fault:\n.dword 0\n"
-                f"faulty_page_address:\n"\
-                f".dword 0x0\n"\
-                f'\n.align 3\n\n'\
-                f'exit_to_s_mode:\n.dword\t0x1\n\n'\
-                f'sample_data:\n.word\t0xbabecafe\n'\
-                f'.word\t0xdeadbeef\n\n'\
-                f'.align 3\n\nsatp_mode_val:\n.dword\t0x0\n\n'\
-                f"\n.align {align}\nrvtest_data:\n"+(''.join([".word 0xbabecafe\n"]*int(self.rsize/4)))
+                    f"return_address:\n"\
+                    f".dword 0x0\n\n"\
+                    f"access_fault:\n.dword 0\n"\
+                    f"faulty_page_address:\n"\
+                    f".dword 0x0\n"\
+                    f'\n.align 3\n\n'\
+                    f'exit_to_s_mode:\n.dword\t0x1\n\n'\
+                    f'sample_data:\n.word\t0xbabecafe\n'\
+                    f'.word\t0xdeadbeef\n\n'\
+                    f'.align 3\n\nsatp_mode_val:\n.dword\t0x0\n\n'\
+                    f"\n.align {align}\nrvtest_data:\n"+(''.join([".word 0xbabecafe\n"]*int(self.rsize/4)))
         log.debug("Generating Test")
         xlen = helpers.get_xlen(self.isa_yaml)
         pmps = helpers.get_valid_pmp_entries(self.isa_yaml)
@@ -59,7 +59,7 @@ class uatg_pmp_u_xpriority(IPlugin):
             for mode in filter(lambda x: x!= 0, modes):
                 label = 'pmp_target'
                 test_asm = f'j start_test;\n.align {align}\npmp_target: \nj 1f;\n.align {align}\n'\
-                        f'{sinst} t2, 0(t1);\njalr x0, ra;\nstart_test:\n'
+                        f'1:\n{sinst} t2, 0(t1);\njalr x0, ra;\nstart_test:\n'
                 test_asm += f'la t1, exit_to_s_mode;\n sw x0, 0(t1);'
                 test_asm += f'la t1, sig;\n li t2, 0;\n la t3, access_fault;\n'
                 test_asm += helpers.config_pmp(entry, 't0', 's0',
@@ -71,12 +71,12 @@ class uatg_pmp_u_xpriority(IPlugin):
                         helpers.get_addr_seq(0,0,'t0','s0',
                         label),
                         0, xlen, True)
-                test_asm += 'li t3, 0;\naddi t6, x0, 0;\nslli t6, t6, 11;\n'\
+                test_asm += '\naddi t6, x0, 0;\nslli t6, t6, 11;\n'\
                         'csrs CSR_MSTATUS, t6;\n la t5, user_entry;\n'\
                         'csrw CSR_MEPC, t5;\n mret;\n user_entry:\n'\
                         f'la t4, recovery_u;\n{sinst} t4, 0(t3);\n'\
-                        f'li a0, 173;\nla t4, pmp_target;\n{sinst} t4, 0(t3);\n jalr ra, t4;\n'\
-                        f'recovery_u:\naddi t1, t1,{inc};\necall;\ntest_exit:\n'
+                        f'li a0, 173;\nla t4, pmp_target;\n jalr ra, t4;\n'\
+                        f'recovery_u:\naddi t1, t1,{inc};\necall;\nsupervisor_exit_label:\ntest_exit:\n'
                 trap_sigbytes = 24
                 sig_code = f'sig:\n .fill 3*{xlen//32},4,0xdeadbeef\n'+\
                         ' mtrap_count:\n .fill 1, 8, 0x0\n' \
@@ -87,7 +87,7 @@ class uatg_pmp_u_xpriority(IPlugin):
                     'asm_data': asm_data,
                     'asm_sig': sig_code,
                     'compile_macros': compile_macros,
-                    'name_postfix': f"{exemode}-{entry}-{mode}-{inst}"
+                    'name_postfix': f"{exemode}-{entry}-{mode}-X"
                 })
 
     def check_log(self, log_file_path, reports_dir):

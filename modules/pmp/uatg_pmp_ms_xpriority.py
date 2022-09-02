@@ -33,7 +33,7 @@ class uatg_pmp_ms_xpriority(IPlugin):
         asm_data = f"\n\n.align 3\n"\
                 f"return_address:\n"\
                 f".dword 0x0\n\n"\
-                f"access_fault:\n.dword 0\n"
+                f"access_fault:\n.dword 0\n"\
                 f"faulty_page_address:\n"\
                 f".dword 0x0\n"\
                 f'\n.align 3\n\n'\
@@ -59,7 +59,7 @@ class uatg_pmp_ms_xpriority(IPlugin):
             for mode in filter(lambda x: x!= 0, modes):
                 label = 'pmp_target'
                 test_asm = f'j start_test;\n.align {align}\npmp_target: \nj 1f;\n.align {align}\n'\
-                        f'{sinst} t2, 0(t1);\njalr x0, ra;\nstart_test:\n'
+                        f'1:\n{sinst} t2, 0(t1);\njalr x0, ra;\nstart_test:\n'
                 test_asm += f'la t1, sig;\n li t2, -1;\n la t3, access_fault;\n'
                 test_asm += helpers.config_pmp(entry, 't0', 's0',
                         helpers.get_addr_seq(mode,self.rsize,'t0','s0',
@@ -76,7 +76,7 @@ class uatg_pmp_ms_xpriority(IPlugin):
                             'csrs CSR_MSTATUS, t6;\n la t5, supervisor_entry;\n'\
                             'csrw CSR_MEPC, t5;\n mret;\n supervisor_entry:\n'\
                             f'li a0, 173;\nla t4, recovery_s;\n{sinst} t4, 0(t3);\n'\
-                            f'la t4, pmp_target;\n{sinst} t4, 0(t3);\n jalr ra, t4;\nrecovery_s:'\
+                            f'la t4, pmp_target;\n jalr ra, t4;\nrecovery_s:'\
                             f'\naddi t1, t1,{inc};\necall;\nsupervisor_exit_label:\n'
                 test_asm += helpers.config_pmp(entry, 't0', 's0',
                     helpers.get_addr_seq(mode,self.rsize,'t0','s0',
@@ -100,7 +100,7 @@ class uatg_pmp_ms_xpriority(IPlugin):
                     'asm_data': asm_data,
                     'asm_sig': sig_code,
                     'compile_macros': compile_macros,
-                    'name_postfix': f"{exemode}-{entry}-{mode}-{inst}"
+                    'name_postfix': f"{exemode}-{entry}-{mode}-X"
                 })
 
     def check_log(self, log_file_path, reports_dir):
