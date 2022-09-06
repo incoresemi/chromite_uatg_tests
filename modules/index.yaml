@@ -1,3 +1,10 @@
+pmp:
+  uatg_pmp_ms_priority: True
+  uatg_pmp_u_priority: True
+  pmp_helpers: False # helper file. Does not generate any test.
+  uatg_pmp_ms_xpriority: False # Experimental
+  uatg_pmp_u_xpriority: False # Experimental
+
 branch_predictor:
   uatg_gshare_fa_btb_fill_01: True
   uatg_gshare_fa_btb_selfmodifying_01: True
