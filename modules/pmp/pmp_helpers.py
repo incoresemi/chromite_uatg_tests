@@ -2,7 +2,7 @@ import itertools
 from riscv_config.warl import warl_class
 
 def get_pmp_reg_index(pmpentry,xlen):
-    reg = 'pmpcfg'+str(int((pmpentry/(xlen/8)) * (xlen/32)))
+    reg = 'pmpcfg'+str(int(int(pmpentry/(xlen/8)) * (xlen/32)))
     shamt = int(pmpentry%(xlen/8)) * 8
     return reg, shamt
 
@@ -76,7 +76,8 @@ def get_valid_pmp_entries(yaml,hart='hart0'):
     legal_list = []
     for i in range(64):
         if yaml[hart]['pmpaddr'+str(i)][node]['accessible']:
-            legal_list.append(i)
+            if 'ro_constant' not in yaml[hart]['pmpaddr'+str(i)][node]['type']:
+                legal_list.append(i)
     return legal_list
 
 def get_legal_modes(yaml,entry,hart='hart0'):
