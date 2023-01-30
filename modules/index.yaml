@@ -1,10 +1,10 @@
 pmp:
-  uatg_pmp_ms_priority: False
-  uatg_pmp_u_priority: False
-  uatg_pmp_ms_partial: False
-  uatg_pmp_u_partial: False
+  uatg_pmp_ms_priority: True
+  uatg_pmp_u_priority: True
+  uatg_pmp_ms_partial: True
+  uatg_pmp_u_partial: True
   pmp_helpers: False # helper file. Does not generate any test.
-  uatg_pmp_ms_xpriority: False
-  uatg_pmp_u_xpriority: False
+  uatg_pmp_ms_xpriority: True
+  uatg_pmp_u_xpriority: True
   uatg_pmp_ms_xpartial: True # Experimental
   uatg_pmp_u_xpartial: True # Experimental
